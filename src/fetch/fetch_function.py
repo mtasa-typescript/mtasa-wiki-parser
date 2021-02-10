@@ -1,11 +1,12 @@
 import enum
 import re
-from typing import List, Dict
+from typing import List, Dict, Any, Optional
 
 import requests
 from bs4 import BeautifulSoup
 
-from src.fetch.function import FunctionUrl, FunctionType, FunctionArgument
+from src.fetch.function import FunctionUrl, FunctionType, FunctionArgument, FunctionData, CompoundFunctionData, \
+    FunctionDoc, FunctionOOP
 from src.fetch.globals import HOST_URL
 
 
@@ -13,6 +14,14 @@ class ParseFunctionType(enum.Enum):
     CLIENT = 'Client'
     SERVER = 'Server'
     SHARED = 'Shared'
+
+
+def cut_start_by_regex(data: str, regex) -> [str, Any]:
+    regex_result = re.search(regex, data)
+    if not regex_result:
+        return ['', None]
+
+    return [data[regex_result.start():], regex_result]
 
 
 # TODO: encapsulate into a class
@@ -30,11 +39,11 @@ def parse_get_function_description(data: str) -> str:
 
         description += f'{line}\n'
 
-    return description
+    return description[:-1]  # Remove last \n
 
 
 def parse_get_function_code(data: str) -> str:
-    SELECT_CODE_REGEX = re.compile(r'<syntaxhighlight[^>]*>(.+)</syntaxhighlight>')
+    SELECT_CODE_REGEX = re.compile(r'<syntaxhighlight[^>]*>([\s\S]+)</syntaxhighlight>')
     return re.search(SELECT_CODE_REGEX, data).group(1)
 
 
@@ -93,9 +102,10 @@ def parse_get_function_signature(code: str) -> FunctionType:
 
 def parse_get_function_arguments_docs(data: str) -> Dict[str, str]:
     START_REGEX = re.compile(r'=+[A-Za-z0-9 ]*Arguments=+', re.IGNORECASE)
-    data = data[re.search(START_REGEX, data).start():]
+    data = cut_start_by_regex(data, START_REGEX)[0]
 
     docs: Dict[str, str] = dict()
+    name = None
     for line in data.split('\n'):
         if line == '':
             continue
@@ -107,18 +117,38 @@ def parse_get_function_arguments_docs(data: str) -> Dict[str, str]:
                 continue
 
         name_regex = re.search(r"\* *'+([^':]+):?'+", line)
+        if name_regex is None and name is not None:
+            docs[name] += line + '\n'
+            continue
+
         name = name_regex.group(1)
 
         line = line[name_regex.end():].strip()
         line = re.sub(r'[\[\]\'\"]', '', line)
 
-        docs[name] = line
+        docs[name] = line + '\n'
 
-    return docs
+    return {k: docs[k][:-1] for k in docs}  # remove \n
 
 
-def parse_get_function_returns() -> str:
-    pass
+def parse_get_function_returns_doc(data: str) -> str:
+    START_REGEX = re.compile(r'=Returns?=+', re.IGNORECASE)
+    data = cut_start_by_regex(data, START_REGEX)[0]
+
+    result = ''
+    for line in data.split('\n'):
+        if line == '':
+            continue
+
+        if line.strip().startswith('='):
+            if 'return' not in line.lower():
+                break
+            else:
+                continue
+
+        result += line + '\n'
+
+    return result[:-1]  # remove last line-break
 
 
 def parse_get_function_type(data: str) -> ParseFunctionType:
@@ -132,9 +162,23 @@ def parse_get_function_type(data: str) -> ParseFunctionType:
         if 'server function' in line:
             return ParseFunctionType.SERVER
         if 'server client function' in line:
-            return ParseFunctionType.SHARED # TODO: is there two sections?
+            return ParseFunctionType.SHARED  # TODO: is there two sections?
 
     raise RuntimeError('Cannot find function type')
+
+
+def parse_get_function_oop(data: str) -> Optional[FunctionOOP]:
+    MATCHER = re.compile(r'{{ *OOP *\|\| *\[\[([^]]+)\]\] *[.:] *([^|]+)')
+
+    oop_result = re.search(MATCHER, data)
+    if oop_result is None:
+        return None
+
+    class_name = oop_result.group(1)
+    class_name = class_name.split('|')[-1]
+    return FunctionOOP(class_name=class_name,
+                       method_name=oop_result.group(2),
+                       field=None)  # TODO: read
 
 
 def parse_apply_branches_and_bounds(data: str) -> str:
@@ -146,12 +190,40 @@ def parse_apply_branches_and_bounds(data: str) -> str:
     return data
 
 
-def get_function_data(f: FunctionUrl):
-    url = f'{HOST_URL}/index.php?title={f.name[0].upper() + f.name[1:]}&action=edit'
+def parse(content: str, f_url: FunctionUrl) -> Optional[CompoundFunctionData]:
+    print('Reading ', f_url.name)
+
+    content = parse_apply_branches_and_bounds(content)  # Cutoff examples, see also
+    content_code = parse_get_function_code(content)
+
+    type_of_function = parse_get_function_type(content)
+    if type_of_function == ParseFunctionType.SHARED:
+        print('Cannot read SHARED function')
+        return None
+
+    data = FunctionData(signature=parse_get_function_signature(content_code),
+                        docs=FunctionDoc(description=parse_get_function_description(content),
+                                         arguments=parse_get_function_arguments_docs(content),
+                                         result=parse_get_function_returns_doc(content)),
+                        url=f_url,
+                        oop=parse_get_function_oop(content))
+    if data.oop is None:
+        print('No OOP definition for', f_url.name)
+    print('Complete')
+
+    if type_of_function == ParseFunctionType.CLIENT:
+        return CompoundFunctionData(client=data)
+
+    if type_of_function == ParseFunctionType.SERVER:
+        return CompoundFunctionData(server=data)
+
+
+def get_function_data(f_url: FunctionUrl) -> CompoundFunctionData:
+    url = f'{HOST_URL}/index.php?title={f_url.name[0].upper() + f_url.name[1:]}&action=edit'
     req = requests.request('GET', url)
     html = req.text
     soup_wiki = BeautifulSoup(html, 'html.parser')
     source_field = soup_wiki.select_one('#wpTextbox1')
     media_wiki = source_field.contents[0]
 
-    return media_wiki
+    return parse(media_wiki, f_url)

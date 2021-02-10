@@ -13,6 +13,12 @@ class ListType(enum.Enum):
     CLIENT = 'Client'
     SERVER = 'Server'
 
+    def __repr__(self) -> str:
+        if self == self.CLIENT:
+            return 'ListType.CLIENT'
+        if self == self.SERVER:
+            return 'ListType.SERVER'
+
 
 @dataclass
 class FunctionUrl:
@@ -29,7 +35,7 @@ class FunctionUrl:
 class FunctionArgument:
     name: str
     argument_type: str
-    default_value: str
+    default_value: Optional[str]
     optional: bool
 
 
@@ -72,3 +78,9 @@ class FunctionData:
     docs: FunctionDoc
     oop: Optional[FunctionOOP]
     url: FunctionUrl
+
+
+@dataclass
+class CompoundFunctionData:
+    server: Optional[FunctionData] = None
+    client: Optional[FunctionData] = None

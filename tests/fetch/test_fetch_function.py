@@ -1,7 +1,9 @@
 import pytest
 
-from src.fetch.fetch_function import get_function_data, parse_get_function_signature, parse_get_function_arguments_docs
-from src.fetch.function import FunctionUrl, ListType
+from src.fetch.fetch_function import get_function_data, parse_get_function_signature, parse_get_function_arguments_docs, \
+    parse_get_function_returns_doc, parse
+from src.fetch.function import FunctionUrl, ListType, CompoundFunctionData, FunctionDoc, FunctionArgument, FunctionType, \
+    FunctionData, FunctionOOP
 
 
 @pytest.fixture
@@ -102,4 +104,45 @@ case of streams.
 """
 
     result = parse_get_function_arguments_docs(code)
-    assert result
+    assert result == {
+        'sound': 'a sound element that is created using playSound or playSound3D. Streams are also supported',
+        'iSamples': 'allowed samples are 256, 512, 1024, 2048, 4096, 8192 and 16384.',
+        'iBands': 'post processing option allows you to split the samples into the '
+                  'desired amount of bands or bars so if you only need 5 bars'
+                  ' this saves a lot of cpu power compared to trying to do it in Lua.'
+    }
+
+
+def test_parse_get_function_arguments_docs_empty():
+    code = ''
+    result = parse_get_function_arguments_docs(code)
+    assert result == {}
+
+
+def test_parse_get_function_returns_doc_correct():
+    code = f"""==Syntax== 
+<syntaxhighlight lang="lua">bool setBlipOrdering ( blip theBlip, int ordering )</syntaxhighlight>
+{{OOP||[[blip]]:setOrdering|ordering|getBlipOrdering|}}
+===Required Arguments===
+*'''theBlip:''' the blip whose Z ordering to change.
+*'''ordering:''' the new Z ordering value. Blips with higher values will appear on top of blips with lower values. Possible range: -32767 to 32767. Default: 0.
+
+===Returns===
+Returns ''true'' if the blip ordering was changed successfully, ''false'' otherwise.
+
+==Example==
+This example will create a blip and make your blip on top of all other blip's.
+<section class="server" name="Server" show="true">
+<syntaxhighlight lang="lua">"""
+
+    result = parse_get_function_returns_doc(code)
+    assert result == """Returns ''true'' if the blip ordering was changed successfully, ''false'' otherwise."""
+
+
+def test_parse_get_function_returns_doc_empty():
+    code = ''
+    result = parse_get_function_returns_doc(code)
+    assert result == ''
+
+
+
