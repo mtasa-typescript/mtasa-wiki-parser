@@ -1,30 +1,51 @@
-import requests
-from bs4 import BeautifulSoup
+import os
+from typing import Optional
 
-URL = 'https://wiki.multitheftauto.com/wiki/CreateBlipAttachedTo'
+from src.fetch.fetch_function import get_function_data
+from src.fetch.fetch_function_list import get_function_list
+from src.fetch.function import ListType
 
+WRITE_TO = 'client.py'
 
-# Source: HTML result
-def get_html():
-    req = requests.request('GET', URL)
-    html = req.text
-    soup_html = BeautifulSoup(html, 'html.parser')
+START_FROM: Optional[str] = 'xmlNodeGetName'
 
+BLACKLIST = {
+    'dxCreateShader',
+    'dxDrawImage',
+    'Matrix',
+    'Vector/Vector2',
+    'Vector/Vector3',
+    'Vector/Vector4',
+    'call',
+    'setTimer',
+    'utf8.lower',
+    'utf8.upper',
+    'setWaterLevel',
+    'setWeaponAmmo',
+}
 
-
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    f_list = get_function_list(ListType.CLIENT)
+    write = START_FROM is None
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    file_path = f'dump/{WRITE_TO}'
+    if not os.path.exists(file_path):
+        with open(file_path, 'w', encoding='UTF-8') as file:
+            file.write('from src.fetch.function import CompoundFunctionData, FunctionData,'
+                       ' FunctionArgument, ListType, FunctionUrl, \\\n FunctionType, FunctionDoc, FunctionOOP\n\n')
+
+    with open(file_path, 'a', encoding='UTF-8') as file:
+        for index, f in enumerate(f_list):
+            if f.name in BLACKLIST:
+                continue
+
+            if f.name == START_FROM and not write:
+                write = True
+            if not write:
+                continue
+
+            data = get_function_data(f)
+            file.write(str(data))
+            file.write('\n')
+
+    print('[INFO] Complete')
