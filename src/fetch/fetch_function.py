@@ -10,6 +10,9 @@ from src.fetch.function import FunctionUrl, FunctionType, FunctionArgument, Func
 from src.fetch.globals import HOST_URL
 
 
+# All this code looks like piece of ...
+# Needs heavy refactoring into classes
+
 class ParseFunctionType(enum.Enum):
     CLIENT = 'Client'
     SERVER = 'Server'
@@ -43,7 +46,7 @@ def parse_get_function_description(data: str) -> str:
 
 
 def parse_get_function_code(data: str) -> str:
-    SELECT_CODE_REGEX = re.compile(r'<syntaxhighlight[^>]*>([\s\S]+)</syntaxhighlight>')
+    SELECT_CODE_REGEX = re.compile(r'<syntaxhighlight[^>]*>([\s\S]+?)</syntaxhighlight>')
     return re.search(SELECT_CODE_REGEX, data).group(1)
 
 
@@ -66,6 +69,13 @@ def parse_get_function_signature(code: str) -> FunctionType:
     for arg_signature in after_bracket.split(','):
         if arg_signature == ')':
             break  # No args
+
+        if '...' in arg_signature:
+            args.append(FunctionArgument(name='...args',
+                                         argument_type='any[]',
+                                         default_value=None,
+                                         optional=True))
+            continue
 
         # TODO: Looks like pipe-filter pattern. Refactoring?
         arg_signature = arg_signature.strip()
@@ -120,7 +130,9 @@ def parse_get_function_arguments_docs(data: str) -> Dict[str, str]:
         if name_regex is None and name is not None:
             docs[name] += line + '\n'
             continue
-
+        elif name_regex is None and name is None:
+            print('[ERROR] Required Arguments wrong line')
+            continue
         name = name_regex.group(1)
 
         line = line[name_regex.end():].strip()
@@ -157,18 +169,18 @@ def parse_get_function_type(data: str) -> ParseFunctionType:
         if not line.startswith('{{'):
             continue
 
-        if 'client function' in line:
+        if 'server client function' in line or 'server_client_function' in line or 'shared function' in line:
+            return ParseFunctionType.SHARED
+        if 'client function' in line or 'client_function' in line:
             return ParseFunctionType.CLIENT
-        if 'server function' in line:
+        if 'server function' in line or 'server_function' in line:
             return ParseFunctionType.SERVER
-        if 'server client function' in line:
-            return ParseFunctionType.SHARED  # TODO: is there two sections?
 
     raise RuntimeError('Cannot find function type')
 
 
 def parse_get_function_oop(data: str) -> Optional[FunctionOOP]:
-    MATCHER = re.compile(r'{{ *OOP *\|\| *\[\[([^]]+)\]\] *[.:] *([^|]+)')
+    MATCHER = re.compile(r'{{ *OOP *\|[^\|]*?\| *\[\[([^]]+)\]\] *[.:] *([^|]+)\|([^\|]*)')
 
     oop_result = re.search(MATCHER, data)
     if oop_result is None:
@@ -178,11 +190,11 @@ def parse_get_function_oop(data: str) -> Optional[FunctionOOP]:
     class_name = class_name.split('|')[-1]
     return FunctionOOP(class_name=class_name,
                        method_name=oop_result.group(2),
-                       field=None)  # TODO: read
+                       field=oop_result.group(3) if oop_result.group(3) else None)
 
 
 def parse_apply_branches_and_bounds(data: str) -> str:
-    END_CUTOFF_REGEX = re.compile(r'=+(See Also|Example)=+', re.IGNORECASE)
+    END_CUTOFF_REGEX = re.compile(r'=+ *(See Also|Examples?) *=+', re.IGNORECASE)
     regexp_result = re.search(END_CUTOFF_REGEX, data)
     if regexp_result:
         data = data[:regexp_result.start()]  # Cutoff
@@ -190,17 +202,42 @@ def parse_apply_branches_and_bounds(data: str) -> str:
     return data
 
 
-def parse(content: str, f_url: FunctionUrl) -> Optional[CompoundFunctionData]:
-    print('Reading ', f_url.name)
+def parse_two_sections(content: str, f_url: FunctionUrl) -> CompoundFunctionData:
+    SERVER_SECTION = re.compile(r'<section.+class="server".*?>([\s\S]+?)<\/section>', re.IGNORECASE)
+    CLIENT_SECTION = re.compile(r'<section.+class="client".*?>([\s\S]+?)<\/section>', re.IGNORECASE)
 
-    content = parse_apply_branches_and_bounds(content)  # Cutoff examples, see also
+    description = parse_get_function_description(content)
+    returns = parse_get_function_returns_doc(content)
+
+    server_content = re.search(SERVER_SECTION, content).group(1)
+    client_content = re.search(CLIENT_SECTION, content).group(1)
+    result = CompoundFunctionData(server=parse_one_side_function(server_content, f_url),
+                                  client=parse_one_side_function(client_content, f_url))
+
+    result.client.docs.description = description
+    result.server.docs.description = description
+
+    if not result.client.docs.result:
+        result.client.docs.result = returns
+    if not result.server.docs.result:
+        result.server.docs.result = returns
+
+    return result
+
+
+# only client or only server side
+def parse_shared_side_function(content: str, f_url: FunctionUrl) -> CompoundFunctionData:
+    if '<section' in content.lower():
+        return parse_two_sections(content, f_url)
+
+    # There are no sections
+    all_data = parse_one_side_function(content, f_url)
+    return CompoundFunctionData(server=all_data,
+                                client=all_data)
+
+
+def parse_one_side_function(content: str, f_url: FunctionUrl) -> FunctionData:
     content_code = parse_get_function_code(content)
-
-    type_of_function = parse_get_function_type(content)
-    if type_of_function == ParseFunctionType.SHARED:
-        print('Cannot read SHARED function')
-        return None
-
     data = FunctionData(signature=parse_get_function_signature(content_code),
                         docs=FunctionDoc(description=parse_get_function_description(content),
                                          arguments=parse_get_function_arguments_docs(content),
@@ -208,9 +245,25 @@ def parse(content: str, f_url: FunctionUrl) -> Optional[CompoundFunctionData]:
                         url=f_url,
                         oop=parse_get_function_oop(content))
     if data.oop is None:
-        print('No OOP definition for', f_url.name)
-    print('Complete')
+        print('[WARN] No OOP definition for', f_url.name)
+    print('[INFO] Complete')
 
+    return data
+
+
+def parse(content: str, f_url: FunctionUrl, skip_shared: bool = False) -> Optional[CompoundFunctionData]:
+    print('[INFO] Reading ', f_url.name)
+
+    content = parse_apply_branches_and_bounds(content)  # Cutoff examples, see also
+
+    type_of_function = parse_get_function_type(content)
+    if type_of_function == ParseFunctionType.SHARED:
+        if skip_shared:
+            print(f'[INFO] Shared function {f_url.name} will be skipped')
+            return None
+        return parse_shared_side_function(content, f_url)
+
+    data = parse_one_side_function(content, f_url)
     if type_of_function == ParseFunctionType.CLIENT:
         return CompoundFunctionData(client=data)
 
@@ -218,7 +271,7 @@ def parse(content: str, f_url: FunctionUrl) -> Optional[CompoundFunctionData]:
         return CompoundFunctionData(server=data)
 
 
-def get_function_data(f_url: FunctionUrl) -> CompoundFunctionData:
+def get_function_data(f_url: FunctionUrl, skip_shared: bool = False) -> Optional[CompoundFunctionData]:
     url = f'{HOST_URL}/index.php?title={f_url.name[0].upper() + f_url.name[1:]}&action=edit'
     req = requests.request('GET', url)
     html = req.text
@@ -226,4 +279,4 @@ def get_function_data(f_url: FunctionUrl) -> CompoundFunctionData:
     source_field = soup_wiki.select_one('#wpTextbox1')
     media_wiki = source_field.contents[0]
 
-    return parse(media_wiki, f_url)
+    return parse(media_wiki, f_url, skip_shared)
