@@ -251,13 +251,16 @@ def parse_one_side_function(content: str, f_url: FunctionUrl) -> FunctionData:
     return data
 
 
-def parse(content: str, f_url: FunctionUrl) -> CompoundFunctionData:
+def parse(content: str, f_url: FunctionUrl, skip_shared: bool = False) -> Optional[CompoundFunctionData]:
     print('[INFO] Reading ', f_url.name)
 
     content = parse_apply_branches_and_bounds(content)  # Cutoff examples, see also
 
     type_of_function = parse_get_function_type(content)
     if type_of_function == ParseFunctionType.SHARED:
+        if skip_shared:
+            print(f'[INFO] Shared function {f_url.name} will be skipped')
+            return None
         return parse_shared_side_function(content, f_url)
 
     data = parse_one_side_function(content, f_url)
@@ -268,7 +271,7 @@ def parse(content: str, f_url: FunctionUrl) -> CompoundFunctionData:
         return CompoundFunctionData(server=data)
 
 
-def get_function_data(f_url: FunctionUrl) -> CompoundFunctionData:
+def get_function_data(f_url: FunctionUrl, skip_shared: bool = False) -> Optional[CompoundFunctionData]:
     url = f'{HOST_URL}/index.php?title={f_url.name[0].upper() + f_url.name[1:]}&action=edit'
     req = requests.request('GET', url)
     html = req.text
@@ -276,4 +279,4 @@ def get_function_data(f_url: FunctionUrl) -> CompoundFunctionData:
     source_field = soup_wiki.select_one('#wpTextbox1')
     media_wiki = source_field.contents[0]
 
-    return parse(media_wiki, f_url)
+    return parse(media_wiki, f_url, skip_shared)
