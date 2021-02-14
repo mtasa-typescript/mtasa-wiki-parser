@@ -8,7 +8,7 @@ from src.fetch.function import ListType
 WRITE_TO = 'client.py'
 WRITE_SHARED_TO = 'shared.py'
 
-START_FROM: Optional[str] = None
+START_FROM: Optional[str] = 'isWorldSoundEnabled'
 
 BLACKLIST = {
     'dxCreateShader',
@@ -61,7 +61,7 @@ if __name__ == '__main__':
                 if not write:
                     continue
 
-                data = get_function_data(f, False)  # Set True, to skip shared functions
+                data = get_function_data(f, True)  # Set True, to skip shared functions
                 if data:
                     if data.client is not None and data.server is not None:
                         shared_file.write(str(data))

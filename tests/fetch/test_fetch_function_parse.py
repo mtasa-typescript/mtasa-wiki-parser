@@ -338,7 +338,7 @@ addEventHandler("clipstatus",checkClipStatus)
             CompoundFunctionData(server=None,
                                  client=FunctionData(
                                      signature=FunctionType(name='getCameraClip',
-                                                            return_types=['bool,', 'bool'],
+                                                            return_types=['bool', 'bool'],
                                                             arguments=[]),
                                      docs=FunctionDoc(description='',
                                                       arguments={},
