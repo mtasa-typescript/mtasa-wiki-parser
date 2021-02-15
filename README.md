@@ -54,7 +54,9 @@ python3 to_typescript/main.py
 
 I. **Maybe one day type definitions generator will be moved to separate repository**
 
-II. **The generator will overwrite all data in *.d.ts* files**
+# All stages between MTASA Wiki and TypeScript type declarations
+
+Please view [Stages Description](docs/FunctionDocPipeline.png) if you to contribute MTASA Function definitions.
 
 # Repository information
 
