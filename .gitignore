@@ -4,5 +4,5 @@ __pycache__
 local*
 dump
 output
-venv
+venv*
 .pytest_cache
