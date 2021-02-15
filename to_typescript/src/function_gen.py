@@ -20,6 +20,8 @@ def prepare_type(source_type: str) -> str:
         return 'boolean'
     if source_type == 'var' or source_type == 'value':
         return 'any'
+    if source_type == 'nil':
+        return 'null'
     if source_type == 'mixed':
         return 'string'
     if source_type == 'function' or source_type == 'handle' or source_type == 'callback':
@@ -27,6 +29,12 @@ def prepare_type(source_type: str) -> str:
 
     if source_type in TYPE_ALIASES:
         return TYPE_ALIASES[source_type]
+
+    source_type = source_type.replace('/', '|')
+    union_types = source_type.split('|')
+    if len(union_types) > 1:
+        union_types = [prepare_type(t) for t in union_types]
+        source_type = '|'.join(union_types)
 
     return source_type
 
@@ -81,10 +89,12 @@ def signature_string(data: FunctionData) -> str:
         arguments += f'{arg_name}{"?" if arg.optional and not "..." in arg.name else ""}' \
                      f': {prepare_type(arg.argument_type)}, '
 
-    return f'    export function {signature.name}({arguments}): {return_type};\n'
+    function_name = signature.name.split('.')[-1]
+    return f'    export function {function_name}({arguments}): {return_type};\n'
 
 
 def find_function_in_file(function_name: str, file_data: str) -> (int, int):
+    function_name = function_name.split('.')[-1]
     regex = re.compile(rf'^ *\/\*\*\n(((?<!\/\*\*)[\S\s])+?)\*\/\n.+function ({function_name})\W.+\n', re.MULTILINE)
     result = regex.search(file_data)
 

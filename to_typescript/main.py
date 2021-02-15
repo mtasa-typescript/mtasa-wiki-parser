@@ -51,7 +51,9 @@ FUNCTION_BLACKLIST: Dict[str, Set[str]] = {
         '',
     },
     'client': {
-        '',
+        'dxGetMaterialSize',    # Optional return type
+        'guiGridListAddRow',    # Union type in argument
+        'processLineOfSight',    # Comments in return types
     },
     'shared': {
         'utf8.byte',
@@ -76,6 +78,11 @@ def function_file_gen(data_list: List[CompoundFunctionData], key: str, dir_path:
                 print(f'[INFO] Function {f.server.signature.name} skipped, because it is Shared')
                 continue
 
+            if f.server != f.client and key == 'shared':
+                print(f'[INFO] Shared function {f.server.signature.name} skipped, '
+                      f'because it is non equal to server and client')
+                continue
+
             data: Optional[FunctionData] = getattr(f, key if key != 'shared' else 'server')
 
             file.write(docs_string(data))
@@ -94,6 +101,11 @@ def function_file_replace(data_list: List[CompoundFunctionData], key: str, dir_p
 
         if f.server == f.client and key != 'shared':
             print(f'[INFO] Function {f.server.signature.name} skipped, because it is Shared')
+            continue
+
+        if f.server != f.client and key == 'shared':
+            print(f'[INFO] Shared function {f.server.signature.name} skipped, '
+                  f'because it is non equal to server and client')
             continue
 
         data: Optional[FunctionData] = getattr(f, key if key != 'shared' else 'server')
@@ -117,6 +129,9 @@ def typescript_functions(data_list: List[CompoundFunctionData], key: str, dir_pa
 
 
 def utf8_functions():
+    with open(f'output/types/shared/utf8.d.ts', 'r', encoding='UTF-8') as file:
+        file_data = file.read()
+
     with open(f'output/types/shared/utf8.d.ts', 'w', encoding='UTF-8') as file:
         file.write(FILE_STARTER['shared'])
         file.write(f"declare module 'mtasa/shared/utf8' " + "{\n"
@@ -127,10 +142,10 @@ def utf8_functions():
                 continue
 
             data: Optional[FunctionData] = f.server
-            if data.signature.name in FUNCTION_BLACKLIST['shared']:
+            if data.signature.name in FUNCTION_BLACKLIST['shared']:  # If function in blacklist -- reveal existing data
+                start_pos, end_pos = find_function_in_file(data.signature.name, file_data)
+                file.write(file_data[start_pos:end_pos] + '\n')
                 continue
-
-            data.signature.name = data.signature.name.replace('utf8.', '')
 
             file.write(docs_string(data))
             file.write(signature_string(data) + '\n')
@@ -141,8 +156,12 @@ def utf8_functions():
 if __name__ == '__main__':
     init_workspace()
 
+    print('[INFO] Server data gen')
     typescript_functions(SERVER_DATA + SHARED_DATA, 'server', 'output/types/server')
+    print('[INFO] Client data gen')
     typescript_functions(CLIENT_DATA + SHARED_DATA, 'client', 'output/types/client')
+    print('[INFO] Shared data gen')
     typescript_functions(SHARED_DATA, 'shared', 'output/types/shared')
 
-    # utf8_functions() # TODO FIXME: fix replace
+    print('[INFO] Shared utf8.* data gen')
+    utf8_functions()
