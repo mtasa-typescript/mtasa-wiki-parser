@@ -17,24 +17,27 @@ def init_dir(dir_name: str):
 
 
 def init_workspace():
-    init_dir('output/types/client')
-    init_dir('output/types/shared')
-    init_dir('output/types/server')
+    init_dir('output/types/mtasa/client')
+    init_dir('output/types/mtasa/shared')
+    init_dir('output/types/mtasa/server')
 
 
-FILE_STARTER = dict(server='import {account, acl, aclgroup,' \
+FILE_STARTER = dict(server='/// <reference types="typescript-to-lua/language-extensions" />\n'
+                           'import {account, acl, aclgroup,' \
                            ' player, table, ban, blip,colshape,' \
                            'element,ped,pickup,resource,team,textdisplay,' \
                            'vehicle,xmlnode,textitem,HandleFunction,file,' \
                            'marker,radararea,request,userdata,timer,' \
-                           'water} from "mtasa/server/structures";\n',
-                    shared='import {account, acl, aclgroup,' \
+                           'water} from "./structure";\n',
+                    shared='/// <reference types="typescript-to-lua/language-extensions" />\n'
+                           'import {account, acl, aclgroup,' \
                            ' player, table, ban, blip,colshape,' \
                            'element,ped,pickup,resource,team,textdisplay,' \
                            'vehicle,xmlnode,textitem,HandleFunction,file,' \
                            'marker,radararea,request,userdata,timer,' \
-                           'water,iterator} from "mtasa/shared/structures";\n',
-                    client='import {account, acl, aclgroup,' \
+                           'water,iterator} from "./structure";\n',
+                    client='/// <reference types="typescript-to-lua/language-extensions" />\n'
+                           'import {account, acl, aclgroup,' \
                            ' player, table, ban, blip,colshape,' \
                            'element,ped,pickup,resource,team,textdisplay,' \
                            'vehicle,xmlnode,textitem,HandleFunction,file,' \
@@ -43,7 +46,7 @@ FILE_STARTER = dict(server='import {account, acl, aclgroup,' \
                            'gui,searchlight,weapon,guibrowser,'
                            'txd,dff,col,ifp,primitiveType,guiscrollbar,'
                            'guimemo,texture,objectgroup,projectile,Matrix,'
-                           '} from "mtasa/client/structures";\n',
+                           '} from "./structure";\n',
                     )
 
 FUNCTION_BLACKLIST: Dict[str, Set[str]] = {
@@ -51,13 +54,12 @@ FUNCTION_BLACKLIST: Dict[str, Set[str]] = {
         '',
     },
     'client': {
-        'dxGetMaterialSize',    # Optional return type
-        'guiGridListAddRow',    # Union type in argument
-        'processLineOfSight',    # Comments in return types
+        'dxGetMaterialSize',  # Optional return type
+        'guiGridListAddRow',  # Union type in argument
+        'processLineOfSight',  # Comments in return types
     },
     'shared': {
         'utf8.byte',
-        'utf8.lower',
         'utf8.match',
     },
 }
@@ -68,7 +70,6 @@ def function_file_gen(data_list: List[CompoundFunctionData], key: str, dir_path:
 
     with open(f'{dir_path}/function.d.ts', 'w', encoding='UTF-8') as file:
         file.write(FILE_STARTER[key])
-        file.write(f"declare module 'mtasa/{key}/functions' " + "{\n\n")
 
         for f in data_list:
             if f.server and 'utf8.' in f.server.signature.name:
@@ -87,8 +88,6 @@ def function_file_gen(data_list: List[CompoundFunctionData], key: str, dir_path:
 
             file.write(docs_string(data))
             file.write(signature_string(data))
-
-        file.write("}")
 
 
 def function_file_replace(data_list: List[CompoundFunctionData], key: str, dir_path: str):
@@ -129,13 +128,12 @@ def typescript_functions(data_list: List[CompoundFunctionData], key: str, dir_pa
 
 
 def utf8_functions():
-    with open(f'output/types/shared/utf8.d.ts', 'r', encoding='UTF-8') as file:
+    with open(f'output/types/mtasa/shared/utf8.d.ts', 'r', encoding='UTF-8') as file:
         file_data = file.read()
 
-    with open(f'output/types/shared/utf8.d.ts', 'w', encoding='UTF-8') as file:
+    with open(f'output/types/mtasa/shared/utf8.d.ts', 'w', encoding='UTF-8') as file:
         file.write(FILE_STARTER['shared'])
-        file.write(f"declare module 'mtasa/shared/utf8' " + "{\n"
-                                                            "    export namespace utf8 {\n\n")
+        file.write("export namespace utf8 {\n")
 
         for f in SHARED_DATA:
             if not (f.server and 'utf8.' in f.server.signature.name):
@@ -148,20 +146,20 @@ def utf8_functions():
                 continue
 
             file.write(docs_string(data))
-            file.write(signature_string(data) + '\n')
+            file.write(signature_string(data, '') + '\n')
 
-        file.write("    }\n}\n")
+        file.write("}\n")
 
 
 if __name__ == '__main__':
     init_workspace()
 
     print('[INFO] Server data gen')
-    typescript_functions(SERVER_DATA + SHARED_DATA, 'server', 'output/types/server')
+    typescript_functions(SERVER_DATA + SHARED_DATA, 'server', 'output/types/mtasa/server')
     print('[INFO] Client data gen')
-    typescript_functions(CLIENT_DATA + SHARED_DATA, 'client', 'output/types/client')
+    typescript_functions(CLIENT_DATA + SHARED_DATA, 'client', 'output/types/mtasa/client')
     print('[INFO] Shared data gen')
-    typescript_functions(SHARED_DATA, 'shared', 'output/types/shared')
+    typescript_functions(SHARED_DATA, 'shared', 'output/types/mtasa/shared')
 
     print('[INFO] Shared utf8.* data gen')
     utf8_functions()

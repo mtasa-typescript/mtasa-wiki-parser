@@ -74,10 +74,10 @@ def main():
                 if data:
                     if data.client is not None and data.server is not None:
                         shared_file.write(str(data))
-                        shared_file.write('\n')
+                        shared_file.write(',\n')
                     else:
                         file.write(str(data))
-                        file.write('\n')
+                        file.write(',\n')
                 else:
                     print(f'[WARN] Function {f.name} was not parsed. Maybe skipped')
 

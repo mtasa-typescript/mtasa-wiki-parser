@@ -193,3 +193,9 @@ def test_parse_get_function_signature_with_dot_in_function_name():
                                                        default_value='false',
                                                        optional=True)
                                   ])
+
+
+def test_parse_get_function_type_server_client_function_bug():
+    code = '''{{Server_client function}}'''
+
+    assert parse_get_function_type(code) == ParseFunctionType.SHARED

@@ -48,33 +48,55 @@ def prepare_arg_name(name: str) -> str:
     return name
 
 
+def docs_post_processing(docs: str) -> str:
+    MAX_LINE_LENGTH = 100
+
+    lines = docs.split('\n')
+    new_lines = []
+
+    for line in lines:
+        new_line = ''
+        i = 0
+
+        for i in range(MAX_LINE_LENGTH, len(line), MAX_LINE_LENGTH):
+            partial_docs = line[i - MAX_LINE_LENGTH:i]
+            new_line += '\n* '.join(partial_docs.rsplit(' ', 1))
+
+        if i < len(line):
+            new_line += line[i:]
+
+        new_lines.append(new_line)
+
+    return '\n'.join(new_lines)
+
+
 def docs_string(data: FunctionData) -> str:
-    docs = '    /**\n'
+    docs = '/**\n'
 
     for line in data.docs.description.split('\n'):
-        docs += '     * ' + line + '\n'
-    docs += '     * @see {@link https://wiki.multitheftauto.com/wiki/' + data.signature.name + '|MTASA Wiki}\n'
+        docs += ' * ' + line + '\n'
+    docs += ' * @see {@link https://wiki.multitheftauto.com/wiki/' + data.signature.name + '|MTASA Wiki}\n'
 
     for arg in data.signature.arguments:
         if arg.name not in data.docs.arguments:
             continue
-        docs += '     * @param ' + arg.name + ' ' \
+        docs += ' * @param ' + arg.name + ' ' \
                 + data.docs.arguments[arg.name].replace('\n', '  ') + '\n'
         if arg.default_value:
-            docs += '     * @default ' + arg.default_value + '\n'
+            docs += ' * @default ' + arg.default_value + '\n'
 
     for index, line in enumerate(data.docs.result.split('\n')):
         if index == 0:
-            docs += '     * @return ' + line + '\n'
+            docs += ' * @return ' + line + '\n'
         else:
-            docs += '     * * ' + line + '\n'
+            docs += ' * * ' + line + '\n'
 
-    docs += '     */\n'
+    docs += ' */\n'
 
-    return docs
+    return docs_post_processing(docs)
 
 
-def signature_string(data: FunctionData) -> str:
+def signature_string(data: FunctionData, pre_string: str = 'export') -> str:
     signature = data.signature
     if len(signature.return_types) == 1:
         return_type = prepare_type(signature.return_types[0])
@@ -90,12 +112,12 @@ def signature_string(data: FunctionData) -> str:
                      f': {prepare_type(arg.argument_type)}, '
 
     function_name = signature.name.split('.')[-1]
-    return f'    export function {function_name}({arguments}): {return_type};\n'
+    return f'{pre_string} function {function_name}({arguments}): {return_type};\n'
 
 
 def find_function_in_file(function_name: str, file_data: str) -> (int, int):
     function_name = function_name.split('.')[-1]
-    regex = re.compile(rf'^ *\/\*\*\n(((?<!\/\*\*)[\S\s])+?)\*\/\n.+function ({function_name})\W.+\n', re.MULTILINE)
+    regex = re.compile(rf'^ *\/\*\*\n(((?<!\/\*\*)[\S\s])+?)\*\/\n.+function ({function_name})\W[^;]+;\n', re.MULTILINE)
     result = regex.search(file_data)
 
     if not result:
