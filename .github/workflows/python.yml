@@ -1,7 +1,12 @@
 name: PythonTests
 
 on:
+  pull_request:
+    branches: 
+      - '*'
   push:
+    branches:
+      - '*'
     paths-ignore:
       - '**.md'
 
