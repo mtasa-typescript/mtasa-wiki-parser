@@ -1,6 +1,6 @@
 # MTASA Wiki Parser
 
-Parses MTASA Wiki functions. Saves parsed data into dump directory. 
+Parses MTASA Wiki functions. Saves parsed data into dump directory.
 
 ## Connect [dump repository](https://gitlab.toliak.ru/mtasa/typescript/wiki-dump)
 
@@ -37,7 +37,7 @@ pip install -r requirements.txt
 ### Run parser
 
 After setting up variables in `User values` in `main.py` execute the command:
- 
+
 ```shell
 python3 main.py
 ```
@@ -54,9 +54,11 @@ python3 to_typescript/main.py
 
 I. **Maybe one day type definitions generator will be moved to separate repository**
 
-# All stages between MTASA Wiki and TypeScript type declarations
+# Definition generation
 
 Please view [Stages Description](docs/FunctionDocPipeline.png) if you to contribute MTASA Function definitions.
+
+**Note:** OOP Declaration should be updated manually (until I write signature replacer)
 
 # Repository information
 

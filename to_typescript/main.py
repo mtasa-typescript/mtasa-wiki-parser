@@ -1,12 +1,13 @@
 import os
-from typing import List, Optional, Dict, Set
+from collections import defaultdict
+from typing import List, Optional, Dict, Set, DefaultDict
 
-from dump.shared import DATA as SHARED_DATA
 from dump.client import DATA as CLIENT_DATA
-from dump.server import DATA as SERVER_DATA
+from dump.shared import DATA as SHARED_DATA
 from src.fetch.function import CompoundFunctionData, FunctionData
-
+from to_typescript.src.file_gen import prepare_category_file_name
 from to_typescript.src.function_gen import docs_string, signature_string, find_function_in_file
+from to_typescript.src.oop_gen import oop_docs, method_definition, property_definition, prepare_class_name
 
 
 # TODO: Looks like piece of script. Refactor that to readable code....
@@ -20,33 +21,37 @@ def init_workspace():
     init_dir('output/types/mtasa/client')
     init_dir('output/types/mtasa/shared')
     init_dir('output/types/mtasa/server')
+    init_dir('output/types/mtasa/client/oop')
+    init_dir('output/types/mtasa/server/oop')
+    init_dir('output/types/mtasa/client/function')
+    init_dir('output/types/mtasa/server/function')
 
 
 FILE_STARTER = dict(server='/// <reference types="typescript-to-lua/language-extensions" />\n'
-                           'import {account, acl, aclgroup,' \
-                           ' player, table, ban, blip,colshape,' \
-                           'element,ped,pickup,resource,team,textdisplay,' \
-                           'vehicle,xmlnode,textitem,HandleFunction,file,' \
-                           'marker,radararea,request,userdata,timer,' \
-                           'water} from "./structure";\n',
+                           '/** @noSelfInFile */\n\n'
+                           'import {Account, ACL, ACLGroup,'
+                           ' Player, Table, Ban, Blip,ColShape,'
+                           'Element,Ped,Pickup,Resource,Team,TextDisplay,'
+                           'Vehicle,XmlNode,TextItem,HandleFunction,File,'
+                           'Marker,RadarArea,Request,Userdata,Timer,'
+                           'Water} from "types/mtasa/server/structure";\n',
+
                     shared='/// <reference types="typescript-to-lua/language-extensions" />\n'
-                           'import {account, acl, aclgroup,' \
-                           ' player, table, ban, blip,colshape,' \
-                           'element,ped,pickup,resource,team,textdisplay,' \
-                           'vehicle,xmlnode,textitem,HandleFunction,file,' \
-                           'marker,radararea,request,userdata,timer,' \
-                           'water,iterator} from "./structure";\n',
+                           '/** @noSelfInFile */\n\n'
+                           'import {iterator} from "types/mtasa/shared/structure";\n',
+
                     client='/// <reference types="typescript-to-lua/language-extensions" />\n'
-                           'import {account, acl, aclgroup,' \
-                           ' player, table, ban, blip,colshape,' \
-                           'element,ped,pickup,resource,team,textdisplay,' \
-                           'vehicle,xmlnode,textitem,HandleFunction,file,' \
-                           'marker,radararea,request,userdata,timer,' \
-                           'water,browser,progressBar,light,effect,'
-                           'gui,searchlight,weapon,guibrowser,'
-                           'txd,dff,col,ifp,primitiveType,guiscrollbar,'
-                           'guimemo,texture,objectgroup,projectile,Matrix,'
-                           '} from "./structure";\n',
+                           '/** @noSelfInFile */\n\n'
+                           'import {Account, ACL, ACLGroup,'
+                           ' Player, Table, Ban, Blip,ColShape,'
+                           'Element,Ped,Pickup,Resource,Team,TextDisplay,'
+                           'Vehicle,XmlNode,TextItem,HandleFunction,File,'
+                           'Marker,RadarArea,Request,Userdata,Timer,'
+                           'Water,Browser,ProgressBar,Light,Effect,'
+                           'Gui,Searchlight,Weapon,GuiBrowser,'
+                           'Txd,Dff,Col,Ifp,PrimitiveType,GuiScrollBar,'
+                           'GuiMemo,Texture,ObjectGroup,Projectile,Matrix,'
+                           '} from "types/mtasa/client/structure";\n',
                     )
 
 FUNCTION_BLACKLIST: Dict[str, Set[str]] = {
@@ -65,49 +70,55 @@ FUNCTION_BLACKLIST: Dict[str, Set[str]] = {
 }
 
 
-def function_file_gen(data_list: List[CompoundFunctionData], key: str, dir_path: str):
-    # This function ignores Blacklist
+def should_function_be_skipped(data: FunctionData, key: str):
+    if 'utf8.' in data.signature.name:
+        return True  # skip utf8 functions
 
-    with open(f'{dir_path}/function.d.ts', 'w', encoding='UTF-8') as file:
+    return False
+
+
+CategorizedType = DefaultDict[str, List[FunctionData]]
+
+
+def categorize_functions(data_list: List[CompoundFunctionData], key: str) -> CategorizedType:
+    categorized: CategorizedType = defaultdict(list)
+    for f in data_list:
+        data: Optional[FunctionData] = getattr(f, key)
+        categorized[data.url.category].append(data)
+
+    return categorized
+
+
+def function_file_gen(categorized: CategorizedType, key: str, dir_path: str, category: str):
+    # This function ignores Blacklist
+    functions: Set[str] = set()
+
+    file_name = prepare_category_file_name(category)
+    with open(f'{dir_path}/function/{file_name}', 'w', encoding='UTF-8') as file:
         file.write(FILE_STARTER[key])
 
-        for f in data_list:
-            if f.server and 'utf8.' in f.server.signature.name:
-                continue  # skip utf8 functions
-
-            if f.server == f.client and key != 'shared':
-                print(f'[INFO] Function {f.server.signature.name} skipped, because it is Shared')
+        for data in categorized[category]:
+            if data.signature.name in functions:
                 continue
 
-            if f.server != f.client and key == 'shared':
-                print(f'[INFO] Shared function {f.server.signature.name} skipped, '
-                      f'because it is non equal to server and client')
-                continue
+            functions.add(data.signature.name)
 
-            data: Optional[FunctionData] = getattr(f, key if key != 'shared' else 'server')
+            if should_function_be_skipped(data, key):
+                continue
 
             file.write(docs_string(data))
             file.write(signature_string(data))
 
 
-def function_file_replace(data_list: List[CompoundFunctionData], key: str, dir_path: str):
-    with open(f'{dir_path}/function.d.ts', 'r', encoding='UTF-8') as file:
+def function_file_replace(categorized: CategorizedType, key: str, dir_path: str, category: str):
+    file_name = prepare_category_file_name(category)
+    with open(f'{dir_path}/function/{file_name}', 'r', encoding='UTF-8') as file:
         file_data = file.read()
 
-    for f in data_list:
-        if f.server and 'utf8.' in f.server.signature.name:
-            continue  # skip utf8 functions
-
-        if f.server == f.client and key != 'shared':
-            print(f'[INFO] Function {f.server.signature.name} skipped, because it is Shared')
+    for data in categorized[category]:
+        if should_function_be_skipped(data, key):
             continue
 
-        if f.server != f.client and key == 'shared':
-            print(f'[INFO] Shared function {f.server.signature.name} skipped, '
-                  f'because it is non equal to server and client')
-            continue
-
-        data: Optional[FunctionData] = getattr(f, key if key != 'shared' else 'server')
         if data.signature.name in FUNCTION_BLACKLIST[key]:
             continue
 
@@ -116,15 +127,20 @@ def function_file_replace(data_list: List[CompoundFunctionData], key: str, dir_p
 
         file_data = file_data[:start_pos] + data_to_replace + file_data[end_pos:]
 
-    with open(f'{dir_path}/function.d.ts', 'w', encoding='UTF-8') as file:
+    with open(f'{dir_path}/function/{file_name}', 'w', encoding='UTF-8') as file:
         file.write(file_data)
 
 
 def typescript_functions(data_list: List[CompoundFunctionData], key: str, dir_path: str):
-    if os.path.exists(f'{dir_path}/function.d.ts'):
-        return function_file_replace(data_list, key, dir_path)
+    categorized = categorize_functions(data_list, key)
 
-    return function_file_gen(data_list, key, dir_path)
+    for category in categorized:
+        file_name = prepare_category_file_name(category)
+
+        if os.path.exists(f'{dir_path}/function/{file_name}'):
+            function_file_replace(categorized, key, dir_path, category)
+        else:
+            function_file_gen(categorized, key, dir_path, category)
 
 
 def utf8_functions():
@@ -151,15 +167,58 @@ def utf8_functions():
         file.write("}\n")
 
 
+def typescript_oop(data_list: List[CompoundFunctionData], key: str, dir_path: str):
+    classes_data: DefaultDict[str, List[str]] = defaultdict(list)
+
+    for f in data_list:
+        data: Optional[FunctionData] = getattr(f, key)
+        if should_function_be_skipped(data, key):
+            continue
+
+        if not data.oop:
+            continue
+
+        class_name = prepare_class_name(data.oop.class_name)
+        put_entrypoint = classes_data[class_name]
+        if data.oop.field and not data.oop.method_name.startswith('set'):
+            field_line = property_definition(data) + '\n'
+            if field_line not in put_entrypoint:
+                put_entrypoint.append(oop_docs(data))
+                put_entrypoint.append(field_line)
+
+        method_line = method_definition(data) + '\n'
+        if method_line not in put_entrypoint:
+            put_entrypoint.append(oop_docs(data))
+            put_entrypoint.append(method_line)
+
+    for class_name in classes_data:
+        path = os.path.join(dir_path, f'{class_name}.d.ts')
+        if os.path.exists(path):
+            print(f'\n[INFO] File {path} exists. Skipped')
+            continue
+
+        with open(path, 'w') as file:
+            file.write(FILE_STARTER[key])
+            file.write(f'export class {class_name} ' + '{\n')
+            for line in classes_data[class_name]:
+                file.write(line)
+
+            file.write('\n}')
+
+
 if __name__ == '__main__':
     init_workspace()
 
-    print('[INFO] Server data gen')
-    typescript_functions(SERVER_DATA + SHARED_DATA, 'server', 'output/types/mtasa/server')
-    print('[INFO] Client data gen')
-    typescript_functions(CLIENT_DATA + SHARED_DATA, 'client', 'output/types/mtasa/client')
-    print('[INFO] Shared data gen')
-    typescript_functions(SHARED_DATA, 'shared', 'output/types/mtasa/shared')
+    # print('[INFO] Server data gen')
+    # typescript_functions(SERVER_DATA + SHARED_DATA, 'server', 'output/types/mtasa/server')
+    # print('[INFO] Client data gen')
+    # typescript_functions(CLIENT_DATA + SHARED_DATA, 'client', 'output/types/mtasa/client')
 
-    print('[INFO] Shared utf8.* data gen')
-    utf8_functions()
+    # print('[INFO] Shared utf8.* data gen')
+    # utf8_functions()
+
+    print('\n[INFO] OOP Code generation. Will be skipped, if files exists')
+    # print('[INFO] Server data gen')
+    # typescript_oop(SERVER_DATA + SHARED_DATA, 'server', 'output/types/mtasa/server/oop')
+    print('[INFO] Client data gen')
+    typescript_oop(CLIENT_DATA + SHARED_DATA, 'client', 'output/types/mtasa/client/oop')
