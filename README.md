@@ -2,10 +2,10 @@
 
 Parses MTASA Wiki functions. Saves parsed data into dump directory.
 
-## Connect [dump repository](https://gitlab.toliak.ru/mtasa/typescript/wiki-dump)
+## Connect [dump repository](https://github.com/mtasa-typescript/mtasa-wiki-dump)
 
 ```shell
-git clone https://gitlab.toliak.ru/mtasa/typescript/wiki-dump dump --depth 1
+git clone https://github.com/mtasa-typescript/mtasa-wiki-dump dump --depth 1
 ```
 
 ## Install and run
@@ -59,10 +59,3 @@ I. **Maybe one day type definitions generator will be moved to separate reposito
 Please view [Stages Description](docs/FunctionDocPipeline.png) if you to contribute MTASA Function definitions.
 
 **Note:** OOP Declaration should be updated manually (until I write signature replacer)
-
-# Repository information
-
-[comment]: <> (TODO: Link)
-[Repository with Issues, Merge Request, etc..](github.com)
-
-[Mirror repository with CI/CD](https://gitlab.toliak.ru/mtasa/typescript/wiki-parser-python) 
