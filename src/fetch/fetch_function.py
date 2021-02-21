@@ -51,8 +51,8 @@ def parse_get_function_code(data: str) -> str:
 
 
 def parse_get_function_signature(code: str) -> FunctionType:
-    WORD_REGEX_END = re.compile(r'([a-zA-Z0-9]+)$')
-    WORD_REGEX = re.compile(r'([a-zA-Z0-9]+)')
+    WORD_REGEX_END = re.compile(r'([a-zA-Z0-9.]+)$')
+    WORD_REGEX = re.compile(r'([a-zA-Z0-9_]+)')
 
     bracket_start = code.index('(')
     before_bracket = code[:bracket_start].strip()
@@ -63,6 +63,7 @@ def parse_get_function_signature(code: str) -> FunctionType:
 
     return_types_str = before_bracket[:name_regex.start()]
     return_types = [t.strip() for t in return_types_str.split(' ') if t.strip() != '']
+    return_types = [t.replace(',', '') for t in return_types]
 
     args: List[FunctionArgument] = []
     optional_arg = False
@@ -169,7 +170,12 @@ def parse_get_function_type(data: str) -> ParseFunctionType:
         if not line.startswith('{{'):
             continue
 
-        if 'server client function' in line or 'server_client_function' in line or 'shared function' in line:
+        if not 'function' in line:
+            continue
+
+        line = line[:re.search(r'}}', line).start()]  # Cut comments
+
+        if re.search(r'(server[_ ]client|shared)[_ ]function', line, re.IGNORECASE):
             return ParseFunctionType.SHARED
         if 'client function' in line or 'client_function' in line:
             return ParseFunctionType.CLIENT

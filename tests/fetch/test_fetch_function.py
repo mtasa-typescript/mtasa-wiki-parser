@@ -1,7 +1,7 @@
 import pytest
 
 from src.fetch.fetch_function import get_function_data, parse_get_function_signature, parse_get_function_arguments_docs, \
-    parse_get_function_returns_doc, parse
+    parse_get_function_returns_doc, parse, parse_get_function_type, ParseFunctionType
 from src.fetch.function import FunctionUrl, ListType, CompoundFunctionData, FunctionDoc, FunctionArgument, FunctionType, \
     FunctionData, FunctionOOP
 
@@ -145,4 +145,57 @@ def test_parse_get_function_returns_doc_empty():
     assert result == ''
 
 
+def test_parse_get_function_type_with_comment():
+    code = '''__NOTOC__ 
+{{Server function}}<!-- Change this to "Client function" or "Server function" appropriately-->
+<!-- Describe in plain english what this function does. Don't go into details, just give an overview -->
+This function returns a table over all the ACL's that exist in a given ACL group.'''
 
+    result = parse_get_function_type(code)
+    assert result == ParseFunctionType.SERVER
+
+
+def test_parse_get_function_signature_with_commas():
+    code = '''int, int, int getTeamColor ( team theTeam )'''
+
+    result = parse_get_function_signature(code)
+    assert result == FunctionType(name='getTeamColor',
+                                  return_types=['int', 'int', 'int'],
+                                  arguments=[
+                                      FunctionArgument(name='theTeam',
+                                                       argument_type='team',
+                                                       default_value=None,
+                                                       optional=False)
+                                  ])
+
+
+def test_parse_get_function_signature_with_dot_in_function_name():
+    code = '''int, int utf8.find ( string input, string pattern [, int startpos = 1, boolean plain = false ] )'''
+
+    result = parse_get_function_signature(code)
+    assert result == FunctionType(name='utf8.find',
+                                  return_types=['int', 'int'],
+                                  arguments=[
+                                      FunctionArgument(name='input',
+                                                       argument_type='string',
+                                                       default_value=None,
+                                                       optional=False),
+                                      FunctionArgument(name='pattern',
+                                                       argument_type='string',
+                                                       default_value=None,
+                                                       optional=False),
+                                      FunctionArgument(name='startpos',
+                                                       argument_type='int',
+                                                       default_value='1',
+                                                       optional=True),
+                                      FunctionArgument(name='plain',
+                                                       argument_type='boolean',
+                                                       default_value='false',
+                                                       optional=True)
+                                  ])
+
+
+def test_parse_get_function_type_server_client_function_bug():
+    code = '''{{Server_client function}}'''
+
+    assert parse_get_function_type(code) == ParseFunctionType.SHARED

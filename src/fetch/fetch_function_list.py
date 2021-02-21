@@ -40,6 +40,9 @@ def get_function_list(list_type: ListType) -> List[FunctionUrl]:
             continue
 
         if 'href' in element.attrs:
+            if [url for url in result if url.name == element.text]:
+                continue  # Function already exists
+
             result.append(FunctionUrl(url=element.attrs['href'],
                                       name=element.text,
                                       category=category,

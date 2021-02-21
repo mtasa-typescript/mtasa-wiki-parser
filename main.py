@@ -5,11 +5,19 @@ from src.fetch.fetch_function import get_function_data
 from src.fetch.fetch_function_list import get_function_list
 from src.fetch.function import ListType
 
-WRITE_TO = 'client.py'
+# User values
+FUNCTION_LIST: ListType = ListType.CLIENT  # What wiki function list will be used
+SKIP_SHARED: bool = True  # Should the parser skip shared functions? (If they are already parsed and dumped)
+START_FROM: Optional[str] = \
+    None  # What function will be the pivot. Set None to start from the beginning
+#
+
+# File names
+WRITE_CLIENT_TO = 'client.py'
+WRITE_SERVER_TO = 'server.py'
 WRITE_SHARED_TO = 'shared.py'
 
-START_FROM: Optional[str] = None
-
+# Functions with non-standard wiki pages
 BLACKLIST = {
     'dxCreateShader',
     'dxDrawImage',
@@ -41,11 +49,12 @@ def init_file(filepath: str):
                             ' FunctionArgument, ListType, FunctionUrl, \\\n FunctionType, FunctionDoc, FunctionOOP\n\n')
 
 
-if __name__ == '__main__':
-    f_list = get_function_list(ListType.CLIENT)  # Change this (client/server)
+def main():
+    f_list = get_function_list(FUNCTION_LIST)  # Change this (client/server)
+    write_to = WRITE_CLIENT_TO if FUNCTION_LIST == ListType.CLIENT else WRITE_SERVER_TO
     write = START_FROM is None
 
-    file_path = f'dump/{WRITE_TO}'
+    file_path = f'dump/{write_to}'
     shared_file_path = f'dump/{WRITE_SHARED_TO}'
     init_file(file_path)
     init_file(shared_file_path)
@@ -61,15 +70,19 @@ if __name__ == '__main__':
                 if not write:
                     continue
 
-                data = get_function_data(f, False)  # Set True, to skip shared functions
+                data = get_function_data(f, SKIP_SHARED)
                 if data:
                     if data.client is not None and data.server is not None:
                         shared_file.write(str(data))
-                        shared_file.write('\n')
+                        shared_file.write(',\n')
                     else:
                         file.write(str(data))
-                        file.write('\n')
+                        file.write(',\n')
                 else:
                     print(f'[WARN] Function {f.name} was not parsed. Maybe skipped')
 
     print('[INFO] Complete, final')
+
+
+if __name__ == '__main__':
+    main()
