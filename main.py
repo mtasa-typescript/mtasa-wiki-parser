@@ -10,7 +10,7 @@ FUNCTION_LIST: ListType = ListType.CLIENT  # What wiki function list will be use
 SKIP_SHARED: bool = True  # Should the parser skip shared functions? (If they are already parsed and dumped)
 START_FROM: Optional[str] = \
     None  # What function will be the pivot. Set None to start from the beginning
-#
+USE_CACHE: bool = True  # Use (or create) cache in dump-html directory
 
 # File names
 WRITE_CLIENT_TO = 'client.py'
@@ -59,8 +59,14 @@ def main():
     init_file(file_path)
     init_file(shared_file_path)
 
-    with open(file_path, 'a', encoding='UTF-8') as file:
-        with open(shared_file_path, 'a', encoding='UTF-8') as shared_file:
+    with open(file_path, 'w', encoding='UTF-8') as file:
+        file.write(f"""from src.fetch.function import CompoundFunctionData, FunctionData, FunctionArgument, ListType, FunctionUrl, \\
+ FunctionType, FunctionDoc, FunctionOOP
+
+DATA = [
+""")
+
+        with open(shared_file_path, 'w', encoding='UTF-8') as shared_file:
             for index, f in enumerate(f_list):
                 if f.name in BLACKLIST:
                     continue
@@ -70,7 +76,7 @@ def main():
                 if not write:
                     continue
 
-                data = get_function_data(f, SKIP_SHARED)
+                data = get_function_data(f, SKIP_SHARED, USE_CACHE)
                 if data:
                     if data.client is not None and data.server is not None:
                         shared_file.write(str(data))
@@ -80,6 +86,8 @@ def main():
                         file.write(',\n')
                 else:
                     print(f'[WARN] Function {f.name} was not parsed. Maybe skipped')
+
+        file.write(']\n')
 
     print('[INFO] Complete, final')
 
