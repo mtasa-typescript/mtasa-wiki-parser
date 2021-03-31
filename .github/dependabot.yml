@@ -1,0 +1,17 @@
+version: 2
+updates:
+# Fetch and update latest `pip` packages
+- package-ecosystem: pip
+  directory: '/'
+  schedule:
+    interval: daily
+    time: '00:00'
+  open-pull-requests-limit: 10
+  reviewers:
+    - toliak
+  assignees:
+    - toliak
+  commit-message:
+    prefix: fix
+    prefix-development: chore
+    include: scope
