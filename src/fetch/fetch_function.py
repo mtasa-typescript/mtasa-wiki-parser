@@ -1,4 +1,5 @@
 import enum
+import os
 import re
 from typing import List, Dict, Any, Optional
 
@@ -277,12 +278,23 @@ def parse(content: str, f_url: FunctionUrl, skip_shared: bool = False) -> Option
         return CompoundFunctionData(server=data)
 
 
-def get_function_data(f_url: FunctionUrl, skip_shared: bool = False) -> Optional[CompoundFunctionData]:
-    url = f'{HOST_URL}/index.php?title={f_url.name[0].upper() + f_url.name[1:]}&action=edit'
-    req = requests.request('GET', url)
-    html = req.text
-    soup_wiki = BeautifulSoup(html, 'html.parser')
-    source_field = soup_wiki.select_one('#wpTextbox1')
-    media_wiki = source_field.contents[0]
+def get_function_data(f_url: FunctionUrl,
+                      skip_shared: bool = False,
+                      use_cache: bool = True) -> Optional[CompoundFunctionData]:
+    name = f_url.name[0].upper() + f_url.name[1:]
+    cache_file = os.path.join('dump-html', name)
+    if os.path.exists(cache_file) and use_cache:
+        with open(cache_file,'r', encoding='UTF-8') as cache:
+            media_wiki = cache.read()
+    else:
+        url = f'{HOST_URL}/index.php?title={name}&action=edit'
+        req = requests.request('GET', url)
+        html = req.text
+        soup_wiki = BeautifulSoup(html, 'html.parser')
+        source_field = soup_wiki.select_one('#wpTextbox1')
+        media_wiki = source_field.contents[0]
+
+        with open(cache_file,'w', encoding='UTF-8') as cache:
+            cache.write(media_wiki)
 
     return parse(media_wiki, f_url, skip_shared)
