@@ -169,3 +169,6 @@ def find_function_in_file(function_name: str, file_data: str) -> (int, int):
                            f'Please provide it or remove the whole file to regenerate it')
 
     return result.start(), result.end()
+
+class TypeScriptFunctionGen:
+    pass
