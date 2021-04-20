@@ -6,9 +6,9 @@ from typing import List, Dict, Any, Optional
 import requests
 from bs4 import BeautifulSoup
 
-from src.fetch.function import FunctionUrl, FunctionType, FunctionArgument, FunctionData, CompoundFunctionData, \
+from parser.fetch.function import FunctionUrl, FunctionType, FunctionArgument, FunctionData, CompoundFunctionData, \
     FunctionDoc, FunctionOOP
-from src.fetch.globals import HOST_URL
+from parser.fetch.globals import HOST_URL
 
 
 # All this code looks like piece of ...

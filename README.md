@@ -10,7 +10,7 @@ git clone https://github.com/mtasa-typescript/mtasa-wiki-dump dump
 
 ## Install and run
 
-*Warning:* You should edit [main.py](main.py) `User values` block
+*Warning:* You should edit [main.py](parser/main.py) `User values` block
 
 ### Install venv
 
@@ -39,6 +39,7 @@ pip install -r requirements.txt
 After setting up variables in `User values` in `main.py` execute the command:
 
 ```shell
+cd parser
 python3 main.py
 ```
 
@@ -47,7 +48,8 @@ python3 main.py
 ## How to run
 
 ```shell
-python3 to_typescript/main.py
+cd to_typescript
+python3 main.py
 ```
 
 ## Caveats

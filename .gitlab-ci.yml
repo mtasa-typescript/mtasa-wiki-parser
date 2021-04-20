@@ -12,5 +12,6 @@ test:
   script:
     - mkdir -p dump-html
     - echo $PYTHONPATH
+    - cd parser
     - export PYTHONPATH=$PWD
     - pytest .

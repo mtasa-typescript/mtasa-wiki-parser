@@ -4,7 +4,7 @@ from typing import List, Optional, Dict, Set, DefaultDict
 
 from dump.client import DATA as CLIENT_DATA
 from dump.shared import DATA as SHARED_DATA
-from src.fetch.function import CompoundFunctionData, FunctionData
+from parser.fetch import CompoundFunctionData, FunctionData
 from to_typescript.src.file_gen import prepare_category_file_name
 from to_typescript.src.function_gen import docs_string, signature_string, find_function_in_file
 from to_typescript.src.oop_gen import oop_docs, method_definition, property_definition, prepare_class_name

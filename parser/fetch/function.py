@@ -3,10 +3,7 @@ import enum
 from dataclasses import dataclass
 from typing import List, Dict, Optional
 
-import requests
-from bs4 import BeautifulSoup
-
-from src.fetch.globals import HOST_URL
+from parser.fetch.globals import HOST_URL
 
 
 class ListType(enum.Enum):

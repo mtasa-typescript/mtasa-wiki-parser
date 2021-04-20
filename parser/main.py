@@ -1,16 +1,16 @@
 import os
 from typing import Optional
 
-from src.fetch.fetch_function import get_function_data
-from src.fetch.fetch_function_list import get_function_list
-from src.fetch.function import ListType
+from parser.fetch.fetch_function import get_function_data
+from parser.fetch.fetch_function_list import get_function_list
+from parser.fetch.function import ListType
 
 # User values
 FUNCTION_LIST: ListType = ListType.CLIENT  # What wiki function list will be used
 SKIP_SHARED: bool = True  # Should the parser skip shared functions? (If they are already parsed and dumped)
 START_FROM: Optional[str] = \
-    None  # What function will be the pivot. Set None to start from the beginning
-USE_CACHE: bool = True  # Use (or create) cache in dump-html directory
+    'engineFreeModel'  # What function will be the pivot. Set None to start from the beginning
+USE_CACHE: bool = False  # Use (or create) cache in dump-html directory
 
 # File names
 WRITE_CLIENT_TO = 'client.py'

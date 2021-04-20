@@ -1,9 +1,8 @@
 import pytest
 
-from src.fetch.fetch_function import get_function_data, parse_get_function_signature, parse_get_function_arguments_docs, \
-    parse_get_function_returns_doc, parse, parse_get_function_type, ParseFunctionType
-from src.fetch.function import FunctionUrl, ListType, CompoundFunctionData, FunctionDoc, FunctionArgument, FunctionType, \
-    FunctionData, FunctionOOP
+from parser.fetch import get_function_data, parse_get_function_signature, parse_get_function_arguments_docs, \
+    parse_get_function_returns_doc, parse_get_function_type, ParseFunctionType
+from parser.fetch import FunctionUrl, ListType, FunctionArgument, FunctionType
 
 
 @pytest.fixture
