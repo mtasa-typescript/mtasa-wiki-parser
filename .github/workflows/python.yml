@@ -30,6 +30,7 @@ jobs:
       - name: Test with pytest
         run: |
           cd parser
+          mkdir -p dump-html
           pytest .
   test_to_typescript:
     runs-on: ${{ matrix.os }}

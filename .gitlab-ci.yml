@@ -10,8 +10,8 @@ parser_test:
     - pip install -r requirements.txt
 
   script:
-    - mkdir -p dump-html
     - cd parser
+    - mkdir -p dump-html
     - pytest .
 
 to_typescript_test:
