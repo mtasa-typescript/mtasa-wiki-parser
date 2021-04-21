@@ -23,6 +23,5 @@ to_typescript_test:
     - pip install -r requirements.txt
 
   script:
-    - mkdir -p dump-html
     - cd to_typescript
     - pytest .

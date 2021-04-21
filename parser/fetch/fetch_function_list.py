@@ -3,7 +3,7 @@ from typing import List
 import requests
 from bs4 import BeautifulSoup, Tag
 
-from fetch.function import ListType, FunctionUrl
+from fetch.structures import ListType, FunctionUrl
 from fetch.globals import HOST_URL
 
 URL_MAP = {

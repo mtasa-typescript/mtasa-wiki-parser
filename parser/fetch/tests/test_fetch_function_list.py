@@ -3,7 +3,7 @@ from typing import Set, Optional
 import pytest
 
 from fetch.fetch_function_list import get_function_list
-from fetch.function import ListType
+from fetch.structures import ListType
 
 
 @pytest.fixture

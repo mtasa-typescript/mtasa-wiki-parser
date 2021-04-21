@@ -3,14 +3,14 @@ from typing import Optional
 
 from fetch.fetch_function import get_function_data
 from fetch.fetch_function_list import get_function_list
-from fetch.function import ListType
+from fetch.structures import ListType
 
 # User values
-FUNCTION_LIST: ListType = ListType.CLIENT  # What wiki function list will be used
-SKIP_SHARED: bool = True  # Should the parser skip shared functions? (If they are already parsed and dumped)
+FUNCTION_LIST: ListType = ListType.SERVER  # What wiki function list will be used
+SKIP_SHARED: bool = False  # Should the parser skip shared functions? (If they are already parsed and dumped)
 START_FROM: Optional[str] = \
-    'engineFreeModel'  # What function will be the pivot. Set None to start from the beginning
-USE_CACHE: bool = False  # Use (or create) cache in dump-html directory
+    None # What function will be the pivot. Set None to start from the beginning
+USE_CACHE: bool = False  # Use cache in dump-html directory
 
 # File names
 WRITE_CLIENT_TO = 'client.py'

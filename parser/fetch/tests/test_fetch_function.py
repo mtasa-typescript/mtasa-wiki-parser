@@ -2,7 +2,7 @@ import pytest
 
 from fetch.fetch_function import get_function_data, parse_get_function_signature, parse_get_function_arguments_docs, \
     parse_get_function_returns_doc, parse_get_function_type, ParseFunctionType
-from fetch.function import FunctionUrl, ListType, FunctionArgument, FunctionType
+from fetch.structures import FunctionUrl, ListType, FunctionArgument, FunctionType
 
 
 @pytest.fixture

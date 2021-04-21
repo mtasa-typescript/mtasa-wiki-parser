@@ -2,11 +2,24 @@
 
 Parses MTASA Wiki functions. Saves parsed data into dump directory.
 
+Minimal expected Python version: 3.7
+
 ## Connect [dump repository](https://github.com/mtasa-typescript/mtasa-wiki-dump)
+
+### For developers
 
 ```shell
 git clone https://github.com/mtasa-typescript/mtasa-wiki-dump parser/dump
 mkdir -p parser/dump-html
+git clone https://github.com/mtasa-typescript/mtasa-lua-types to_typescript/output
+```
+
+### For internal developers
+
+```shell
+git clone https://github.com/mtasa-typescript/mtasa-wiki-dump parser/dump
+git clone https://github.com/mtasa-typescript/mtasa-wiki-dump-html parser/dump-html
+git clone https://github.com/mtasa-typescript/mtasa-lua-types to_typescript/output
 ```
 
 ## Install and run

@@ -6,7 +6,7 @@ from typing import List, Dict, Any, Optional
 import requests
 from bs4 import BeautifulSoup
 
-from fetch.function import FunctionUrl, FunctionType, FunctionArgument, FunctionData, CompoundFunctionData, \
+from fetch.structures import FunctionUrl, FunctionType, FunctionArgument, FunctionData, CompoundFunctionData, \
     FunctionDoc, FunctionOOP
 from fetch.globals import HOST_URL
 
