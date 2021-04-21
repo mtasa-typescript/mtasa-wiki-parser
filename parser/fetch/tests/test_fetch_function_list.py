@@ -2,8 +2,8 @@ from typing import Set, Optional
 
 import pytest
 
-from src.fetch.fetch_function_list import get_function_list
-from src.fetch.function import ListType
+from fetch.fetch_function_list import get_function_list
+from fetch.function import ListType
 
 
 @pytest.fixture

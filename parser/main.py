@@ -1,9 +1,9 @@
 import os
 from typing import Optional
 
-from parser.fetch.fetch_function import get_function_data
-from parser.fetch.fetch_function_list import get_function_list
-from parser.fetch.function import ListType
+from fetch.fetch_function import get_function_data
+from fetch.fetch_function_list import get_function_list
+from fetch.function import ListType
 
 # User values
 FUNCTION_LIST: ListType = ListType.CLIENT  # What wiki function list will be used

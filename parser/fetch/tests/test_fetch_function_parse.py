@@ -1,7 +1,7 @@
 import pytest
 
-from src.fetch.fetch_function import parse
-from src.fetch.function import CompoundFunctionData, FunctionData, FunctionType, FunctionOOP, FunctionDoc, ListType, \
+from fetch.fetch_function import parse
+from fetch.function import CompoundFunctionData, FunctionData, FunctionType, FunctionOOP, FunctionDoc, ListType, \
     FunctionUrl, FunctionArgument
 
 url_placeholder = FunctionUrl(url='U', name='N', category='C', function_type=ListType.CLIENT)

@@ -3,7 +3,7 @@ import enum
 from dataclasses import dataclass
 from typing import List, Dict, Optional
 
-from parser.fetch.globals import HOST_URL
+from fetch.globals import HOST_URL
 
 
 class ListType(enum.Enum):

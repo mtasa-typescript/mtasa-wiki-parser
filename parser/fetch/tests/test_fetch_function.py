@@ -1,8 +1,8 @@
 import pytest
 
-from parser.fetch import get_function_data, parse_get_function_signature, parse_get_function_arguments_docs, \
+from fetch.fetch_function import get_function_data, parse_get_function_signature, parse_get_function_arguments_docs, \
     parse_get_function_returns_doc, parse_get_function_type, ParseFunctionType
-from parser.fetch import FunctionUrl, ListType, FunctionArgument, FunctionType
+from fetch.function import FunctionUrl, ListType, FunctionArgument, FunctionType
 
 
 @pytest.fixture
@@ -29,8 +29,8 @@ def get_element_by_id_url() -> FunctionUrl:
                        function_type=ListType.CLIENT, )
 
 
-def test_get_function_gui_get_screen_size(gui_get_screen_size_url):
-    result = get_function_data(gui_get_screen_size_url)
+def test_get_function_gui_get_screen_size_no_cache(gui_get_screen_size_url):
+    result = get_function_data(gui_get_screen_size_url, use_cache=False)
     assert result is not None
 
 

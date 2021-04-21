@@ -3,8 +3,8 @@ from typing import List
 import requests
 from bs4 import BeautifulSoup, Tag
 
-from parser.fetch.function import ListType, FunctionUrl
-from parser.fetch.globals import HOST_URL
+from fetch.function import ListType, FunctionUrl
+from fetch.globals import HOST_URL
 
 URL_MAP = {
     ListType.CLIENT: f'{HOST_URL}/wiki/Client_Scripting_Functions',

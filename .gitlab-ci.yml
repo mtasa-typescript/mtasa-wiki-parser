@@ -1,7 +1,7 @@
 stages:
   - tests
 
-test:
+parser_test:
   image: python:3.7-slim
 
   stage: tests
@@ -11,7 +11,18 @@ test:
 
   script:
     - mkdir -p dump-html
-    - echo $PYTHONPATH
     - cd parser
-    - export PYTHONPATH=$PWD
+    - pytest .
+
+to_typescript_test:
+  image: python:3.7-slim
+
+  stage: tests
+
+  before_script:
+    - pip install -r requirements.txt
+
+  script:
+    - mkdir -p dump-html
+    - cd to_typescript
     - pytest .

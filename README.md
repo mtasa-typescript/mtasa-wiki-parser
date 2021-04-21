@@ -5,7 +5,8 @@ Parses MTASA Wiki functions. Saves parsed data into dump directory.
 ## Connect [dump repository](https://github.com/mtasa-typescript/mtasa-wiki-dump)
 
 ```shell
-git clone https://github.com/mtasa-typescript/mtasa-wiki-dump dump
+git clone https://github.com/mtasa-typescript/mtasa-wiki-dump parser/dump
+mkdir -p parser/dump-html
 ```
 
 ## Install and run
