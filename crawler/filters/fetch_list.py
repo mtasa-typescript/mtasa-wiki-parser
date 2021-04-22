@@ -56,3 +56,4 @@ class FilterFetchList(FilterAbstract):
     def apply(self):
         result = self.download_list()
         self.context.url_list.extend(result)
+        print(f'Downloaded list for {self.list_type}')

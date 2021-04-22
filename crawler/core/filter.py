@@ -1,6 +1,6 @@
 import abc
 from dataclasses import dataclass
-from typing import Optional, Any, Dict, List
+from typing import Optional, Any, Dict, List, Tuple, Set
 
 from crawler.core.types import ListType, FunctionUrl
 
@@ -8,7 +8,8 @@ from crawler.core.types import ListType, FunctionUrl
 @dataclass
 class Context:
     host_url: str
-    fetch_start_from: Optional[ListType, str]
+    fetch_start_from: Optional[Tuple[ListType, str]]
+    blacklist: Set[str]
     data: Dict[str, Any]
     url_list: List[FunctionUrl]
 
