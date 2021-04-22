@@ -6,13 +6,14 @@ class FilterRemoveDuplicates(FilterAbstract):
     def filter_predicate(self):
         def predicate(source: FunctionUrl):
             for url in self.context.url_list:
+                # TODO: Decrease complexity (n^2) somehow
                 if url.url == source.url:
                     return False
 
             return True
 
-        return
+        return predicate
 
     def apply(self):
-        filtered = filter(lambda u: u, self.context.url_list)
-        self.context.url_list
+        filtered = filter(self.filter_predicate(), self.context.url_list)
+        self.context.url_list = filtered
