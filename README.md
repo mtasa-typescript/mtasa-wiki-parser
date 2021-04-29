@@ -9,22 +9,22 @@ Minimal expected Python version: 3.7
 ### For developers
 
 ```shell
-git clone https://github.com/mtasa-typescript/mtasa-wiki-dump parser/dump
-mkdir -p parser/dump-html
+git clone https://github.com/mtasa-typescript/mtasa-wiki-dump to_python/dump
+mkdir -p crawler/dump-html
 git clone https://github.com/mtasa-typescript/mtasa-lua-types to_typescript/output
 ```
 
 ### For internal developers
 
 ```shell
-git clone https://github.com/mtasa-typescript/mtasa-wiki-dump parser/dump
-git clone https://github.com/mtasa-typescript/mtasa-wiki-dump-html parser/dump-html
+git clone https://github.com/mtasa-typescript/mtasa-wiki-dump to_python/dump
+git clone https://github.com/mtasa-typescript/mtasa-wiki-dump-html crawler/dump-html
 git clone https://github.com/mtasa-typescript/mtasa-lua-types to_typescript/output
 ```
 
 ## Install and run
 
-*Warning:* You should edit [main.py](parser/main.py) `User values` block
+*Warning:* You should edit [main.py](to_python/main.py) `User values` block
 
 ### Install venv
 

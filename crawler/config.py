@@ -28,4 +28,7 @@ BLACKLIST = {
     'httpSetResponseCookie',
     'httpSetResponseHeader',
     'httpWrite',
+
+    'utf8.lower',
+    'utf8.upper',
 }
