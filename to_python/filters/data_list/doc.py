@@ -2,7 +2,7 @@ import re
 import sys
 from typing import Dict, Optional, Tuple, List
 
-from wikitextparser import WikiText
+from wikitextparser import WikiText, Section
 
 from to_python.core.filter import FilterAbstract
 from to_python.core.types import FunctionDoc, FunctionData
@@ -10,11 +10,11 @@ from to_python.core.types import FunctionDoc, FunctionData
 
 class FilterParseDocs(FilterAbstract):
     @staticmethod
-    def get_sections_title_contains(wiki: WikiText, expected: str) -> List[WikiText]:
+    def get_sections_title_contains(wiki: WikiText, expected: str) -> List[Tuple[Section, int]]:
         arg_sections = []
-        for section in wiki.sections:
+        for index, section in enumerate(wiki.sections):
             if section.title and expected in section.title.lower():
-                arg_sections.append(section)
+                arg_sections.append((section, index))
 
         return arg_sections
 
@@ -60,7 +60,7 @@ class FilterParseDocs(FilterAbstract):
         arg_sections = self.get_sections_title_contains(wiki, 'return')
 
         result = ''
-        for section in arg_sections:
+        for section, _ in arg_sections:
             content = str(section).lower()
             result += content + '\n'
 
@@ -87,7 +87,7 @@ class FilterParseDocs(FilterAbstract):
             if arg_name is None:
                 if name is None:
                     if 'optional' not in section.title.lower():
-                        print(f'Undetermined line in function "{f_name}"', file=sys.stderr)
+                        print(f'[WARN] Undetermined line in function "{f_name}"', file=sys.stderr)
 
                     continue
 
@@ -114,7 +114,7 @@ class FilterParseDocs(FilterAbstract):
 
         result = dict()
         misc_doc = ''
-        for section in arg_sections:
+        for section, _ in arg_sections:
             partial, misc = self.parse_section_to_args(f_name, section)
             misc_doc += misc + '\n'
             result.update(partial)
