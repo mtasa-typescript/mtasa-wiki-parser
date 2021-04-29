@@ -12,9 +12,12 @@ pluggy==0.13.1
 py==1.10.0
 pyparsing==2.4.7
 pytest==6.2.3
+regex==2021.4.4
 requests==2.25.1
 soupsieve==2.2.1
 toml==0.10.2
 typing-extensions==3.7.4.3
 urllib3==1.26.4
+wcwidth==0.2.5
+wikitextparser==0.47.4
 zipp==3.4.1

@@ -1,4 +1,3 @@
-import enum
 import re
 from typing import Optional
 
@@ -10,6 +9,11 @@ class FilterParseSideSharedFileSectionsInvalid(RuntimeError):
 
 
 class FilterParseSide(FilterAbstract):
+    """
+    Determines function side (client/server/shared).
+    Puts client and server content into context.side_data
+    """
+
     SHARED_SIGNATURE = re.compile(r'(server[_ ]client|shared)[_ ]function', re.IGNORECASE)
     CLIENT_SIGNATURE = re.compile(r'client[_ ]function', re.IGNORECASE)
     SERVER_SIGNATURE = re.compile(r'server[_ ]function', re.IGNORECASE)
@@ -45,6 +49,11 @@ class FilterParseSide(FilterAbstract):
             return ParseFunctionSide.SERVER
 
     def get_file_side(self, raw: str) -> ParseFunctionSide:
+        """
+        Determines file's side
+        :param raw: Raw data
+        """
+
         for line in raw.split('\n'):
             side = self.get_side_from_line(line)
             if side is None:
@@ -55,6 +64,9 @@ class FilterParseSide(FilterAbstract):
         raise RuntimeError('Cannot find function type')
 
     def parse_shared_file(self, raw: str) -> RawSide:
+        """
+        Parse raw data, if file is shared
+        """
         if len(re.findall('<section', raw)) < 2:
             return RawSide(side=ParseFunctionSide.SHARED,
                            server=raw,
@@ -75,6 +87,10 @@ class FilterParseSide(FilterAbstract):
                        client=client_raw)
 
     def parse_file(self, name: str) -> RawSide:
+        """
+        Parses file (by filename)
+        """
+
         raw = self.context.raw_data[name]
         side = self.get_file_side(raw)
 

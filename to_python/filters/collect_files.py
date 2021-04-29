@@ -6,6 +6,10 @@ from to_python.core.filter import FilterAbstract
 
 
 class FilterCollectDumpFiles(FilterAbstract):
+    """
+    Accumulates all files inside DUMP_DIRECTORY into context.functions
+    """
+
     DUMP_DIRECTORY = '../crawler/dump-html/**'
 
     @staticmethod

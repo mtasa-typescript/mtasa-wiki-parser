@@ -5,7 +5,7 @@ from to_python.core.filter import FilterAbstract
 
 class FilterRawPostProcess(FilterAbstract):
     """
-    Cleans raw data
+    Cleans raw data (from context.raw_data)
     """
 
     END_CUTOFF_REGEX = re.compile(r'=+ *(See Also|Examples?) *=+', re.IGNORECASE)
