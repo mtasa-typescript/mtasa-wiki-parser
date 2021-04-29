@@ -1,7 +1,9 @@
 import re
 from typing import Optional
 
-from to_python.core.filter import FilterAbstract, ParseFunctionSide, RawSide
+from to_python.core.context import ParseFunctionSide, RawSide
+from to_python.core.filter import FilterAbstract
+from to_python.core.types import CompoundFunctionData, FunctionData
 
 
 class FilterParseSideSharedFileSectionsInvalid(RuntimeError):
@@ -107,4 +109,13 @@ class FilterParseSide(FilterAbstract):
 
     def apply(self):
         for name in self.context.parsed:
-            self.context.side_data[name] = self.parse_file(name)
+            data = self.parse_file(name)
+            self.context.side_data[name] = data
+
+            # Init parsed data objects
+            kwargs = dict()
+            if data.client is not None:
+                kwargs['client'] = FunctionData(None, None, None, name)
+            if data.server is not None:
+                kwargs['server'] = FunctionData(None, None, None, name)
+            self.context.parsed[name] = CompoundFunctionData(**kwargs)

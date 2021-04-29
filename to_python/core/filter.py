@@ -5,10 +5,8 @@ from typing import Any, Dict, Optional, Tuple
 
 from wikitextparser import WikiText
 
+from to_python.core.context import Context
 from to_python.core.types import CompoundFunctionData
-
-
-
 
 
 class FilterAbstract(metaclass=abc.ABCMeta):

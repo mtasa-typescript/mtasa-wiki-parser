@@ -53,7 +53,7 @@ class FunctionData:
     signature: FunctionType
     docs: FunctionDoc
     oop: Optional[FunctionOOP]
-    url: FunctionUrl
+    name: str
 
 
 @dataclass
