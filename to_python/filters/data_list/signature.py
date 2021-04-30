@@ -8,130 +8,10 @@ from wikitextparser import WikiText
 
 from to_python.core.context import ParseFunctionSide
 from to_python.core.filter import FilterAbstract
+from to_python.core.format import colorize_token_list
+from to_python.core.signature import SignatureParser, SignatureTokenizer
 from to_python.core.types import FunctionType
 from to_python.filters.data_list.doc import FilterParseDocs
-
-
-class SignatureParserError(RuntimeError):
-    pass
-
-
-class SignatureParser:
-    CHARS_TO_SPLIT = re.compile(r'[(\[\]=,) ]')
-
-    class TokenType(enum.Enum):
-        RETURN_TYPE = 'ReturnType'
-        FUNCTION_NAME = 'FunctionName'
-        ARGUMENT_START = 'ArgumentStart'
-        ARGUMENT_END = 'ArgumentEnd'
-        ARGUMENT_TYPE = 'ArgumentType'
-        ARGUMENT_NAME = 'ArgumentName'
-        OPTIONAL_START = 'OptionalStart'
-        OPTIONAL_END = 'OptionalEnd'
-        EQUAL_SIGN = 'EqualSign'
-        DEFAULT_VALUE = 'DefaultValue'
-        COMMA_SIGN = 'CommaSign'
-        UNDEFINED = 'Undefined'
-
-    @dataclass
-    class Token:
-        type: 'SignatureParser.TokenType'
-        value: str
-
-    def __init__(self, code: str):
-        self.code = code
-        self.tokenized: List[SignatureParser.Token] = []
-
-    def token_should_be_undefined(self, token: 'SignatureParser.Token'):
-        if token.type != self.TokenType.UNDEFINED:
-            raise SignatureParserError(f'Expected UNDEFINED token, got {str(token.type)}. '
-                                       f'Function signature:\n{self.code}')
-
-    def tokenize(self):
-        """
-        Fills self.tokenized
-        """
-        delimiters = [x for x in re.finditer(self.CHARS_TO_SPLIT, self.code)]
-        split = []
-        last_index = 0
-        for delimiter in delimiters:
-            end_index = delimiter.span()[0]
-            split.append(self.code[last_index:end_index])
-            split.append(delimiter.group())
-
-            last_index = delimiter.span()[1]
-
-        split.append(self.code[last_index:])
-        split = list(filter(lambda x: x != '' and x != ' ', split))
-
-        # Fills
-        for token in split:
-            token_type = self.TokenType.UNDEFINED
-            if token == '=':
-                token_type = self.TokenType.EQUAL_SIGN
-            if token == '[':
-                token_type = self.TokenType.OPTIONAL_START
-            if token == ']':
-                token_type = self.TokenType.OPTIONAL_END
-            if token == ',':
-                token_type = self.TokenType.COMMA_SIGN
-            if token == '(':
-                token_type = self.TokenType.ARGUMENT_START
-            if token == ')':
-                token_type = self.TokenType.ARGUMENT_END
-
-            self.tokenized.append(self.Token(value=token,
-                                             type=token_type))
-
-        # Determine function name and return types
-        for index, token in enumerate(self.tokenized):
-            if token.type != self.TokenType.ARGUMENT_START:
-                continue
-
-            self.token_should_be_undefined(self.tokenized[index - 1])
-            self.tokenized[index - 1].type = self.TokenType.FUNCTION_NAME
-            for i in range(0, index - 1):
-                self.token_should_be_undefined(self.tokenized[i])
-                self.tokenized[i].type = self.TokenType.RETURN_TYPE
-
-            break
-
-        # After equal sign there is always a default value
-        for index, token in enumerate(self.tokenized):
-            if token.type != self.TokenType.EQUAL_SIGN:
-                continue
-            self.token_should_be_undefined(self.tokenized[index + 1])
-            self.tokenized[index + 1].type = self.TokenType.DEFAULT_VALUE
-
-        # After comma sign expected: [optional start/optional end] + type + argument name
-        for index, token in enumerate(self.tokenized):
-            if token.type not in {self.TokenType.COMMA_SIGN, self.TokenType.ARGUMENT_START}:
-                continue
-
-            current_type = self.TokenType.ARGUMENT_TYPE
-            for i in range(index + 1, len(self.tokenized)):
-                in_token = self.tokenized[i]
-                if in_token.type in {self.TokenType.OPTIONAL_START, self.TokenType.OPTIONAL_END}:
-                    continue
-                if in_token.type in {self.TokenType.COMMA_SIGN}:
-                    break
-
-                self.token_should_be_undefined(self.tokenized[i])
-                self.tokenized[i].type = current_type
-
-                if current_type == self.TokenType.ARGUMENT_TYPE:
-                    current_type = self.TokenType.ARGUMENT_NAME
-                else:
-                    break
-
-        # In the end there should be no UNDEFINED tokens
-        for index, token in enumerate(self.tokenized):
-            if token.type != self.TokenType.UNDEFINED:
-                continue
-            raise RuntimeError('Undefined token. Function signature: \n' + self.code)
-
-    def parse(self) -> FunctionType:
-        self.tokenize()
 
 
 class FilterParseFunctionSignature(FilterAbstract):
@@ -155,8 +35,14 @@ class FilterParseFunctionSignature(FilterAbstract):
         """
         code = self.clean_code(code)
 
-        SignatureParser(code).parse()
-        print(code)
+        tokenized = SignatureTokenizer(code).tokenize()
+
+        colors = colorize_token_list(tokenized)
+        print(f'{code: <175}', f'{colors: <175}', sep="\n" if len(code) > 175 else " ")
+
+        result = SignatureParser(
+            tokenized=tokenized
+        ).parse()
 
     def pick_signature_container(self, f_name: str, raw_data: str, wiki: WikiText) -> str:
         """
