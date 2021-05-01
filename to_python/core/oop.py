@@ -160,6 +160,13 @@ class OOPTokenizer:
                 continue
             raise OOPTokenizerError('Undefined token. Function signature: \n' + self.code)
 
+    def trim_tokenize(self):
+        """
+        Strips all values
+        """
+        for token in self.tokenized:
+            token.value = token.value.strip()
+
     def tokenize(self):
         """
         Tokenization
@@ -171,7 +178,6 @@ class OOPTokenizer:
         self.content_tokenize()
 
         self.delimiters_check()
-        self.final_check()
         SignatureTokenizer.concat_neighbours_tokenize(tokenized=self.tokenized,
                                                       allowed={
                                                           self.TokenType.UNUSED,
@@ -180,6 +186,9 @@ class OOPTokenizer:
                                                           self.TokenType.FIELD,
                                                           self.TokenType.COUNTERPART_METHOD,
                                                       })
+
+        self.trim_tokenize()
+        self.final_check()
 
         return self.tokenized
 

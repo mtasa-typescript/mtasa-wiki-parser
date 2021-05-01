@@ -64,11 +64,11 @@ class FilterParseFunctionOOP(FilterAbstract):
             wiki_content = self.context.wiki_side[f_name]
 
             if raw_content.client is not None:
-                self.context.parsed[f_name].client.signature = self.parse_oop(
+                self.context.parsed[f_name].client.oop = self.parse_oop(
                     self.pick_oop(f_name, raw_content.client, wiki_content.client)
                 )
 
             if raw_content.server is not None:
-                self.context.parsed[f_name].server.signature = self.parse_oop(
+                self.context.parsed[f_name].server.oop = self.parse_oop(
                     self.pick_oop(f_name, raw_content.server, wiki_content.server)
                 )

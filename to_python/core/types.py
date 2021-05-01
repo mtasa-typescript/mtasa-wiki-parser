@@ -1,8 +1,6 @@
 from dataclasses import dataclass
 from typing import List, Dict, Optional
 
-from crawler.core.types import FunctionUrl
-
 
 @dataclass
 class FunctionType:
@@ -14,9 +12,9 @@ class FunctionType:
 
     def __repr__(self):
         return f'''FunctionType(
-                        names={repr(self.names)},
-                        is_optional={self.is_optional},
-                    )'''
+                                    names={repr(self.names)},
+                                    is_optional={self.is_optional},
+                                )'''
 
 
 @dataclass
@@ -30,10 +28,10 @@ class FunctionArgument:
 
     def __repr__(self):
         return f'''FunctionArgument(
-                    name='{self.name}',
-                    argument_type={repr(self.argument_type)},
-                    default_value={repr(self.default_value)},
-                )'''
+                                name='{self.name}',
+                                argument_type={repr(self.argument_type)},
+                                default_value={repr(self.default_value)},
+                            )'''
 
 
 @dataclass
@@ -50,14 +48,14 @@ class FunctionArgumentValues:
             result_list = [repr(argument) for argument in v]
             arguments_list.append(',\n                '.join(result_list))
 
-        arguments = ',\n            '.join([f'[\n                {v}\n            ]'
-                                            for v in arguments_list])
+        arguments = f',\n{" " * 24}'.join([f'[\n{" " * 28}{v}\n{" " * 24}]'
+                                           for v in arguments_list])
         return f'''FunctionArgumentValues(
-        arguments=[
-            {arguments}
-        ],
-        variable_length={self.variable_length},
-    )'''
+                    arguments=[
+                        {arguments}
+                    ],
+                    variable_length={self.variable_length},
+                )'''
 
 
 @dataclass
@@ -69,13 +67,13 @@ class FunctionReturnTypes:
     variable_length: bool
 
     def __repr__(self):
-        return_types = ',\n            '.join([repr(v) for v in self.return_types])
+        return_types = f',\n{" " * 20}'.join([repr(v) for v in self.return_types])
         return f'''FunctionReturnTypes(
-        return_types=[
-            {return_types}
-        ],
-        variable_length={self.variable_length},
-    )'''
+                    return_types=[
+                        {return_types}
+                    ],
+                    variable_length={self.variable_length},
+                )'''
 
 
 @dataclass
@@ -89,10 +87,10 @@ class FunctionSignature:
 
     def __repr__(self):
         return f'''FunctionSignature(
-    name='{self.name}',
-    return_types={repr(self.return_types)},
-    arguments={repr(self.arguments)},
-)'''
+                name='{self.name}',
+                return_types={repr(self.return_types)},
+                arguments={repr(self.arguments)},
+            )'''
 
 
 @dataclass
@@ -105,11 +103,15 @@ class FunctionDoc:
     result: str
 
     def __repr__(self):
+        dict_text = (f'{{\n{" " * 20}'
+                     + f',\n{" " * 20}'.join(f'"{k}": """{self.arguments[k]} """' for k in self.arguments)
+                     + f'\n{" " * 16}}}')
+
         return f'''FunctionDoc(
-    description='{self.description}',
-    arguments='{repr(self.arguments)}',
-    result='{self.result}',
-)'''
+                description="""{self.description} """,
+                arguments={dict_text},
+                result="""{self.result} """,
+            )'''
 
 
 @dataclass
@@ -125,12 +127,12 @@ class FunctionOOP:
 
     def __repr__(self):
         return f'''FunctionOOP(
-        description='{self.description}',
-        class_name='{self.class_name}',
-        method_name='{self.method_name}',
-        field='{self.field}',
-        is_static='{self.is_static}',
-    )'''
+                description="""{self.description} """,
+                class_name='{self.class_name}',
+                method_name='{self.method_name}',
+                field='{self.field}',
+                is_static={self.is_static},
+            )'''
 
 
 @dataclass
@@ -145,11 +147,11 @@ class FunctionData:
 
     def __repr__(self):
         return f'''FunctionData(
-    signature='{repr(self.signature)}',
-    docs='{repr(self.docs)}',
-    oop='{repr(self.oop)}',
-    name='{self.name}',
-)'''
+            signature={repr(self.signature)},
+            docs={repr(self.docs)},
+            oop={repr(self.oop)},
+            name='{self.name}',
+        )'''
 
 
 @dataclass
@@ -161,7 +163,7 @@ class CompoundFunctionData:
     client: Optional[FunctionData] = None
 
     def __repr__(self):
-        return f'''FunctionData(
-    server='{repr(self.server)}',
-    client='{repr(self.client)}',
-)'''
+        return f'''CompoundFunctionData(
+        server={repr(self.server)},
+        client={repr(self.client)},
+    )'''

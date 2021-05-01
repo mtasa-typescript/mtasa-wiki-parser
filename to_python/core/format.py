@@ -7,20 +7,20 @@ POSTFIX = '\033[0m'
 
 # Generate styles
 PREFIX_LIST_GEN = [
-    [i, j, k, l]
-    for k in [None, 3]  # italic
-    for j in [None, 1]  # bold
-    for l in [None, 4]  # underline
-    for i in [*[i for i in range(90, 97)], 0]  # colors
+    [_i, _j, _k, _l]
+    for _k in [None, 3]  # italic
+    for _j in [None, 1]  # bold
+    for _l in [None, 4]  # underline
+    for _i in [*[_i for _i in range(90, 97)], 0]  # colors
 ]
 
 PREFIX_LIST = []
-for element in PREFIX_LIST_GEN:
+for _element in PREFIX_LIST_GEN:
     mixin_start = '\033['
     mixin_end = 'm'
 
     result = ''
-    for sub in element:
+    for sub in _element:
         if sub is None:
             continue
 
@@ -55,18 +55,18 @@ def colorize_token_list(token_list: List[SignatureTokenizer.Token]) -> str:
 
 def colorize_oop_token_list(token_list: List[SignatureTokenizer.Token]) -> str:
     token_type_mapping = {
-        OOPTokenizer.TokenType.START: PREFIX_LIST[12],
-        OOPTokenizer.TokenType.END: PREFIX_LIST[3],
-        OOPTokenizer.TokenType.DELIMITER: PREFIX_LIST[7],
-        OOPTokenizer.TokenType.UNUSED: PREFIX_LIST[7],
-        OOPTokenizer.TokenType.REFERENCE_START: PREFIX_LIST[4],
-        OOPTokenizer.TokenType.REFERENCE_BODY: PREFIX_LIST[5],
-        OOPTokenizer.TokenType.REFERENCE_END: PREFIX_LIST[1],
-        OOPTokenizer.TokenType.NOTE: PREFIX_LIST[1],
-        OOPTokenizer.TokenType.METHOD: PREFIX_LIST[6],
-        OOPTokenizer.TokenType.FIELD: PREFIX_LIST[11],
-        OOPTokenizer.TokenType.COUNTERPART_METHOD: PREFIX_LIST[2],
-        OOPTokenizer.TokenType.UNDEFINED: PREFIX_LIST[11],
+        OOPTokenizer.TokenType.START: PREFIX_LIST[7],
+        OOPTokenizer.TokenType.END: PREFIX_LIST[7],
+        OOPTokenizer.TokenType.DELIMITER: PREFIX_LIST[23],
+        OOPTokenizer.TokenType.UNUSED: PREFIX_LIST[2],
+        OOPTokenizer.TokenType.REFERENCE_START: PREFIX_LIST[21],
+        OOPTokenizer.TokenType.REFERENCE_BODY: PREFIX_LIST[20],
+        OOPTokenizer.TokenType.REFERENCE_END: PREFIX_LIST[21],
+        OOPTokenizer.TokenType.NOTE: PREFIX_LIST[0],
+        OOPTokenizer.TokenType.METHOD: PREFIX_LIST[4],
+        OOPTokenizer.TokenType.FIELD: PREFIX_LIST[5],
+        OOPTokenizer.TokenType.COUNTERPART_METHOD: PREFIX_LIST[6],
+        OOPTokenizer.TokenType.UNDEFINED: PREFIX_LIST[1],
     }
 
     return ' '.join([

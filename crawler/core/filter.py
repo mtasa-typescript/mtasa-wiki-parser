@@ -10,8 +10,8 @@ class Context:
     host_url: str
     fetch_start_from: Optional[Tuple[ListType, str]]
     blacklist: Set[str]
-    data: Dict[str, Any]
     url_list: List[FunctionUrl]
+    fetched: List[Tuple[FunctionUrl, str]]
 
 
 class FilterAbstract(metaclass=abc.ABCMeta):

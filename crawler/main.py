@@ -7,8 +7,8 @@ def main():
     context = Context(host_url=config.HOST_URL,
                       fetch_start_from=config.START_FROM,
                       blacklist=config.BLACKLIST,
-                      data=dict(),
-                      url_list=[])
+                      url_list=[],
+                      fetched=[])
 
     for filt in FILTER_CHAIN:
         filt.initialize(context)

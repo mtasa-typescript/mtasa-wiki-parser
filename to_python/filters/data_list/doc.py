@@ -5,7 +5,7 @@ from typing import Dict, Optional, Tuple, List
 from wikitextparser import WikiText, Section
 
 from to_python.core.filter import FilterAbstract
-from to_python.core.types import FunctionDoc, FunctionData
+from to_python.core.types import FunctionDoc
 
 
 class FilterParseDocs(FilterAbstract):
@@ -99,6 +99,7 @@ class FilterParseDocs(FilterAbstract):
                 continue
 
             name = arg_name.group(1)
+            name = self.clean_line(name)
 
             line = line[arg_name.end():].strip()
             line = self.clean_line(line)

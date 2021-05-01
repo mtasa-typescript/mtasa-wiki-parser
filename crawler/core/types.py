@@ -7,10 +7,7 @@ class ListType(enum.Enum):
     SERVER = 'Server'
 
     def __repr__(self) -> str:
-        if self == self.CLIENT:
-            return 'ListType.CLIENT'
-        if self == self.SERVER:
-            return 'ListType.SERVER'
+        return str(self)
 
 
 @dataclass
@@ -23,3 +20,11 @@ class FunctionUrl:
     def get_full_url(self) -> str:
         from crawler.config import HOST_URL
         return f'{HOST_URL}{self.url}'
+
+    def __repr__(self):
+        return f'''FunctionUrl(
+        url="{self.url}",
+        name="{self.name}",
+        category="{self.category}",
+        function_type={repr(self.function_type)},
+    )'''

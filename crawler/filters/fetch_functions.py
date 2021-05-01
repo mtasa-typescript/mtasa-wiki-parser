@@ -1,4 +1,3 @@
-import os
 import sys
 import traceback
 
@@ -17,8 +16,6 @@ class FilterFetchFunctions(FilterAbstract):
     """
     Fetches functions defined in the URL List
     """
-
-    DUMP_FOLDER = 'dump-html'
 
     @staticmethod
     def get_function_name(url: FunctionUrl) -> str:
@@ -39,24 +36,6 @@ class FilterFetchFunctions(FilterAbstract):
         source_field = soup_wiki.select_one('#wpTextbox1')
 
         return source_field.contents[0]
-
-    def save_file(self, url: FunctionUrl, result: str):
-        """
-        Saves fetched data into a file
-        :param url: Data about the function
-        :param result: Fetched data
-        """
-        name = self.get_function_name(url)
-        subfolder = os.path.join(self.DUMP_FOLDER, name[:2].upper())
-        cache_file = os.path.join(subfolder, name)
-
-        if not os.path.exists(self.DUMP_FOLDER):
-            os.mkdir(self.DUMP_FOLDER)
-        if not os.path.exists(subfolder):
-            os.mkdir(subfolder)
-
-        with open(cache_file, 'w', encoding='UTF-8') as cache:
-            cache.write(result)
 
     def apply(self):
         enable_fetch = False
@@ -84,13 +63,13 @@ class FilterFetchFunctions(FilterAbstract):
                     result = self.fetch_function(url)
                     print(f'Fetched [{j}/{len(self.context.url_list)}] "{url.name}", {url.function_type.name}')
                     break
-                except TimeoutError as e:
+                except Exception as e:
                     print('Exception: ', file=sys.stderr)
                     traceback.print_last(file=sys.stderr)
                     print(f'Attempt: {i + 1}', file=sys.stderr)
 
             if result is None:
-                raise FunctionFetchError(f'No result for "{url.name}", {url.function_type.name}')
+                print(f'No result for "{url.name}", {url.function_type.name}.\nEmergency exit...', file=sys.stderr)
+                return
 
-            self.save_file(url, result)
-            print(f'Saved "{url.name}", {url.function_type.name}')
+            self.context.fetched.append((url, result))

@@ -7,7 +7,7 @@ def main():
                       parsed=dict(),
                       raw_data=dict(),
                       side_data=dict(),
-                      data=dict(),
+                      urls=dict(),
                       wiki_raw=dict(),
                       wiki_side=dict(), )
 

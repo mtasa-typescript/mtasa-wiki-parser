@@ -10,7 +10,7 @@ Minimal expected Python version: 3.7
 
 ```shell
 git clone https://github.com/mtasa-typescript/mtasa-wiki-dump to_python/dump
-mkdir -p crawler/dump-html
+mkdir -p crawler/dump_html
 git clone https://github.com/mtasa-typescript/mtasa-lua-types to_typescript/output
 ```
 
@@ -18,7 +18,7 @@ git clone https://github.com/mtasa-typescript/mtasa-lua-types to_typescript/outp
 
 ```shell
 git clone https://github.com/mtasa-typescript/mtasa-wiki-dump to_python/dump
-git clone https://github.com/mtasa-typescript/mtasa-wiki-dump-html crawler/dump-html
+git clone https://github.com/mtasa-typescript/mtasa-wiki-dump_html crawler/dump_html
 git clone https://github.com/mtasa-typescript/mtasa-lua-types to_typescript/output
 ```
 

@@ -5,6 +5,7 @@ from typing import Optional, Tuple, Any, Dict
 
 from wikitextparser import WikiText
 
+from crawler.core.types import FunctionUrl
 from to_python.core.types import CompoundFunctionData
 
 
@@ -59,4 +60,5 @@ class Context:
     # Side data parsed by wtp
     wiki_side: Dict[str, WikiSide]
 
-    data: Dict[str, Any]
+    # URLs from URL List
+    urls: Dict[str, FunctionUrl]

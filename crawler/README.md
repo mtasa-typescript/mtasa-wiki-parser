@@ -1,8 +1,8 @@
 # Crawler
 
-Caches all wiki pages into `dump-html` directory.
+Caches all wiki pages into `dump_html` directory.
 Organized by first two letters.
 
-Dumps are collected into [dump-html repository](https://github.com/mtasa-typescript/mtasa-wiki-dump-html)
+Dumps are collected into [dump_html repository](https://github.com/mtasa-typescript/mtasa-wiki-dump_html)
 
-It's private, so, if you would like to use parser, you should create your own dump-html files via the crawler.
+It's private, so, if you would like to use parser, you should create your own dump_html files via the crawler.
