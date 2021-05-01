@@ -9,6 +9,10 @@ from to_python.core.types import FunctionDoc, FunctionData
 
 
 class FilterParseDocs(FilterAbstract):
+    """
+    Parse function documentation
+    """
+
     @staticmethod
     def get_sections_title_contains(wiki: WikiText, expected: str) -> List[Tuple[Section, int]]:
         arg_sections = []

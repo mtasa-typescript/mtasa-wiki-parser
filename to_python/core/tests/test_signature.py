@@ -1,7 +1,9 @@
 import pytest
 
-from to_python.core.signature import SignatureTokenizer
+from to_python.core.signature import SignatureTokenizer, SignatureParser
 from to_python.core.tests.utils import compare_lists
+from to_python.core.types import FunctionSignature, FunctionReturnTypes, FunctionType, FunctionArgument, \
+    FunctionArgumentValues
 
 TokenType = SignatureTokenizer.TokenType
 
@@ -610,3 +612,106 @@ TokenType = SignatureTokenizer.TokenType
 ])
 def test_signature_tokenizer_function(code, expected):
     compare_lists(SignatureTokenizer(code).tokenize(), expected)
+
+
+@pytest.mark.parametrize("code,expected", [
+    (
+            'string mixed/texture [,int...] synthetic '
+            '( string arg1 / int arg1_1 [, string/float arg2 = something*10 ], [ arguments... ] )',
+            FunctionSignature(
+                name='synthetic',
+                return_types=FunctionReturnTypes(
+                    return_types=[
+                        FunctionType(
+                            names=['string'],
+                            is_optional=False,
+                        ),
+                        FunctionType(
+                            names=['mixed', 'texture'],
+                            is_optional=False,
+                        ),
+                        FunctionType(
+                            names=['int'],
+                            is_optional=True,
+                        )
+                    ],
+                    variable_length=True,
+                ),
+                arguments=FunctionArgumentValues(
+                    arguments=[
+                        [
+                            FunctionArgument(
+                                name='arg1',
+                                argument_type=FunctionType(
+                                    names=['string'],
+                                    is_optional=False,
+                                ),
+                                default_value=None,
+                            ),
+                            FunctionArgument(
+                                name='arg1_1',
+                                argument_type=FunctionType(
+                                    names=['int'],
+                                    is_optional=False,
+                                ),
+                                default_value=None,
+                            )
+                        ],
+                        [
+                            FunctionArgument(
+                                name='arg2',
+                                argument_type=FunctionType(
+                                    names=['string', 'float'],
+                                    is_optional=True,
+                                ),
+                                default_value='something*10',
+                            )
+                        ],
+                        [
+                            FunctionArgument(
+                                name='arguments',
+                                argument_type=None,
+                                default_value=None,
+                            )
+                        ]
+                    ],
+                    variable_length=True,
+                ),
+            )
+    ),
+    (
+            'string synthetic2 ( string arg1 / arg1_1 )',
+            FunctionSignature(
+                name='synthetic2',
+                return_types=FunctionReturnTypes(
+                    return_types=[
+                        FunctionType(
+                            names=['string'],
+                            is_optional=False,
+                        )
+                    ],
+                    variable_length=False,
+                ),
+                arguments=FunctionArgumentValues(
+                    arguments=[
+                        [
+                            FunctionArgument(
+                                name='arg1/arg1_1',
+                                argument_type=FunctionType(
+                                    names=['string'],
+                                    is_optional=False,
+                                ),
+                                default_value=None,
+                            )
+                        ]
+                    ],
+                    variable_length=False,
+                ),
+            )
+    ),
+])
+def test_signature_parser(code, expected):
+    tokenized = SignatureTokenizer(code).tokenize()
+    result = SignatureParser(tokenized).parse()
+
+    assert result == expected

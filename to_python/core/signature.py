@@ -2,9 +2,10 @@ import enum
 import re
 import sys
 from dataclasses import dataclass
-from typing import Optional, List
+from typing import Optional, List, Tuple, Dict, Any, Set
 
-from to_python.core.types import FunctionType
+from to_python.core.types import FunctionSignature, FunctionArgumentValues, FunctionReturnTypes, FunctionType, \
+    FunctionArgument
 
 
 class SignatureTokenizerError(RuntimeError):
@@ -57,22 +58,23 @@ class SignatureTokenizer:
         type: 'SignatureTokenizer.TokenType'
         value: str
 
-    def split(self):
+    @staticmethod
+    def split(code: str, chars_to_split):
         """
         Splits self.code by delimiters
         :return: List of splitter strings
         """
-        delimiters = [x for x in re.finditer(self.CHARS_TO_SPLIT, self.code)]
+        delimiters = [x for x in re.finditer(chars_to_split, code)]
         split = []
         last_index = 0
         for delimiter in delimiters:
             end_index = delimiter.span()[0]
-            split.append(self.code[last_index:end_index])
+            split.append(code[last_index:end_index])
             split.append(delimiter.group())
 
             last_index = delimiter.span()[1]
 
-        split.append(self.code[last_index:])
+        split.append(code[last_index:])
         return list(filter(lambda x: x != '' and x != ' ', split))
 
     def fill_tokenize(self, split_list: List[str]):
@@ -83,21 +85,21 @@ class SignatureTokenizer:
             token_type = self.TokenType.UNDEFINED
             if token == '=':
                 token_type = self.TokenType.EQUAL_SIGN
-            if token == '[':
+            elif token == '[':
                 token_type = self.TokenType.OPTIONAL_START
-            if token == ']':
+            elif token == ']':
                 token_type = self.TokenType.OPTIONAL_END
-            if token == ',':
+            elif token == ',':
                 token_type = self.TokenType.COMMA_SIGN
-            if token == '(':
+            elif token == '(':
                 token_type = self.TokenType.ARGUMENT_START
-            if token == ')':
+            elif token == ')':
                 token_type = self.TokenType.ARGUMENT_END
-            if token in {'/', '|'}:
+            elif token in {'/', '|'}:
                 token_type = self.TokenType.TYPE_UNION_SIGN
-            if token == '...':
+            elif token == '...':
                 token_type = self.TokenType.VARARGS_SIGN
-            if token == '"':
+            elif token == '"':
                 token_type = self.TokenType.DEFAULT_VALUE
 
             self.tokenized.append(self.Token(value=token,
@@ -288,25 +290,21 @@ class SignatureTokenizer:
 
             index = i
 
-    def concat_neighbours_tokenize(self):
+    @staticmethod
+    def concat_neighbours_tokenize(tokenized: List, allowed: Set):
         """
         Concat neighbor tokens into a single one, if allowed
         """
-        allowed = {
-            self.TokenType.DEFAULT_VALUE,
-            self.TokenType.ARGUMENT_NAME,
-        }
-
         index = 0
-        while index < len(self.tokenized):
-            token = self.tokenized[index]
+        while index < len(tokenized):
+            token = tokenized[index]
             if token.type not in allowed:
                 index += 1
                 continue
 
-            if self.tokenized[index + 1].type == token.type:
-                token.value += self.tokenized[index + 1].value
-                self.tokenized.pop(index + 1)
+            if tokenized[index + 1].type == token.type:
+                token.value += tokenized[index + 1].value
+                tokenized.pop(index + 1)
                 continue
 
             index += 1
@@ -331,7 +329,7 @@ class SignatureTokenizer:
                         if exception:
                             raise SignatureTokenizerError(f'{message}. Function signature:\n{self.code}')
                         else:
-                            print(f'[ERROR] {message}')
+                            print(f'[ERROR] {message}', file=sys.stderr)
 
                     open_bracket_index = index
                     continue
@@ -342,7 +340,7 @@ class SignatureTokenizer:
                         if exception:
                             raise SignatureTokenizerError(f'{message}. Function signature:\n{self.code}')
                         else:
-                            print(f'[ERROR] {message}')
+                            print(f'[ERROR] {message}', file=sys.stderr)
 
                     close_bracket_index = index
                     continue
@@ -397,14 +395,18 @@ class SignatureTokenizer:
         :return: List of tokens
         """
 
-        split_list = self.split()
+        split_list = self.split(self.code, self.CHARS_TO_SPLIT)
         self.fill_tokenize(split_list)
         self.brackets_check(exception=False)
 
         self.function_name_and_returns_tokenize()
         self.default_value_tokenize()
         self.arguments_tokenize()
-        self.concat_neighbours_tokenize()
+        self.concat_neighbours_tokenize(tokenized=self.tokenized,
+                                        allowed={
+                                            self.TokenType.DEFAULT_VALUE,
+                                            self.TokenType.ARGUMENT_NAME,
+                                        })
 
         self.final_check()
 
@@ -412,8 +414,171 @@ class SignatureTokenizer:
 
 
 class SignatureParser:
+    TokenType = SignatureTokenizer.TokenType
+
     def __init__(self, tokenized: List[SignatureTokenizer.Token]):
         self.tokenized: List[SignatureTokenizer.Token] = tokenized
 
-    def parse(self) -> FunctionType:
-        pass
+    def get_name(self) -> str:
+        """
+        Gets name of the function
+        """
+        for token in self.tokenized:
+            if token.type == self.TokenType.FUNCTION_NAME:
+                return token.value
+
+        raise SignatureParserError('No function name in tokenized function')
+
+    def get_argument(self, index_from: int, argument_context: Dict[str, Any]) -> Tuple[List[FunctionArgument], int]:
+        """
+        Parse a single argument
+        :param index_from: Index to start
+        :param argument_context: Context
+        :return: Parsed argument and index to continue
+        """
+        stop_token = {
+            self.TokenType.ARGUMENT_END,
+            self.TokenType.COMMA_SIGN,
+        }
+
+        result: List[FunctionArgument] = []
+        partial_name: str = None
+        partial_type: FunctionType = None
+        partial_default = None
+        append = False
+
+        index = index_from
+        while index < len(self.tokenized):
+            token = self.tokenized[index]
+            if token.type in stop_token:
+                result.append(FunctionArgument(name=partial_name,
+                                               argument_type=partial_type,
+                                               default_value=partial_default))
+                break
+
+            # Special tokens to update the context
+            if token.type == self.TokenType.OPTIONAL_START:
+                argument_context['is_optional'] = True
+
+            elif token.type == self.TokenType.OPTIONAL_END:
+                argument_context['is_optional'] = False
+
+            elif token.type == self.TokenType.VARARGS_SIGN:
+                argument_context['is_variable_length'] = True
+
+            elif token.type == self.TokenType.TYPE_UNION_SIGN:
+                append = True
+
+            elif token.type == self.TokenType.ARGUMENT_TYPE:
+                if append:
+                    if partial_name is None:
+                        partial_type.names.append(token.value)
+
+                        index += 1
+                        continue
+                    else:
+                        result.append(FunctionArgument(name=partial_name,
+                                                       argument_type=partial_type,
+                                                       default_value=partial_default))
+                        partial_name = None
+                        partial_default = None
+                        append = False
+
+                partial_type = FunctionType(names=[token.value],
+                                            is_optional=argument_context['is_optional'])
+
+            elif token.type == self.TokenType.ARGUMENT_NAME:
+                partial_name = token.value
+
+            elif token.type == self.TokenType.DEFAULT_VALUE:
+                partial_default = token.value
+
+            index += 1
+
+        return result, index
+
+    def get_arguments(self) -> FunctionArgumentValues:
+        """
+        Gets arguments of the function
+        """
+        arguments = False
+
+        argument_context = dict(
+            is_variable_length=False,
+            is_optional=False,
+        )
+
+        argument_list: List[List[FunctionArgument]] = []
+
+        index = 0
+        while index < len(self.tokenized):
+            token = self.tokenized[index]
+
+            # Only arguments content should be processed
+            if token.type == self.TokenType.ARGUMENT_START:
+                arguments = True
+            if token.type == self.TokenType.ARGUMENT_END:
+                break
+            if not arguments:
+                index += 1
+                continue
+
+            if token.type in {
+                self.TokenType.ARGUMENT_START,
+                self.TokenType.COMMA_SIGN,
+            }:
+                index += 1
+                continue
+
+            result, index = self.get_argument(index, argument_context)
+            argument_list.append(result)
+
+        return FunctionArgumentValues(arguments=argument_list,
+                                      variable_length=argument_context['is_variable_length'])
+
+    def get_returns(self) -> FunctionReturnTypes:
+        """
+        Gets return types of the function
+        """
+
+        return_types: List[FunctionType] = []
+        is_variable_length = False
+        is_optional = False
+        append_type = False
+
+        for token in self.tokenized:
+            # All return types was provided before the function name
+            if token.type == self.TokenType.FUNCTION_NAME:
+                break
+
+            if token.type == self.TokenType.OPTIONAL_START:
+                is_optional = True
+                continue
+            if token.type == self.TokenType.OPTIONAL_END:
+                is_optional = False
+                continue
+
+            if token.type == self.TokenType.VARARGS_RETURN_SIGN:
+                is_variable_length = True
+                continue
+            if token.type == self.TokenType.TYPE_UNION_SIGN:
+                append_type = True
+                continue
+
+            if token.type == self.TokenType.RETURN_TYPE:
+                if append_type:
+                    return_types[-1].names.append(token.value)
+                    append_type = False
+                else:
+                    return_types.append(FunctionType(names=[token.value],
+                                                     is_optional=is_optional))
+
+        return FunctionReturnTypes(return_types=return_types,
+                                   variable_length=is_variable_length)
+
+    def parse(self) -> FunctionSignature:
+        return FunctionSignature(
+            name=self.get_name(),
+            arguments=self.get_arguments(),
+            return_types=self.get_returns(),
+        )
