@@ -1,4 +1,5 @@
 import os
+from typing import List
 
 from crawler.core.filter import FilterAbstract
 from crawler.core.types import FunctionUrl
@@ -26,17 +27,24 @@ class FilterSaveFetched(FilterAbstract):
         with open(cache_file, 'w', encoding='UTF-8') as cache:
             cache.write(result)
 
+    @staticmethod
+    def text_url_list(url_list: List[FunctionUrl]) -> str:
+        """
+        Converts URL List into a text
+        """
+        text = 'from crawler.core.types import FunctionUrl, ListType\n\n'
+        text += 'URL_LIST = [\n    ' + ',\n    '.join(repr(v) for v in url_list) + '\n]\n'
+
+        return text
+
     def save_url_list(self):
         """
         Saves fetched url list
         """
         cache_file = os.path.join(self.DUMP_FOLDER, '__init__.py')
 
-        text = 'from crawler.core.types import FunctionUrl, ListType\n\n'
-        text += 'URL_LIST = [\n    ' + ',\n    '.join(repr(v) for v in self.context.url_list) + '\n]\n'
-
         with open(cache_file, 'w', encoding='UTF-8') as cache:
-            cache.write(text)
+            cache.write(self.text_url_list(self.context.url_list))
 
     def apply(self):
         for url, text in self.context.fetched:

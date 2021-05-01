@@ -3,6 +3,7 @@ import os
 import re
 from typing import DefaultDict, List, Set
 
+from crawler.filters.save_fetched import FilterSaveFetched
 from to_python.core.filter import FilterAbstract
 from to_python.core.types import CompoundFunctionData
 
@@ -100,16 +101,30 @@ DUMP = [
         with open(cache_file, 'w', encoding='UTF-8') as cache:
             cache.write(text)
 
+    def save_url_list(self):
+        """
+        Saves fetched url list
+        """
+        cache_file = os.path.join(self.DUMP_FOLDER_ROOT, 'url_list.py')
+
+        with open(cache_file, 'w', encoding='UTF-8') as cache:
+            cache.write(FilterSaveFetched.text_url_list(
+                [self.context.urls[k] for k in self.context.urls]
+            ))
+
     def save_data(self):
         """
         Saves all parsed data from self.context.parsed into the files
         """
         for category in self.categories:
             self.save_category_data(category)
+        print('Saved data')
 
         self.save_init_file()
+        print('Generated __init__.py file')
 
-        print('Saved data')
+        self.save_url_list()
+        print('Save url_list.py file')
 
     def apply(self):
         for f_name in self.context.parsed:

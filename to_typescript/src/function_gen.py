@@ -170,5 +170,6 @@ def find_function_in_file(function_name: str, file_data: str) -> (int, int):
 
     return result.start(), result.end()
 
+
 class TypeScriptFunctionGen:
     pass
