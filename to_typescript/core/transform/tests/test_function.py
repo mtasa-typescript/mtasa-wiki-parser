@@ -275,3 +275,37 @@ def test_function_generate_arguments_last_varargs_cut(function_generator_fixture
     result = function_generator_fixture.generate_arguments()
 
     assert result == expected
+
+
+def test_function_generate_full(function_generator_fixture: TypeScriptFunctionGenerator):
+    expected = '''/**
+ * This function allows you to retrieve the zone name of a certain location.
+ * @see {@link https://example.com/wiki/GetZoneName | Wiki, getZoneName }
+ * @param x The X axis position
+ * @param y The Y axis position
+ * @param z The Z axis position
+ * @param citiesonly : An optional argument to choose if you want to return one of the following city names:
+ * ** Tierra Robada
+ * ** Bone County
+ * ** Las Venturas
+ * ** San Fierro
+ * ** Red County
+ * ** Whetstone
+ * ** Flint County
+ * ** Los Santos
+ * @return returns the string of the zone name
+ */
+export function getZoneName(
+    x: float,
+    y: float,
+    z: float | string,
+    citiesonly?: bool,
+    ...varargs: any[]
+): LuaMultiReturn<[
+    string | mixed | undefined,
+    int,
+    ...any[]
+]>;'''
+    result = function_generator_fixture.generate()
+
+    assert result == expected

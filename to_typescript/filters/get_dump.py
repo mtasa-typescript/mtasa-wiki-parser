@@ -11,4 +11,5 @@ class FilterGetDump(FilterAbstract):
         self.context.functions = DUMP
 
     def apply(self):
-        pass
+        self.get_dump()
+        print(f'Got all Dumps: {len(self.context.functions)}')

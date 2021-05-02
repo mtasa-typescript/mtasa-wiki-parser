@@ -153,4 +153,10 @@ class TypeScriptFunctionGenerator:
         return ',\n    '.join(args)
 
     def generate(self) -> str:
-        pass
+        """
+        Generates function declaration
+        """
+        return f'''{self.generate_doc()}
+export function {self.data.name}(
+    {self.generate_arguments()}
+): {self.generate_return_type()};'''
