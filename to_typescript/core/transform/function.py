@@ -2,7 +2,7 @@ from typing import List
 
 from crawler.core.types import FunctionUrl
 from to_python.core.types import FunctionData, FunctionType, FunctionArgument
-from to_typescript.core.transform.extra_rules import TypeConverter
+from to_typescript.core.transform.extra_rules import is_varargs_type
 
 
 class TypeScriptFunctionGeneratorError(RuntimeError):
@@ -57,6 +57,11 @@ class TypeScriptFunctionGenerator:
         """
         docs = self.data.docs
 
+        description = self.cut_doc_lines(docs.description)
+        doc_description = f'\n * {description}'
+        if not description:
+            doc_description = ''
+
         doc_param_list = []
         for arg_name in docs.arguments:
             arg_desc = docs.arguments[arg_name]
@@ -68,8 +73,7 @@ class TypeScriptFunctionGenerator:
         doc_return = f' * @return {doc_return}\n' if doc_return else ''
 
         # TODO: Add @default
-        result = f'''/**
- * {self.cut_doc_lines(docs.description)}
+        result = f'''/**{doc_description}
  * @see {{@link {self.host_name}{self.url.url} | Wiki, {self.url.name} }}
 {doc_params}{doc_return} */'''
 
@@ -99,7 +103,7 @@ class TypeScriptFunctionGenerator:
                 if len(signature.return_types.return_types) > 1:
                     result += ',\n'
                 result += '    ' + '...any[]\n'
-            return result + ']>'
+            return result + '\n]>'
 
         # Nothing
         if not signature.return_types.return_types:
@@ -139,7 +143,7 @@ class TypeScriptFunctionGenerator:
                     'Varargs: Cannot transpile multiple arguments at the last position')
 
             last_arg = arg_list[-1][0]
-            if TypeConverter.is_varargs_type(last_arg.argument_type):
+            if is_varargs_type(last_arg.argument_type):
                 arg_list.pop(-1)
             postfix = '...varargs: any[]'
 
@@ -156,7 +160,12 @@ class TypeScriptFunctionGenerator:
         """
         Generates function declaration
         """
-        return f'''{self.generate_doc()}
-export function {self.data.name}(
+        args = self.generate_arguments()
+        args_brackets = f'''(
     {self.generate_arguments()}
-): {self.generate_return_type()};'''
+)'''
+        if not args:
+            args_brackets = '()'
+
+        return f'''{self.generate_doc()}
+export function {self.data.name}{args_brackets}: {self.generate_return_type()};'''

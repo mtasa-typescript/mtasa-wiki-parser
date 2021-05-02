@@ -277,6 +277,15 @@ def test_function_generate_arguments_last_varargs_cut(function_generator_fixture
     assert result == expected
 
 
+def test_function_generate_arguments_no_args(function_generator_fixture: TypeScriptFunctionGenerator):
+    function_generator_fixture.data.signature.arguments.arguments = []
+    function_generator_fixture.data.signature.arguments.variable_length = False
+    expected = ''
+    result = function_generator_fixture.generate_arguments()
+
+    assert result == expected
+
+
 def test_function_generate_full(function_generator_fixture: TypeScriptFunctionGenerator):
     expected = '''/**
  * This function allows you to retrieve the zone name of a certain location.

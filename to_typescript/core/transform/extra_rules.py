@@ -8,18 +8,84 @@ class TypeConverter:
     Converts MTASA Wiki types into TypeScript types
     """
 
+    TYPE_ALIASES = {
+        # Classes
+        'gui-browser': 'GuiBrowser',
+        'gui-scrollbar': 'GuiScrollBar',
+        'gui-memo': 'GuiMemo',
+        'matrix': 'Matrix',
+        'account': 'Account',
+        'acl': 'ACL',
+        'aclgroup': 'ACLGroup',
+        'player': 'Player',
+        'table': 'LuaTable',
+        'ban': 'Ban',
+        'blip': 'Blip',
+        'colshape': 'ColShape',
+        'element': 'Element',
+        'ped': 'Ped',
+        'pickup': 'Pickup',
+        'resource': 'Resource',
+        'team': 'Team',
+        'textdisplay': 'TextDisplay',
+        'vehicle': 'Vehicle',
+        'xmlnode': 'XmlNode',
+        'textitem': 'TextItem',
+        'file': 'File',
+        'marker': 'Marker',
+        'radararea': 'RadarArea',
+        'request': 'Request',
+        'userdata': 'Userdata',
+        'water': 'Water',
+        'timer': 'Timer',
+        'browser': 'Browser',
+        'progressBar': 'ProgressBar',
+        'light': 'Light',
+        'effect': 'Effect',
+        'gui': 'Gui',
+        'searchlight': 'Searchlight',
+        'weapon': 'Weapon',
+        'txd': 'Txd',
+        'dff': 'Dff',
+        'col': 'Col',
+        'ifp': 'Ifp',
+        'primitiveType': 'PrimitiveType',
+        'texture': 'Texture',
+        'object': 'Object',
+        'rendertarget': 'RenderTarget',
+        'shader': 'Shader',
+        'sound': 'Sound',
+        'objectgroup': 'ObjectGroup',
+        'projectile': 'Projectile',
+
+        # Primitives
+        'int': 'number',
+        'float': 'number',
+        'uint': 'number',
+        'color': 'number',
+        'str': 'string',
+        'bool': 'boolean',
+        'var': 'unknown',
+        'value': 'unknown',
+        'nil': 'null',
+        'mixed': 'any',
+        'function': 'HandleFunction',
+        'handle': 'HandleFunction',
+        'callback': 'HandleFunction',
+    }
+
     def __init__(self, arg_type: str):
         self.arg_type = arg_type
 
     def convert(self) -> str:
-        return self.arg_type and 'any'
+        return self.TYPE_ALIASES.get(self.arg_type, self.arg_type)
 
-    @staticmethod
-    def is_varargs_type(type_name: Optional[FunctionType]) -> bool:
-        if type_name is None:
-            return True
 
-        if 'var' in [name.lower().strip() for name in type_name.names]:
-            return True
+def is_varargs_type(type_name: Optional[FunctionType]) -> bool:
+    if type_name is None:
+        return True
 
-        return False
+    if 'var' in [name.lower().strip() for name in type_name.names]:
+        return True
+
+    return False

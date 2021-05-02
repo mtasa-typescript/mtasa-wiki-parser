@@ -167,3 +167,10 @@ class CompoundFunctionData:
         server={repr(self.server)},
         client={repr(self.client)},
     )'''
+
+    def __iter__(self):
+        if self.server is not None:
+            yield 'server', self.server
+
+        if self.client is not None:
+            yield 'client', self.client

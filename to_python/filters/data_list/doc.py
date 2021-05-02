@@ -143,6 +143,8 @@ class FilterParseDocs(FilterAbstract):
             raw_content = self.context.side_data[f_name]
             wiki_content = self.context.wiki_side[f_name]
             description = self.get_docs(f_name)
+            if not description:
+                print(f'[ERROR] Function without a description: {f_name}')
 
             if raw_content.client is not None:
                 return_doc = self.get_return_docs(f_name, raw_content.client, wiki_content.client)
