@@ -74,7 +74,7 @@ class TypeScriptFunctionGenerator:
 
         # TODO: Add @default
         result = f'''/**{doc_description}
- * @see {{@link {self.host_name}{self.url.url} | Wiki, {self.url.name} }}
+ * @see {{@link {self.host_name}{self.url.url} Wiki, {self.url.name} }}
 {doc_params}{doc_return} */'''
 
         return result

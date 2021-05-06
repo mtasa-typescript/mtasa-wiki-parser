@@ -21,6 +21,10 @@ class ContextDeclarations:
     function: 'ContextDeclarations.DictType' = field(default_factory=default_dict_factory)
     oop: 'ContextDeclarations.DictType' = field(default_factory=default_dict_factory)
 
+    # Just names for index.d.ts file
+    # <category, <client/server, [function name]>>
+    function_names: 'ContextDeclarations.DictType' = field(default_factory=default_dict_factory)
+
 
 @dataclass
 class Context:

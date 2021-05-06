@@ -33,9 +33,21 @@ class FilterGenerateFunctionDeclarations(FilterAbstract):
             category = self.get_dts_file_name(url.category)
             self.context.declarations.function[category][side].append(declaration)
 
+    def save_function_for_index(self, compound: CompoundFunctionData, url: FunctionUrl):
+        """
+        Generates self.context.declarations.function_names
+        """
+        category = self.get_dts_file_name(url.category)
+
+        for side, data in compound:
+            self.context.declarations.function_names[category][side].append(url.name)
+
     def apply(self):
         for function in self.context.functions:
             name = (function.server or function.client).name
-            self.generate_declaration(function, self.context.urls[name])
+            url = self.context.urls[name]
+            self.generate_declaration(function, url)
+
+            self.save_function_for_index(function, url)
 
         print('Declarations generated')

@@ -15,6 +15,8 @@ class FilterFunctionSave(FilterAbstract):
             'Element',
             'Marker',
             'Player',
+            'File',
+            'Team',
         ],
         client=[
             'ColShape',
@@ -22,24 +24,28 @@ class FilterFunctionSave(FilterAbstract):
             'Marker',
             'Matrix',
             'Player',
-        ]
+            'File',
+            'Team',
+        ],
     )
 
     DUMP_FOLDERS = dict(server='output/types/mtasa/server/function',
                         client='output/types/mtasa/client/function')
 
     @staticmethod
-    def generate_imports(side: str) -> str:
-        modules = ',\n    '.join(FilterFunctionSave.IMPORTS[side])
+    def generate_imports(module_list: List[str], filename: str) -> str:
+        modules = ',\n    '.join(module_list)
         return f'''import {{
     {modules}
-}} from '../structure';
+}} from '{filename}';
 '''
 
     def save_file_category(self, category_name: str, side: str, content: List[str]):
         cache_file = os.path.join(self.DUMP_FOLDERS[side], f'{category_name}.d.ts')
 
-        text = self.FILE_STARTER + self.generate_imports(side) + '\n'
+        text = (self.FILE_STARTER +
+                self.generate_imports(FilterFunctionSave.IMPORTS[side], '../structure')
+                + '\n')
         text += '\n\n'.join(content) + '\n'
 
         with open(cache_file, 'w', encoding='UTF-8') as cache:

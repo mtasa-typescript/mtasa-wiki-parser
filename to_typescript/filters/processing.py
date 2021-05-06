@@ -16,7 +16,11 @@ class FilterDumpProcess(FilterAbstract):
             f = self.context.functions[index]
             url = self.context.urls[(f.server or f.client).name]
 
-            if 'element' not in url.category.lower():
+            if url.category.lower() not in {
+                'file functions',
+                'player functions',
+                'element functions',
+            }:
                 self.context.functions.pop(index)
                 continue
 
