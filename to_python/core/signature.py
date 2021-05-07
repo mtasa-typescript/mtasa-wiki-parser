@@ -442,15 +442,16 @@ class SignatureParser:
         }
 
         result: List[FunctionArgument] = []
-        partial_name: str = None
-        partial_type: FunctionType = None
+        partial_name: Optional[str] = None
+        partial_type: Optional[FunctionType] = None
         partial_default = None
         append = False
 
         index = index_from
         while index < len(self.tokenized):
             token = self.tokenized[index]
-            if token.type in stop_token:
+            if token.type in stop_token and partial_name is not None:
+                # Add on stop and only if there was a name
                 result.append(FunctionArgument(name=partial_name,
                                                argument_type=partial_type,
                                                default_value=partial_default))
@@ -531,7 +532,9 @@ class SignatureParser:
                 continue
 
             result, index = self.get_argument(index, argument_context)
-            argument_list.append(result)
+            if result:
+                # Do not add empty list
+                argument_list.append(result)
 
         return FunctionArgumentValues(arguments=argument_list,
                                       variable_length=argument_context['is_variable_length'])

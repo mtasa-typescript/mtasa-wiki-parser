@@ -709,6 +709,56 @@ def test_signature_tokenizer_function(code, expected):
                 ),
             )
     ),
+    (
+            'int guiGridListAddRow ( element gridList [, int/string itemText1, int/string itemText2, ... ] )',
+            FunctionSignature(
+                name='guiGridListAddRow',
+                return_types=FunctionReturnTypes(
+                    return_types=[
+                        FunctionType(
+                            names=['int'],
+                            is_optional=False,
+                        )
+                    ],
+                    variable_length=False,
+                ),
+                arguments=FunctionArgumentValues(
+                    arguments=[
+                        [
+                            FunctionArgument(
+                                name='gridList',
+                                argument_type=FunctionType(
+                                    names=['element'],
+                                    is_optional=False,
+                                ),
+                                default_value=None,
+                            )
+                        ],
+                        [
+                            FunctionArgument(
+                                name='itemText1',
+                                argument_type=FunctionType(
+                                    names=['int', 'string'],
+                                    is_optional=True,
+                                ),
+                                default_value=None,
+                            )
+                        ],
+                        [
+                            FunctionArgument(
+                                name='itemText2',
+                                argument_type=FunctionType(
+                                    names=['int', 'string'],
+                                    is_optional=True,
+                                ),
+                                default_value=None,
+                            )
+                        ]
+                    ],
+                    variable_length=True,
+                ),
+            )
+    ),
 ])
 def test_signature_parser(code, expected):
     tokenized = SignatureTokenizer(code).tokenize()

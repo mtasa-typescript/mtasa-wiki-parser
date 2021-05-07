@@ -17,8 +17,13 @@ class FilterCollectDumpFiles(FilterAbstract):
         return name[0].lower() + name[1:]
 
     def get_file_list(self) -> List[str]:
-        return [f for f in glob.iglob(self.DUMP_DIRECTORY, recursive=True)
-                if os.path.isfile(f) and not f.endswith('.py')]
+        return [
+            f for f in glob.iglob(self.DUMP_DIRECTORY, recursive=True)
+            if os.path.isfile(f)
+            if not f.endswith('.py')
+            if not f.endswith('.gitignore')
+            if '__pycache__' not in f
+        ]
 
     def apply(self):
         for file in self.get_file_list():

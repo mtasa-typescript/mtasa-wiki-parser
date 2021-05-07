@@ -23,7 +23,7 @@ class FunctionArgument:
     Argument data
     """
     name: str
-    argument_type: FunctionType
+    argument_type: Optional[FunctionType]
     default_value: Optional[str]
 
     def __repr__(self):
