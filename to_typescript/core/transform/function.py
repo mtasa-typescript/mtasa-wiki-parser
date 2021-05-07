@@ -102,7 +102,7 @@ class TypeScriptFunctionGenerator:
             if signature.return_types.variable_length:
                 if len(signature.return_types.return_types) > 1:
                     result += ',\n'
-                result += '    ' + '...any[]\n'
+                result += '    ' + '...any[]'
             return result + '\n]>'
 
         # Nothing

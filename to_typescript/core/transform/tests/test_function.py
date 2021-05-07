@@ -133,7 +133,7 @@ This function adds the given ACL to the given ACL group. This makes the resource
 def test_function_generate_doc(function_generator_fixture: TypeScriptFunctionGenerator):
     expected = '''/**
  * This function allows you to retrieve the zone name of a certain location.
- * @see {@link https://example.com/wiki/GetZoneName | Wiki, getZoneName }
+ * @see {@link https://example.com/wiki/GetZoneName Wiki, getZoneName }
  * @param x The X axis position
  * @param y The Y axis position
  * @param z The Z axis position
@@ -158,7 +158,7 @@ def test_function_generate_doc_no_return(function_generator_fixture: TypeScriptF
 
     expected = '''/**
  * This function allows you to retrieve the zone name of a certain location.
- * @see {@link https://example.com/wiki/GetZoneName | Wiki, getZoneName }
+ * @see {@link https://example.com/wiki/GetZoneName Wiki, getZoneName }
  * @param x The X axis position
  * @param y The Y axis position
  * @param z The Z axis position
@@ -182,7 +182,7 @@ def test_function_generate_doc_no_args(function_generator_fixture: TypeScriptFun
 
     expected = '''/**
  * This function allows you to retrieve the zone name of a certain location.
- * @see {@link https://example.com/wiki/GetZoneName | Wiki, getZoneName }
+ * @see {@link https://example.com/wiki/GetZoneName Wiki, getZoneName }
  * @return returns the string of the zone name
  */'''
     docs = function_generator_fixture.generate_doc()
@@ -289,7 +289,7 @@ def test_function_generate_arguments_no_args(function_generator_fixture: TypeScr
 def test_function_generate_full(function_generator_fixture: TypeScriptFunctionGenerator):
     expected = '''/**
  * This function allows you to retrieve the zone name of a certain location.
- * @see {@link https://example.com/wiki/GetZoneName | Wiki, getZoneName }
+ * @see {@link https://example.com/wiki/GetZoneName Wiki, getZoneName }
  * @param x The X axis position
  * @param y The Y axis position
  * @param z The Z axis position
