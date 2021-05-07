@@ -318,3 +318,39 @@ export function getZoneName(
     result = function_generator_fixture.generate()
 
     assert result == expected
+
+
+def test_function_generate_empty_docs(function_generator_fixture: TypeScriptFunctionGenerator):
+    """
+    Real case: setTrafficLightState
+    """
+    function_generator_fixture.data.docs.arguments = dict(x='')
+    function_generator_fixture.data.docs.description = ''
+    function_generator_fixture.data.docs.result = ''
+    expected = '''/**
+ * @see {@link https://example.com/wiki/GetZoneName Wiki, getZoneName }
+ * @param x
+ */'''
+    result = function_generator_fixture.generate_doc()
+
+    assert result == expected
+
+
+def test_function_generate_trailing_whitespace_docs(function_generator_fixture: TypeScriptFunctionGenerator):
+    """
+    Real case: setWeaponAmmo
+    """
+    function_generator_fixture.data.docs.arguments = dict(ammoInClip='The amount of ammo to set in the players clip.  '
+                                                                     'This will be taken from the main ammo.  '
+                                                                     'If left unspecified or set to 0,'
+                                                                     ' the current clip will remain.')
+    function_generator_fixture.data.docs.description = ''
+    function_generator_fixture.data.docs.result = ''
+    expected = '''/**
+ * @see {@link https://example.com/wiki/GetZoneName Wiki, getZoneName }
+ * @param ammoInClip The amount of ammo to set in the players clip.  This will be taken from the main ammo.
+ * If left unspecified or set to 0, the current clip will remain.
+ */'''
+    result = function_generator_fixture.generate_doc()
+
+    assert result == expected

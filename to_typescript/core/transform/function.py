@@ -43,8 +43,8 @@ class TypeScriptFunctionGenerator:
                     if line[i] == ' ':
                         index_to_cut = i
 
-                add_line = line[index_to_cut:]
-                lines[index] = line[:index_to_cut]
+                add_line = line[index_to_cut:].strip()
+                lines[index] = line[:index_to_cut].strip()
                 lines.insert(index + 1, add_line)
 
             index += 1
@@ -65,7 +65,8 @@ class TypeScriptFunctionGenerator:
         doc_param_list = []
         for arg_name in docs.arguments:
             arg_desc = docs.arguments[arg_name]
-            doc_param_list.append(f' * @param {arg_name} {self.cut_doc_lines(arg_desc)}')
+            doc_param_list.append(f' * @param {arg_name} {self.cut_doc_lines(arg_desc)}'.rstrip())
+
         doc_params = '\n'.join(doc_param_list)
         doc_params += '\n' if doc_param_list else ''
 

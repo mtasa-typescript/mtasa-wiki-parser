@@ -13,6 +13,7 @@ class TypeConverter:
         'gui-browser': 'GuiBrowser',
         'gui-scrollbar': 'GuiScrollBar',
         'gui-memo': 'GuiMemo',
+        'gui-element': 'GuiElement',
         'matrix': 'Matrix',
         'account': 'Account',
         'acl': 'ACL',
@@ -72,6 +73,11 @@ class TypeConverter:
         'function': 'HandleFunction',
         'handle': 'HandleFunction',
         'callback': 'HandleFunction',
+
+        # Utility
+
+        # TODO: see the table https://wiki.multitheftauto.com/wiki/EngineGetObjectGroupPhysicalProperty
+        'objectgroup-modifiable': 'string',
     }
 
     def __init__(self, arg_type: str):

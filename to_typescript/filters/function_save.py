@@ -9,28 +9,69 @@ class FilterFunctionSave(FilterAbstract):
 // DO NOT EDIT. ANY CHANGES WILL BE OVERWRITTEN
 
 '''
-    IMPORTS = dict(
-        server=[
-            'ColShape',
-            'Element',
-            'Marker',
-            'Player',
-            'File',
-            'Team',
-        ],
-        client=[
-            'ColShape',
-            'Element',
-            'Marker',
-            'Matrix',
-            'Player',
-            'File',
-            'Team',
-        ],
-    )
-
     DUMP_FOLDERS = dict(server='output/types/mtasa/server/function',
                         client='output/types/mtasa/client/function')
+
+    imports = dict(
+        server=[
+            'TextDisplay',
+            'Account',
+            'ACL',
+            'ACLGroup',
+            'Ban',
+            'XML',
+        ],
+        client=[
+            'ProgressBar',
+            'Gui',
+            'Txd',
+            'Dff',
+            'Col',
+            'Ifp',
+            'PrimitiveType',
+            'GuiScrollBar',
+            'Texture',
+            'ObjectGroup',
+            'Matrix',
+            'Browser',
+            'Light',
+            'Effect',
+            'Searchlight',
+            'Weapon',
+            'GuiBrowser',
+            'GuiMemo',
+            'GuiElement',
+            'Projectile',
+        ],
+        shared=[  # Appends to client/server list in runtime
+            'Userdata',
+            'TextItem',
+            'Pickup',
+            'Request',
+            'Player',
+            'Blip',
+            'ColShape',
+            'Element',
+            'Ped',
+            'Resource',
+            'Team',
+            'Vehicle',
+            'XmlNode',
+            'File',
+            'Marker',
+            'Object',
+            'RadarArea',
+            'Water',
+            'Timer',
+            'HandleFunction',
+        ]
+    )
+
+    def __init__(self):
+        self.imports = self.imports.copy()
+        for key in self.imports['shared']:
+            self.imports['client'].append(key)
+            self.imports['server'].append(key)
 
     @staticmethod
     def generate_imports(module_list: List[str], filename: str) -> str:
@@ -44,7 +85,7 @@ class FilterFunctionSave(FilterAbstract):
         cache_file = os.path.join(self.DUMP_FOLDERS[side], f'{category_name}.d.ts')
 
         text = (self.FILE_STARTER +
-                self.generate_imports(FilterFunctionSave.IMPORTS[side], '../structure')
+                self.generate_imports(FilterFunctionSave.imports[side], '../structure')
                 + '\n')
         text += '\n\n'.join(content) + '\n'
 

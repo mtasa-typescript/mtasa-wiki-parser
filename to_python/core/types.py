@@ -1,3 +1,4 @@
+from copy import copy
 from dataclasses import dataclass
 from typing import List, Dict, Optional
 
@@ -16,6 +17,10 @@ class FunctionType:
                                     is_optional={self.is_optional},
                                 )'''
 
+    def __copy__(self):
+        return FunctionType(names=copy(self.names),
+                            is_optional=self.is_optional)
+
 
 @dataclass
 class FunctionArgument:
@@ -32,6 +37,11 @@ class FunctionArgument:
                                 argument_type={repr(self.argument_type)},
                                 default_value={repr(self.default_value)},
                             )'''
+
+    def __copy__(self):
+        return FunctionArgument(name=self.name,
+                                argument_type=copy(self.argument_type),
+                                default_value=self.default_value)
 
 
 @dataclass
@@ -57,6 +67,10 @@ class FunctionArgumentValues:
                     variable_length={self.variable_length},
                 )'''
 
+    def __copy__(self):
+        return FunctionArgumentValues(arguments=copy(self.arguments),
+                                      variable_length=self.variable_length)
+
 
 @dataclass
 class FunctionReturnTypes:
@@ -75,6 +89,10 @@ class FunctionReturnTypes:
                     variable_length={self.variable_length},
                 )'''
 
+    def __copy__(self):
+        return FunctionReturnTypes(return_types=copy(self.return_types),
+                                   variable_length=self.variable_length)
+
 
 @dataclass
 class FunctionSignature:
@@ -91,6 +109,11 @@ class FunctionSignature:
                 return_types={repr(self.return_types)},
                 arguments={repr(self.arguments)},
             )'''
+
+    def __copy__(self):
+        return FunctionSignature(name=self.name,
+                                 return_types=copy(self.return_types),
+                                 arguments=copy(self.arguments))
 
 
 @dataclass
