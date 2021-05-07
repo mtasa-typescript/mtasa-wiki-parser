@@ -20,5 +20,5 @@ class FilterWikiTextParser(FilterAbstract):
         for f_name in self.context.side_data:
             data = self.context.side_data[f_name]
             self.context.wiki_side[f_name] = WikiSide(side=data.side,
-                                              server=self.parse(data.server),
-                                              client=self.parse(data.client))
+                                                      server=self.parse(data.server),
+                                                      client=self.parse(data.client))

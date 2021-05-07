@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List
 
 from crawler.core.types import FunctionUrl
 from to_python.core.types import CompoundFunctionData, FunctionData
@@ -18,20 +18,20 @@ class FilterGenerateFunctionDeclarations(FilterAbstract):
                 .lower())
 
     def generate_declaration(self, compound: CompoundFunctionData, url: FunctionUrl):
-        sides: Dict[str, FunctionData] = dict()
+        sides: Dict[str, List[FunctionData]] = dict()
         if compound.server:
             sides['server'] = compound.server
         if compound.client:
             sides['client'] = compound.client
 
         for side in sides:
-            data = sides[side]
-            declaration = TypeScriptFunctionGenerator(host_name=self.context.host_name,
-                                                      data=data,
-                                                      url=url).generate()
+            for data in sides[side]:
+                declaration = TypeScriptFunctionGenerator(host_name=self.context.host_name,
+                                                          data=data,
+                                                          url=url).generate()
 
-            category = self.get_dts_file_name(url.category)
-            self.context.declarations.function[category][side].append(declaration)
+                category = self.get_dts_file_name(url.category)
+                self.context.declarations.function[category][side].append(declaration)
 
     def save_function_for_index(self, compound: CompoundFunctionData, url: FunctionUrl):
         """
@@ -44,7 +44,7 @@ class FilterGenerateFunctionDeclarations(FilterAbstract):
 
     def apply(self):
         for function in self.context.functions:
-            name = (function.server or function.client).name
+            name = (function.server or function.client)[0].name
             url = self.context.urls[name]
             self.generate_declaration(function, url)
 

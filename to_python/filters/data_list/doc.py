@@ -149,7 +149,7 @@ class FilterParseDocs(FilterAbstract):
             if raw_content.client is not None:
                 return_doc = self.get_return_docs(f_name, raw_content.client, wiki_content.client)
                 args_doc, description_mixin = self.get_args_docs(f_name, raw_content.client, wiki_content.client)
-                self.context.parsed[f_name].client.docs = FunctionDoc(
+                self.context.parsed[f_name].client[0].docs = FunctionDoc(
                     description=(description + '\n' + description_mixin).strip(),
                     arguments=args_doc,
                     result=return_doc
@@ -158,7 +158,7 @@ class FilterParseDocs(FilterAbstract):
             if raw_content.server is not None:
                 return_doc = self.get_return_docs(f_name, raw_content.server, wiki_content.server)
                 args_doc, description_mixin = self.get_args_docs(f_name, raw_content.server, wiki_content.server)
-                self.context.parsed[f_name].server.docs = FunctionDoc(
+                self.context.parsed[f_name].server[0].docs = FunctionDoc(
                     description=(description + '\n' + description_mixin).strip(),
                     arguments=args_doc,
                     result=return_doc

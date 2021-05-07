@@ -14,6 +14,8 @@ class TypeConverter:
         'gui-scrollbar': 'GuiScrollBar',
         'gui-memo': 'GuiMemo',
         'gui-element': 'GuiElement',
+        'gui-edit': 'GuiEdit',
+        'gui-window': 'GuiWindow',
         'matrix': 'Matrix',
         'account': 'Account',
         'acl': 'ACL',
@@ -40,7 +42,7 @@ class TypeConverter:
         'water': 'Water',
         'timer': 'Timer',
         'browser': 'Browser',
-        'progressBar': 'ProgressBar',
+        'progressbar': 'ProgressBar',
         'light': 'Light',
         'effect': 'Effect',
         'gui': 'Gui',
@@ -50,9 +52,9 @@ class TypeConverter:
         'dff': 'Dff',
         'col': 'Col',
         'ifp': 'Ifp',
-        'primitiveType': 'PrimitiveType',
+        'primitivetype': 'PrimitiveType',
         'texture': 'Texture',
-        'object': 'Object',
+        'object': 'MTASAObject',
         'rendertarget': 'RenderTarget',
         'shader': 'Shader',
         'sound': 'Sound',
@@ -84,7 +86,7 @@ class TypeConverter:
         self.arg_type = arg_type
 
     def convert(self) -> str:
-        return self.TYPE_ALIASES.get(self.arg_type, self.arg_type)
+        return self.TYPE_ALIASES.get(self.arg_type.lower(), self.arg_type)
 
 
 def is_varargs_type(type_name: Optional[FunctionType]) -> bool:

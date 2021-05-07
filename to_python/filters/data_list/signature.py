@@ -139,11 +139,11 @@ class FilterParseFunctionSignature(FilterAbstract):
             wiki_content = self.context.wiki_side[f_name]
 
             if raw_content.client is not None:
-                self.context.parsed[f_name].client.signature = self.parse_signature(
+                self.context.parsed[f_name].client[0].signature = self.parse_signature(
                     self.pick_signature(f_name, raw_content.client, wiki_content.client)
                 )
 
             if raw_content.server is not None:
-                self.context.parsed[f_name].server.signature = self.parse_signature(
+                self.context.parsed[f_name].server[0].signature = self.parse_signature(
                     self.pick_signature(f_name, raw_content.server, wiki_content.server)
                 )

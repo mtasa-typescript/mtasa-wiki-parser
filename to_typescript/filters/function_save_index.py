@@ -32,7 +32,6 @@ class FilterFunctionSaveIndex(FilterAbstract):
             if side not in data:
                 continue
 
-            modules = data[side]
             text += FilterFunctionSaveIndex.generate_exports(f'./function/{category}') + '\n'
 
         with open(cache_file, 'w', encoding='UTF-8') as cache:

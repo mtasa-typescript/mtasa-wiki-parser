@@ -1,5 +1,5 @@
 from copy import copy
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import List, Dict, Optional
 
 
@@ -182,18 +182,24 @@ class CompoundFunctionData:
     """
     Data about client-side and server-side function
     """
-    server: Optional[FunctionData] = None
-    client: Optional[FunctionData] = None
+    server: List[FunctionData] = field(default_factory=list)
+    client: List[FunctionData] = field(default_factory=list)
 
     def __repr__(self):
+        server = f',\n{" " * 12}'.join([repr(v) for v in self.server])
+        client = f',\n{" " * 12}'.join([repr(v) for v in self.client])
         return f'''CompoundFunctionData(
-        server={repr(self.server)},
-        client={repr(self.client)},
+        server=[
+            {server}
+        ],
+        client=[
+            {client}
+        ],
     )'''
 
     def __iter__(self):
-        if self.server is not None:
+        if self.server:
             yield 'server', self.server
 
-        if self.client is not None:
+        if self.client:
             yield 'client', self.client
