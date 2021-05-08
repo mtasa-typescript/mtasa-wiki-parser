@@ -96,4 +96,7 @@ def is_varargs_type(type_name: Optional[FunctionType]) -> bool:
     if 'var' in [name.lower().strip() for name in type_name.names]:
         return True
 
+    if 'unknown' in [name.lower().strip() for name in type_name.names]:
+        return True
+
     return False

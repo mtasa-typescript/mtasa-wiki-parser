@@ -57,7 +57,6 @@ class FilterDumpProcess(FilterAbstract):
                     types.names = [TypeConverter(name).convert() for name in types.names]
 
         # Return types
-        # TODO: resolve 'call' function
         for return_type in signature.return_types.return_types:
             return_type.names = [TypeConverter(name).convert() for name in return_type.names]
 

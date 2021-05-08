@@ -17,7 +17,7 @@ class FilterFunctionSaveIndex(FilterAbstract):
     DUMP_FOLDERS = dict(server='output/types/mtasa/server/',
                         client='output/types/mtasa/client/')
 
-    FILE_NAME = 'index.d.ts'
+    FILE_NAME = 'mtasa.d.ts'
 
     @staticmethod
     def generate_exports(filename: str) -> str:

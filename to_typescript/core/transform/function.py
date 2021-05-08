@@ -1,3 +1,4 @@
+from copy import copy
 from typing import List
 
 from crawler.core.types import FunctionUrl
@@ -93,15 +94,20 @@ class TypeScriptFunctionGenerator:
         Generates return TypeScript type
         """
         signature = self.data.signature
+        return_types = copy(signature.return_types.return_types)
 
         # Multiple
-        if signature.return_types.variable_length or len(signature.return_types.return_types) > 1:
+        if signature.return_types.variable_length or len(return_types) > 1:
+            last_arg = return_types[-1]
+            if is_varargs_type(last_arg):
+                return_types.pop(-1)
+
             result = 'LuaMultiReturn<[\n'
             result += ',\n'.join('    ' + self.function_type_text(t)
-                                 for t in signature.return_types.return_types)
+                                 for t in return_types)
 
             if signature.return_types.variable_length:
-                if len(signature.return_types.return_types) > 1:
+                if len(return_types) > 1:
                     result += ',\n'
                 result += '    ' + '...any[]'
             return result + '\n]>'
@@ -111,7 +117,7 @@ class TypeScriptFunctionGenerator:
             return 'void'
 
         # Single
-        return self.function_type_text(signature.return_types.return_types[0])
+        return self.function_type_text(return_types[0])
 
     @staticmethod
     def function_arg_text(arg: List[FunctionArgument]) -> str:
