@@ -149,11 +149,15 @@ class FunctionOOP:
     is_static: bool
 
     def __repr__(self):
+        p_description = f'"""{self.description}"""' if self.description else 'None'
+        p_method_name = f'"""{self.method_name}"""' if self.method_name else 'None'
+        p_field = f'"""{self.field}"""' if self.field else 'None'
+
         return f'''FunctionOOP(
-                description="""{self.description} """,
+                description={p_description},
                 class_name='{self.class_name}',
-                method_name='{self.method_name}',
-                field='{self.field}',
+                method_name={p_method_name},
+                field={p_field},
                 is_static={self.is_static},
             )'''
 
