@@ -107,6 +107,7 @@ class FilterFunctionSave(FilterAbstract):
                 os.mkdir(folder)
 
     def apply(self):
+        self.create_dump_directories(self.DUMP_FOLDERS)
 
         functions = self.context.declarations.function
         for category_name in functions:
