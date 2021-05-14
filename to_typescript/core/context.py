@@ -19,7 +19,10 @@ class ContextDeclarations:
     DictType = DefaultDict[str, DefaultDict[str, List[str]]]
 
     function: 'ContextDeclarations.DictType' = field(default_factory=default_dict_factory)
-    oop: 'ContextDeclarations.DictType' = field(default_factory=default_dict_factory)
+
+    # < class name, <client/server, <declaration> >
+    oop_methods: 'ContextDeclarations.DictType' = field(default_factory=default_dict_factory)
+    oop_fields: 'ContextDeclarations.DictType' = field(default_factory=default_dict_factory)
 
     # Just names for mtasa.d.ts file
     # <category, <client/server, [function name]>>

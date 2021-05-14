@@ -1,5 +1,6 @@
 import os
-from typing import List
+from copy import deepcopy
+from typing import List, Dict
 
 from to_typescript.core.filter import FilterAbstract
 
@@ -24,10 +25,10 @@ class FilterFunctionSave(FilterAbstract):
         client=[
             'ProgressBar',
             'Gui',
-            'Txd',
-            'Dff',
-            'Col',
-            'Ifp',
+            'EngineTXD',
+            'EngineDFF',
+            'EngineCOL',
+            'EngineIFP',
             'PrimitiveType',
             'Texture',
             'ObjectGroup',
@@ -44,6 +45,7 @@ class FilterFunctionSave(FilterAbstract):
             'GuiScrollBar',
             'GuiWindow',
             'Projectile',
+            'Material',
         ],
         shared=[  # Appends to client/server list in runtime
             'Userdata',
@@ -61,7 +63,7 @@ class FilterFunctionSave(FilterAbstract):
             'XmlNode',
             'File',
             'Marker',
-            'Object as MTASAObject',
+            'MTASAObject',
             'RadarArea',
             'Water',
             'Timer',
@@ -70,7 +72,7 @@ class FilterFunctionSave(FilterAbstract):
     )
 
     def __init__(self):
-        self.imports = self.imports.copy()
+        self.imports = deepcopy(self.imports)
         for key in self.imports['shared']:
             self.imports['client'].append(key)
             self.imports['server'].append(key)
@@ -87,18 +89,24 @@ class FilterFunctionSave(FilterAbstract):
         cache_file = os.path.join(self.DUMP_FOLDERS[side], f'{category_name}.d.ts')
 
         text = (self.FILE_STARTER +
-                self.generate_imports(FilterFunctionSave.imports[side], '../structure')
+                self.generate_imports(self.imports[side], '../structure')
                 + '\n')
         text += '\n\n'.join(content) + '\n'
 
         with open(cache_file, 'w', encoding='UTF-8') as cache:
             cache.write(text)
 
-    def apply(self):
-        for key in self.DUMP_FOLDERS:
-            folder = self.DUMP_FOLDERS[key]
+    @staticmethod
+    def create_dump_directories(directories: Dict[str, str]):
+        """
+        Creates a directory if the directory does not exists
+        """
+        for key in directories:
+            folder = directories[key]
             if not os.path.exists(folder):
                 os.mkdir(folder)
+
+    def apply(self):
 
         functions = self.context.declarations.function
         for category_name in functions:

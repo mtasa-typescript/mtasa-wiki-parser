@@ -16,6 +16,29 @@ class TypeConverter:
         'gui-element': 'GuiElement',
         'gui-edit': 'GuiEdit',
         'gui-window': 'GuiWindow',
+        'guibrowser': 'GuiBrowser',
+        'guiscrollbar': 'GuiScrollBar',
+        'guimemo': 'GuiMemo',
+        'guielement': 'GuiElement',
+        'guiedit': 'GuiEdit',
+        'guiwindow': 'GuiWindow',
+        'guicheckbox': 'GuiCheckbox',
+        'font': 'Font',
+        'engine': 'Engine',
+        'guicombobox': 'GuiCombobox',
+        'guigridlist': 'GuiGridList',
+        'guilabel': 'GuiLabel',
+        'guistaticimage': 'GuiStaticImage',
+        'guitab': 'GuiTab',
+        'guitabpanel': 'GuiTabPanel',
+        'guifont': 'GuiFont',
+        'material': 'Material',
+        'screensource': 'DxScreenSource',
+        'dxscreensource': 'DxScreenSource',
+        'guibutton': 'GuiButton',
+        'sound3d': 'Sound3D',
+        'dxrendertarget': 'DxRenderTarget',
+        'camera': 'Camera',
         'matrix': 'Matrix',
         'account': 'Account',
         'acl': 'ACL',
@@ -48,10 +71,16 @@ class TypeConverter:
         'gui': 'Gui',
         'searchlight': 'Searchlight',
         'weapon': 'Weapon',
-        'txd': 'Txd',
-        'dff': 'Dff',
-        'col': 'Col',
-        'ifp': 'Ifp',
+        'txd': 'EngineTXD',
+        'dff': 'EngineDFF',
+        'col': 'EngineCOL',
+        'ifp': 'EngineIFP',
+        'enginetxd': 'EngineTXD',
+        'enginedff': 'EngineDFF',
+        'enginecol': 'EngineCOL',
+        'dxtexture': 'DxTexture',
+        'dxshader': 'DxShader',
+        'dxfont': 'DxFont',
         'primitivetype': 'PrimitiveType',
         'texture': 'Texture',
         'object': 'MTASAObject',
@@ -60,6 +89,8 @@ class TypeConverter:
         'sound': 'Sound',
         'objectgroup': 'ObjectGroup',
         'projectile': 'Projectile',
+        'queryhandle': 'QueryHandle',
+        'xml': 'XML',
 
         # Primitives
         'int': 'number',
@@ -87,6 +118,60 @@ class TypeConverter:
 
     def convert(self) -> str:
         return self.TYPE_ALIASES.get(self.arg_type.lower(), self.arg_type)
+
+
+class ClassInheritance:
+    """
+    Classes inheritance
+    https://wiki.multitheftauto.com/wiki/MTA_Classes
+    """
+    INHERITANCE = {
+        'Player': 'Ped',
+        'Ped': 'Element',
+        'Vehicle': 'Element',
+        'Object': 'Element',
+        'Pickup': 'Element',
+        'Marker': 'Element',
+        'ColShape': 'Element',
+        'Blip': 'Element',
+        'RadarArea': 'Element',
+        'Projectile': None,  # getType override error
+        'Team': 'Element',
+        'TXD': 'Element',
+        'DFF': 'Element',
+        'COL': 'Element',
+        'Sound': 'Element',
+        'Material': 'Element',
+        'Font': 'Element',
+        'Weapon': 'Element',
+        'Camera': 'Element',
+        'Effect': 'Element',
+        'Browser': 'Element',
+        'Light': None,  # getType override error
+        'Searchlight': 'Element',
+        'Water': 'Element',
+        'Texture': 'Material',
+        'Shader': 'Material',
+        'GuiElement': None,
+        'GuiMemo': 'GuiElement',
+        'GuiEdit': 'GuiElement',
+        'GuiWindow': 'GuiElement',
+        'GuiBrowser': 'GuiElement',
+        'GuiScrollBar': 'GuiElement',
+        'GuiCheckbox': 'GuiElement',
+        'GuiCombobox': 'GuiElement',
+        'GuiGridList': 'GuiElement',
+        'GuiLabel': 'GuiElement',
+        'GuiStaticImage': 'GuiElement',
+        'GuiTab': 'GuiElement',
+        'GuiTabPanel': 'GuiElement',
+    }
+
+    def __init__(self, arg_type: str):
+        self.arg_type = arg_type
+
+    def get_child(self) -> Optional[str]:
+        return self.INHERITANCE.get(self.arg_type, None)
 
 
 def is_varargs_type(type_name: Optional[FunctionType]) -> bool:

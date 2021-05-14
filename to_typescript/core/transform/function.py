@@ -2,7 +2,7 @@ from copy import copy
 from typing import List
 
 from crawler.core.types import FunctionUrl
-from to_python.core.types import FunctionData, FunctionType, FunctionArgument
+from to_python.core.types import FunctionData, FunctionType, FunctionArgument, FunctionDoc
 from to_typescript.core.transform.extra_rules import is_varargs_type
 
 
@@ -52,16 +52,25 @@ class TypeScriptFunctionGenerator:
 
         return '\n * '.join(lines)
 
+    @staticmethod
+    def generate_doc_description(docs: FunctionDoc) -> str:
+        """
+        Generates JSDoc function description
+        """
+        description = TypeScriptFunctionGenerator.cut_doc_lines(docs.description)
+
+        if not description:
+            return ''
+
+        return f'\n * {description}'
+
     def generate_doc(self) -> str:
         """
         Generates JSDoc
         """
         docs = self.data.docs
 
-        description = self.cut_doc_lines(docs.description)
-        doc_description = f'\n * {description}'
-        if not description:
-            doc_description = ''
+        doc_description = self.generate_doc_description(docs)
 
         doc_param_list = []
         for arg_name in docs.arguments:
@@ -169,7 +178,7 @@ class TypeScriptFunctionGenerator:
         """
         args = self.generate_arguments()
         args_brackets = f'''(
-    {self.generate_arguments()}
+    {args}
 )'''
         if not args:
             args_brackets = '()'

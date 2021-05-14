@@ -18,6 +18,8 @@ class FilterGenerateFunctionDeclarations(FilterAbstract):
                 .lower())
 
     def generate_declaration(self, compound: CompoundFunctionData, url: FunctionUrl):
+        # TODO: use CompoundFunctionData __iter__ (loop)
+
         sides: Dict[str, List[FunctionData]] = dict()
         if compound.server:
             sides['server'] = compound.server
@@ -50,4 +52,4 @@ class FilterGenerateFunctionDeclarations(FilterAbstract):
 
             self.save_function_for_index(function, url)
 
-        print('Declarations generated')
+        print('Function Declarations generated')

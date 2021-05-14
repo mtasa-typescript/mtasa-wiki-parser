@@ -6,14 +6,18 @@ from to_typescript.core.filter import FilterAbstract
 from to_typescript.core.transform.extra_rules import TypeConverter
 
 
-class FilterDumpProcess(FilterAbstract):
+class FilterDumpProcessFunctions(FilterAbstract):
     """
     Post processing for dumps.
     Argument types changes, custom types, names, argument names, return types
     or additional information can be provided here
     """
 
-    def _debug_only_element_section(self):
+    def remove_utf8(self):
+        """
+        Removed UTF8 category. It should be processed manually
+        """
+        # TODO: process UTF8 category
         index = 0
         while index < len(self.context.functions):
             f = self.context.functions[index]
@@ -138,7 +142,7 @@ class FilterDumpProcess(FilterAbstract):
         return data_list_index + increment
 
     def apply(self):
-        self._debug_only_element_section()
+        self.remove_utf8()
 
         for function in self.context.functions:
             for side, data_list in function:
@@ -147,8 +151,3 @@ class FilterDumpProcess(FilterAbstract):
                 while index < len(data_list):
                     index = self.prepare_function(data_list_index=index,
                                                   data_list=data_list)
-
-        # self.prepare_argument_names()
-        # self.prepare_types()
-        #
-        # self.resolve_multiple_signatures()
