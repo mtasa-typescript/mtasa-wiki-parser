@@ -1,4 +1,4 @@
-from copy import copy
+from copy import copy, deepcopy
 from typing import Optional
 
 from crawler.core.types import FunctionUrl
@@ -18,13 +18,13 @@ class TypeScriptOOPGenerator:
     MAX_DOC_LINE_LENGTH = 90
 
     def __init__(self, data: FunctionData, url: FunctionUrl, host_name: str):
-        self.data = copy(data)
+        self.data = deepcopy(data)
         self.url = url
         self.host_name = host_name
         self.generator = TypeScriptFunctionGenerator(self.data, self.url, self.host_name)
 
         # Remove first argument, if method is not static
-        if not self.data.oop.is_static:
+        if not self.data.oop.is_static and self.data.oop.method_name != 'constructor':
             arguments = self.data.signature.arguments.arguments
             if arguments:
                 arg_name = arguments[0][0].name

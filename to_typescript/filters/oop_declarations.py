@@ -9,7 +9,8 @@ from to_typescript.core.transform.oop import TypeScriptOOPGenerator
 
 class FilterGenerateOOPDeclarations(FilterAbstract):
     def __init__(self):
-        self.fields_in_class: DefaultDict[str, Set[str]] = defaultdict(set)
+        # < function name, <side, prop list> >
+        self.fields_in_class: DefaultDict[str, DefaultDict[str, Set[str]]] = defaultdict(lambda: defaultdict(set))
 
     def generate_declaration(self, compound: CompoundFunctionData, url: FunctionUrl):
         for side, data_list in compound:
@@ -27,8 +28,8 @@ class FilterGenerateOOPDeclarations(FilterAbstract):
                                                             data=data,
                                                             url=url).generate_method()
 
-                if declaration_field and field_name not in self.fields_in_class[file_name]:
-                    self.fields_in_class[file_name].add(field_name)
+                if declaration_field and field_name not in self.fields_in_class[file_name][side]:
+                    self.fields_in_class[file_name][side].add(field_name)
 
                     self.context.declarations.oop_fields[file_name][side].append(declaration_field)
 

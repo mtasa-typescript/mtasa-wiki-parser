@@ -23,7 +23,7 @@ class TypeConverter:
         'guiedit': 'GuiEdit',
         'guiwindow': 'GuiWindow',
         'guicheckbox': 'GuiCheckbox',
-        'font': 'Font',
+        'font': 'DxFont',
         'engine': 'Engine',
         'guicombobox': 'GuiCombobox',
         'guigridlist': 'GuiGridList',
