@@ -84,9 +84,9 @@ class TypeScriptFunctionGenerator:
         doc_return = f' * @return {doc_return}\n' if doc_return else ''
 
         # TODO: Add @default
-        result = f'''/**{doc_description}
+        result = f'''{doc_description}
  * @see {{@link {self.host_name}{self.url.url} Wiki, {self.url.name} }}
-{doc_params}{doc_return} */'''
+{doc_params}{doc_return}'''
 
         return result
 
@@ -183,5 +183,6 @@ class TypeScriptFunctionGenerator:
         if not args:
             args_brackets = '()'
 
-        return f'''{self.generate_doc()}
-export function {self.data.name}{args_brackets}: {self.generate_return_type()};'''
+        return f'''/**{self.generate_doc()} * @noSelf
+ */
+export declare function {self.data.name}{args_brackets}: {self.generate_return_type()};'''

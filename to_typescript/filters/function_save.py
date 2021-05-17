@@ -93,7 +93,7 @@ class FilterFunctionSave(FilterAbstract):
                 + '\n')
         text += '\n\n'.join(content) + '\n'
 
-        with open(cache_file, 'w', encoding='UTF-8') as cache:
+        with open(cache_file, 'w', encoding='UTF-8', newline='\n') as cache:
             cache.write(text)
 
     @staticmethod

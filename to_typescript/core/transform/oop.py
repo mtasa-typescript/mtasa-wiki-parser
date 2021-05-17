@@ -72,5 +72,5 @@ class TypeScriptOOPGenerator:
         if self.data.oop.method_name == 'constructor':
             return_type = ''
 
-        return f'''{self.generator.generate_doc()}
+        return f'''/**{self.generator.generate_doc()} */
 {static}{self.data.oop.method_name}{args_brackets}{return_type};'''

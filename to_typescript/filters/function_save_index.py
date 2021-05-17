@@ -27,6 +27,8 @@ class FilterFunctionSaveIndex(FilterAbstract):
         cache_file = os.path.join(self.DUMP_FOLDERS[side], self.FILE_NAME)
 
         text = self.FILE_STARTER
+
+        # Functions index
         for category in self.context.declarations.function_names:
             data = self.context.declarations.function_names[category]
             if side not in data:
@@ -34,7 +36,17 @@ class FilterFunctionSaveIndex(FilterAbstract):
 
             text += FilterFunctionSaveIndex.generate_exports(f'./function/{category}') + '\n'
 
-        with open(cache_file, 'w', encoding='UTF-8') as cache:
+        # OOP index
+        keys = set(filter(lambda x: self.context.declarations.oop_methods[x].get(side),
+                          self.context.declarations.oop_methods.keys()))
+        keys.update(set(filter(lambda x: self.context.declarations.oop_fields[x].get(side),
+                               self.context.declarations.oop_fields.keys())))
+
+        for key in keys:
+            path = f'./oop/{"gui/" if "Gui" in key else ""}{key}'
+            text += FilterFunctionSaveIndex.generate_exports(path) + '\n'
+
+        with open(cache_file, 'w', encoding='UTF-8', newline='\n') as cache:
             cache.write(text)
 
     def apply(self):

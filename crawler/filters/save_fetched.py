@@ -24,7 +24,7 @@ class FilterSaveFetched(FilterAbstract):
         if not os.path.exists(subfolder):
             os.mkdir(subfolder)
 
-        with open(cache_file, 'w', encoding='UTF-8') as cache:
+        with open(cache_file, 'w', encoding='UTF-8', newline='\n') as cache:
             cache.write(result)
 
     @staticmethod
@@ -43,7 +43,7 @@ class FilterSaveFetched(FilterAbstract):
         """
         cache_file = os.path.join(self.DUMP_FOLDER, '__init__.py')
 
-        with open(cache_file, 'w', encoding='UTF-8') as cache:
+        with open(cache_file, 'w', encoding='UTF-8', newline='\n') as cache:
             cache.write(self.text_url_list(self.context.url_list))
 
     def apply(self):

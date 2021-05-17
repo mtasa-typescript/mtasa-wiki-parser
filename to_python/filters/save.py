@@ -73,7 +73,7 @@ DUMP_PARTIAL = [
     {list_text}
 ]
 '''
-        with open(cache_file, 'w', encoding='UTF-8') as cache:
+        with open(cache_file, 'w', encoding='UTF-8', newline='\n') as cache:
             cache.write(text)
 
     def save_init_file(self):
@@ -98,7 +98,7 @@ DUMP = [
 ]
 '''
 
-        with open(cache_file, 'w', encoding='UTF-8') as cache:
+        with open(cache_file, 'w', encoding='UTF-8', newline='\n') as cache:
             cache.write(text)
 
     def save_url_list(self):
@@ -107,7 +107,7 @@ DUMP = [
         """
         cache_file = os.path.join(self.DUMP_FOLDER_ROOT, 'url_list.py')
 
-        with open(cache_file, 'w', encoding='UTF-8') as cache:
+        with open(cache_file, 'w', encoding='UTF-8', newline='\n') as cache:
             cache.write(FilterSaveFetched.text_url_list(
                 [self.context.urls[k] for k in self.context.urls]
             ))

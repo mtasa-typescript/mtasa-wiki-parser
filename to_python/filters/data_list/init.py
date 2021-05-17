@@ -9,7 +9,7 @@ class FilterInitInternalList(FilterAbstract):
 
     @staticmethod
     def read_file(filepath: str) -> str:
-        with open(filepath, encoding='UTF-8') as file:
+        with open(filepath, encoding='UTF-8', newline='\n') as file:
             return file.read()
 
     def apply(self):

@@ -24,8 +24,9 @@ FILTER_CHAIN = [
 
     FilterGenerateFunctionDeclarations(),
     FilterFunctionSave(),
-    FilterFunctionSaveIndex(),
 
     FilterGenerateOOPDeclarations(),
     FilterOOPSave(),
+
+    FilterFunctionSaveIndex(),
 ]

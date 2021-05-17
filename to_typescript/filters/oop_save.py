@@ -72,7 +72,7 @@ export class {class_name}{inherit_inline} {{
             text += self.shift_lines('\n\n'.join(methods), 4) + '\n'
         text += self.get_class_end()
 
-        with open(cache_file, 'w', encoding='UTF-8') as cache:
+        with open(cache_file, 'w', encoding='UTF-8', newline='\n') as cache:
             cache.write(text)
 
     def apply(self):
@@ -81,8 +81,9 @@ export class {class_name}{inherit_inline} {{
             if not os.path.exists(folder):
                 os.mkdir(folder)
 
-        keys = list(self.context.declarations.oop_methods.keys())
-        keys.extend(list(self.context.declarations.oop_fields.keys()))
+        # TODO: move into Context method
+        keys = set(self.context.declarations.oop_methods.keys())
+        keys.update(set(self.context.declarations.oop_fields.keys()))
 
         for key in keys:
             for side in ['client', 'server']:
