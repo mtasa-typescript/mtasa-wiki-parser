@@ -82,7 +82,7 @@ class TypeConverter:
         'dxshader': 'DxShader',
         'dxfont': 'DxFont',
         'primitivetype': 'PrimitiveType',
-        'texture': 'Texture',
+        'texture': 'DxTexture',
         'object': 'MTASAObject',
         'rendertarget': 'RenderTarget',
         'shader': 'Shader',
