@@ -30,7 +30,7 @@ class FilterFunctionSave(FilterAbstract):
             'EngineCOL',
             'EngineIFP',
             'PrimitiveType',
-            'Texture',
+            'DxTexture',
             'ObjectGroup',
             'Matrix',
             'Browser',
