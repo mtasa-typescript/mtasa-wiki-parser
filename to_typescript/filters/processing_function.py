@@ -81,10 +81,14 @@ class FilterDumpProcessFunctions(FilterAbstract):
 
         first_optional_index = -1
         for index, argument_list in enumerate(signature.arguments.arguments):
-
             is_optional = len([argument
                                for argument in argument_list
                                if argument.argument_type and argument.argument_type.is_optional]) != 0
+
+            if len([argument
+                    for argument in argument_list
+                    if not argument.argument_type]) != 0:
+                is_optional = True
 
             if is_optional:
                 if first_optional_index == -1:

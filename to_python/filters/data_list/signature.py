@@ -121,7 +121,7 @@ class FilterParseFunctionSignature(FilterAbstract):
 
         return code_inside
 
-    SELECT_CODE_REGEX = re.compile(r'<syntaxhighlight[^>]*>([\s\S]+?)</syntaxhighlight>')
+    SELECT_CODE_REGEX = re.compile(r'<syntaxhighlight[^>]*lua[^>]*>([\s\S]+?)</syntaxhighlight>')
 
     def pick_signature(self, f_name: str, raw_data: str, wiki: WikiText) -> str:
         """
