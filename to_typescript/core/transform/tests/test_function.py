@@ -131,7 +131,7 @@ This function adds the given ACL to the given ACL group. This makes the resource
 
 
 def test_function_generate_doc(function_generator_fixture: TypeScriptFunctionGenerator):
-    expected = '''/**
+    expected = '''
  * This function allows you to retrieve the zone name of a certain location.
  * @see {@link https://example.com/wiki/GetZoneName Wiki, getZoneName }
  * @param x The X axis position
@@ -147,7 +147,7 @@ def test_function_generate_doc(function_generator_fixture: TypeScriptFunctionGen
  * ** Flint County
  * ** Los Santos
  * @return returns the string of the zone name
- */'''
+'''
     docs = function_generator_fixture.generate_doc()
 
     assert docs == expected
@@ -156,7 +156,7 @@ def test_function_generate_doc(function_generator_fixture: TypeScriptFunctionGen
 def test_function_generate_doc_no_return(function_generator_fixture: TypeScriptFunctionGenerator):
     function_generator_fixture.data.docs.result = '  \n '
 
-    expected = '''/**
+    expected = '''
  * This function allows you to retrieve the zone name of a certain location.
  * @see {@link https://example.com/wiki/GetZoneName Wiki, getZoneName }
  * @param x The X axis position
@@ -171,7 +171,7 @@ def test_function_generate_doc_no_return(function_generator_fixture: TypeScriptF
  * ** Whetstone
  * ** Flint County
  * ** Los Santos
- */'''
+'''
     docs = function_generator_fixture.generate_doc()
 
     assert docs == expected
@@ -180,11 +180,11 @@ def test_function_generate_doc_no_return(function_generator_fixture: TypeScriptF
 def test_function_generate_doc_no_args(function_generator_fixture: TypeScriptFunctionGenerator):
     function_generator_fixture.data.docs.arguments = dict()
 
-    expected = '''/**
+    expected = '''
  * This function allows you to retrieve the zone name of a certain location.
  * @see {@link https://example.com/wiki/GetZoneName Wiki, getZoneName }
  * @return returns the string of the zone name
- */'''
+'''
     docs = function_generator_fixture.generate_doc()
 
     assert docs == expected
@@ -303,8 +303,9 @@ def test_function_generate_full(function_generator_fixture: TypeScriptFunctionGe
  * ** Flint County
  * ** Los Santos
  * @return returns the string of the zone name
+ * @noSelf
  */
-export function getZoneName(
+export declare function getZoneName(
     x: float,
     y: float,
     z: float | string,
@@ -327,10 +328,10 @@ def test_function_generate_empty_docs(function_generator_fixture: TypeScriptFunc
     function_generator_fixture.data.docs.arguments = dict(x='')
     function_generator_fixture.data.docs.description = ''
     function_generator_fixture.data.docs.result = ''
-    expected = '''/**
+    expected = '''
  * @see {@link https://example.com/wiki/GetZoneName Wiki, getZoneName }
  * @param x
- */'''
+'''
     result = function_generator_fixture.generate_doc()
 
     assert result == expected
@@ -346,11 +347,11 @@ def test_function_generate_trailing_whitespace_docs(function_generator_fixture: 
                                                                      ' the current clip will remain.')
     function_generator_fixture.data.docs.description = ''
     function_generator_fixture.data.docs.result = ''
-    expected = '''/**
+    expected = '''
  * @see {@link https://example.com/wiki/GetZoneName Wiki, getZoneName }
  * @param ammoInClip The amount of ammo to set in the players clip.  This will be taken from the main ammo.
  * If left unspecified or set to 0, the current clip will remain.
- */'''
+'''
     result = function_generator_fixture.generate_doc()
 
     assert result == expected
