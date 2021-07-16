@@ -1,7 +1,7 @@
 from copy import copy
 from typing import List
 
-from crawler.core.types import FunctionUrl
+from crawler.core.types import PageUrl
 from to_python.core.types import FunctionData, FunctionType, FunctionArgument, FunctionDoc
 from to_typescript.core.transform.extra_rules import is_varargs_type
 
@@ -17,7 +17,7 @@ class TypeScriptFunctionGenerator:
 
     MAX_DOC_LINE_LENGTH = 90
 
-    def __init__(self, data: FunctionData, url: FunctionUrl, host_name: str):
+    def __init__(self, data: FunctionData, url: PageUrl, host_name: str):
         self.data = data
         self.url = url
         self.host_name = host_name

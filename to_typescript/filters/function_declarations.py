@@ -1,6 +1,6 @@
 from typing import Dict, List
 
-from crawler.core.types import FunctionUrl
+from crawler.core.types import PageUrl
 from to_python.core.types import CompoundFunctionData, FunctionData
 from to_typescript.core.filter import FilterAbstract
 from to_typescript.core.transform.function import TypeScriptFunctionGenerator
@@ -17,7 +17,7 @@ class FilterGenerateFunctionDeclarations(FilterAbstract):
                 .split(' ')[0]
                 .lower())
 
-    def generate_declaration(self, compound: CompoundFunctionData, url: FunctionUrl):
+    def generate_declaration(self, compound: CompoundFunctionData, url: PageUrl):
         # TODO: use CompoundFunctionData __iter__ (loop)
 
         sides: Dict[str, List[FunctionData]] = dict()
@@ -35,7 +35,7 @@ class FilterGenerateFunctionDeclarations(FilterAbstract):
                 category = self.get_dts_file_name(url.category)
                 self.context.declarations.function[category][side].append(declaration)
 
-    def save_function_for_index(self, compound: CompoundFunctionData, url: FunctionUrl):
+    def save_function_for_index(self, compound: CompoundFunctionData, url: PageUrl):
         """
         Generates self.context.declarations.function_names
         """

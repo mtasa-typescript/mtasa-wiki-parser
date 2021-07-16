@@ -1,7 +1,7 @@
 from collections import defaultdict
 from typing import Set, DefaultDict
 
-from crawler.core.types import FunctionUrl
+from crawler.core.types import PageUrl
 from to_python.core.types import CompoundFunctionData
 from to_typescript.core.filter import FilterAbstract
 from to_typescript.core.transform.oop import TypeScriptOOPGenerator
@@ -12,7 +12,7 @@ class FilterGenerateOOPDeclarations(FilterAbstract):
         # < function name, <side, prop list> >
         self.fields_in_class: DefaultDict[str, DefaultDict[str, Set[str]]] = defaultdict(lambda: defaultdict(set))
 
-    def generate_declaration(self, compound: CompoundFunctionData, url: FunctionUrl):
+    def generate_declaration(self, compound: CompoundFunctionData, url: PageUrl):
         for side, data_list in compound:
             for data in data_list:
                 if data.oop is None:

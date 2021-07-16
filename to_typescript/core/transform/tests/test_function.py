@@ -1,6 +1,6 @@
 import pytest
 
-from crawler.core.types import FunctionUrl, ListType
+from crawler.core.types import PageUrl, ListType
 from to_python.core.types import FunctionType, \
     FunctionArgument, \
     FunctionArgumentValues, \
@@ -104,11 +104,11 @@ def function_generator_fixture() -> TypeScriptFunctionGenerator:
         oop=None,
         name='getZoneName',
     )
-    url = FunctionUrl(
+    url = PageUrl(
         url="/wiki/GetZoneName",
         name="getZoneName",
         category="World functions",
-        function_type=ListType.SERVER,
+        type=ListType.SERVER,
     )
 
     return TypeScriptFunctionGenerator(data=data, url=url, host_name='https://example.com')

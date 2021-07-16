@@ -11,20 +11,23 @@ class ListType(enum.Enum):
 
 
 @dataclass
-class FunctionUrl:
+class PageUrl:
+    """
+    Describes the URL to the MTASA Wiki function page
+    """
     url: str
     name: str
     category: str
-    function_type: ListType
+    type: ListType
 
     def get_full_url(self) -> str:
         from crawler.config import HOST_URL
         return f'{HOST_URL}{self.url}'
 
     def __repr__(self):
-        return f'''FunctionUrl(
+        return f'''PageUrl(
         url="{self.url}",
         name="{self.name}",
         category="{self.category}",
-        function_type={repr(self.function_type)},
+        type={repr(self.type)},
     )'''

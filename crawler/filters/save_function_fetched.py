@@ -1,38 +1,43 @@
 import os
-from typing import List
+from typing import List, Optional
 
 from crawler.core.filter import FilterAbstract
-from crawler.core.types import FunctionUrl
-from crawler.filters.fetch_functions import FilterFetchFunctions
+from crawler.core.types import PageUrl
+from crawler.filters.fetch_function_pages import WikiPageFetcher
 
 
 class FilterSaveFetched(FilterAbstract):
     DUMP_FOLDER = 'dump_html'
 
-    def save_file(self, url: FunctionUrl, result: str):
+    def save_file(self, url: PageUrl, result: str, subdir: Optional[str] = None):
         """
         Saves fetched data into a file
         :param url: Data about the function
         :param result: Fetched data
+        :param subdir: Subdirectory with data (relative path, based on DUMP folder)
         """
-        name = FilterFetchFunctions.get_function_name(url)
-        subfolder = os.path.join(self.DUMP_FOLDER, name[:2].upper())
-        cache_file = os.path.join(subfolder, name)
+        name = WikiPageFetcher.normalize_page_name(url.name)
+        if subdir is None:
+            subdir = os.path.join(self.DUMP_FOLDER, name[:2].upper())
+        else:
+            subdir = os.path.join(self.DUMP_FOLDER, subdir)
+
+        cache_file = os.path.join(subdir, name)
 
         if not os.path.exists(self.DUMP_FOLDER):
             os.mkdir(self.DUMP_FOLDER)
-        if not os.path.exists(subfolder):
-            os.mkdir(subfolder)
+        if not os.path.exists(subdir):
+            os.mkdir(subdir)
 
         with open(cache_file, 'w', encoding='UTF-8', newline='\n') as cache:
             cache.write(result)
 
     @staticmethod
-    def text_url_list(url_list: List[FunctionUrl]) -> str:
+    def text_url_list(url_list: List[PageUrl]) -> str:
         """
         Converts URL List into a text
         """
-        text = 'from crawler.core.types import FunctionUrl, ListType\n\n'
+        text = 'from crawler.core.types import PageUrl, ListType\n\n'
         text += 'URL_LIST = [\n    ' + ',\n    '.join(repr(v) for v in url_list) + '\n]\n'
 
         return text
@@ -49,7 +54,7 @@ class FilterSaveFetched(FilterAbstract):
     def apply(self):
         for url, text in self.context.fetched:
             self.save_file(url, text)
-            print(f'Saved "{url.name}", {url.function_type.name}')
+            print(f'Saved "{url.name}", {url.type.name}')
 
         self.save_url_list()
         print(f'Saved URL List')

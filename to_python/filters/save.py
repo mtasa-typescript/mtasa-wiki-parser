@@ -3,7 +3,7 @@ import os
 import re
 from typing import DefaultDict, List, Set
 
-from crawler.filters.save_fetched import FilterSaveFetched
+from crawler.filters.save_function_fetched import FilterSaveFetched
 from to_python.core.filter import FilterAbstract
 from to_python.core.types import CompoundFunctionData
 

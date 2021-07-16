@@ -1,17 +1,26 @@
 import abc
-from dataclasses import dataclass
-from typing import Optional, Any, Dict, List, Tuple, Set
+from dataclasses import dataclass, field
+from typing import Optional, List, Tuple, Set
 
-from crawler.core.types import ListType, FunctionUrl
+from crawler.core.types import ListType, PageUrl
 
 
 @dataclass
 class Context:
     host_url: str
+    fetch_batch_size: int
+
     fetch_start_from: Optional[Tuple[ListType, str]]
     blacklist: Set[str]
-    url_list: List[FunctionUrl]
-    fetched: List[Tuple[FunctionUrl, str]]
+
+    event_fetch_start_from: Optional[Tuple[ListType, str]]
+    event_blacklist: Set[str]
+
+    url_list: List[PageUrl] = field(default_factory=list)
+    fetched: List[Tuple[PageUrl, str]] = field(default_factory=list)
+
+    event_url_list: List[PageUrl] = field(default_factory=list)
+    event_fetched: List[Tuple[PageUrl, str]] = field(default_factory=list)
 
 
 class FilterAbstract(metaclass=abc.ABCMeta):

@@ -1,7 +1,7 @@
 from copy import copy, deepcopy
 from typing import Optional
 
-from crawler.core.types import FunctionUrl
+from crawler.core.types import PageUrl
 from to_python.core.types import FunctionData
 from to_typescript.core.transform.function import TypeScriptFunctionGenerator
 
@@ -17,7 +17,7 @@ class TypeScriptOOPGenerator:
 
     MAX_DOC_LINE_LENGTH = 90
 
-    def __init__(self, data: FunctionData, url: FunctionUrl, host_name: str):
+    def __init__(self, data: FunctionData, url: PageUrl, host_name: str):
         self.data = deepcopy(data)
         self.url = url
         self.host_name = host_name

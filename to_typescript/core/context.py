@@ -2,7 +2,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from typing import Dict, List, DefaultDict
 
-from crawler.core.types import FunctionUrl
+from crawler.core.types import PageUrl
 from to_python.core.types import CompoundFunctionData
 
 # <category, <client/server, <declaration>>>
@@ -38,7 +38,7 @@ class Context:
     functions: List[CompoundFunctionData] = field(default_factory=list)
 
     # URLs from URL List
-    urls: Dict[str, FunctionUrl] = field(default_factory=dict)
+    urls: Dict[str, PageUrl] = field(default_factory=dict)
 
     # Generated declarations
     declarations: ContextDeclarations = field(default_factory=ContextDeclarations)
