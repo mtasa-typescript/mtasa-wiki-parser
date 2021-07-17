@@ -10,9 +10,11 @@ class Context:
     host_url: str
     fetch_batch_size: int
 
+    function_subfolder: str
     fetch_start_from: Optional[Tuple[ListType, str]]
     blacklist: Set[str]
 
+    event_subfolder: str
     event_fetch_start_from: Optional[Tuple[ListType, str]]
     event_blacklist: Set[str]
 

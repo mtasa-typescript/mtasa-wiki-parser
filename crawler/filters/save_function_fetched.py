@@ -53,7 +53,11 @@ class FilterSaveFetched(FilterAbstract):
 
     def apply(self):
         for url, text in self.context.fetched:
-            self.save_file(url, text)
+            self.save_file(
+                url,
+                text,
+                os.path.join(self.context.function_subfolder, url.name[:2].upper())
+            )
             print(f'Saved "{url.name}", {url.type.name}')
 
         self.save_url_list()

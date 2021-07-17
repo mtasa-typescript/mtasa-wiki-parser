@@ -27,7 +27,11 @@ class FilterSaveFetchedEvents(FilterSaveFetched):
 
     def apply(self):
         for url, text in self.context.event_fetched:
-            self.save_file(url, text, url.name[2:4].upper())
+            self.save_file(
+                url,
+                text,
+                os.path.join(self.context.event_subfolder, url.name[2:4].upper())
+            )
             print(f'Saved "{url.name}", {url.type.name}')
 
         self.save_event_url_list()
