@@ -459,10 +459,10 @@ class SignatureParser:
 
             # Special tokens to update the context
             if token.type == self.TokenType.OPTIONAL_START:
-                argument_context['is_optional'] = True
+                argument_context['optional_counter'] += 1
 
             elif token.type == self.TokenType.OPTIONAL_END:
-                argument_context['is_optional'] = False
+                argument_context['optional_counter'] -= 1
 
             elif token.type == self.TokenType.VARARGS_SIGN:
                 argument_context['is_variable_length'] = True
@@ -486,7 +486,7 @@ class SignatureParser:
                         append = False
 
                 partial_type = FunctionType(names=[token.value],
-                                            is_optional=argument_context['is_optional'])
+                                            is_optional=argument_context['optional_counter'] > 0)
 
             elif token.type == self.TokenType.ARGUMENT_NAME:
                 partial_name = token.value
@@ -506,7 +506,7 @@ class SignatureParser:
 
         argument_context = dict(
             is_variable_length=False,
-            is_optional=False,
+            optional_counter=0,
         )
 
         argument_list: List[List[FunctionArgument]] = []

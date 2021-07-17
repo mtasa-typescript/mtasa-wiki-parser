@@ -10,7 +10,7 @@ class FilterCollectDumpFiles(FilterAbstract):
     Accumulates all files inside DUMP_DIRECTORY into context.functions
     """
 
-    DUMP_DIRECTORY = '../crawler/dump_html/**'
+    DUMP_DIRECTORY = '../crawler/dump_html/functions/**'
 
     @staticmethod
     def function_name(name: str):

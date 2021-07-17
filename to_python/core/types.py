@@ -2,6 +2,8 @@ from copy import copy
 from dataclasses import dataclass, field
 from typing import List, Dict, Optional
 
+from crawler.core.types import ListType
+
 
 @dataclass
 class FunctionType:
@@ -95,6 +97,23 @@ class FunctionReturnTypes:
 
 
 @dataclass
+class FunctionGeneric:
+    """
+    Generic type information
+    """
+    name: str
+    extends: Optional[str]
+    default_value: Optional[str]
+
+    def __repr__(self):
+        return f'''FunctionGeneric(
+                        name='{self.name}',
+                        extends{self.extends}',
+                        default_value={repr(self.default_value)},
+                    )'''
+
+
+@dataclass
 class FunctionSignature:
     """
     Function information (default style)
@@ -102,12 +121,17 @@ class FunctionSignature:
     name: str
     return_types: FunctionReturnTypes
     arguments: FunctionArgumentValues
+    generic_types: List[FunctionGeneric] = field(default_factory=list)
 
     def __repr__(self):
+        generics = f',\n{" " * 20}'.join([repr(v) for v in self.generic_types])
         return f'''FunctionSignature(
                 name='{self.name}',
                 return_types={repr(self.return_types)},
                 arguments={repr(self.arguments)},
+                generic_types=[
+                    {generics}
+                ],
             )'''
 
     def __copy__(self):
@@ -207,3 +231,15 @@ class CompoundFunctionData:
 
         if self.client:
             yield 'client', self.client
+
+    def __getitem__(self, item: ListType):
+        """
+        Allows [] operation
+        """
+        if item == ListType.CLIENT:
+            return self.client
+
+        if item == ListType.SERVER:
+            return self.server
+
+        return None

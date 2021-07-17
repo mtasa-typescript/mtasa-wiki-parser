@@ -2,7 +2,7 @@ from copy import copy
 from typing import List
 
 from crawler.core.types import PageUrl
-from to_python.core.types import FunctionData, FunctionType, FunctionArgument, FunctionDoc
+from to_python.core.types import FunctionData, FunctionType, FunctionArgument, FunctionDoc, FunctionGeneric
 from to_typescript.core.transform.extra_rules import is_varargs_type
 
 
@@ -172,6 +172,29 @@ class TypeScriptFunctionGenerator:
 
         return ',\n    '.join(args)
 
+    @staticmethod
+    def generate_generics(generics: List[FunctionGeneric]) -> str:
+        """
+        Generates generics declarations
+        """
+        if not generics:
+            return ''
+
+        generic_strs = []
+        for generic in generics:
+            string = generic.name
+            if generic.extends:
+                string += f' extends {generic.extends}'
+
+            if generic.default_value:
+                string += f' = {generic.default_value}'
+
+            generic_strs.append(string)
+
+        result = '<\n    '
+        result += '\n    ,'.join(generic_strs)
+        return result + '\n>'
+
     def generate(self) -> str:
         """
         Generates function declaration
@@ -183,6 +206,8 @@ class TypeScriptFunctionGenerator:
         if not args:
             args_brackets = '()'
 
+        generics = self.generate_generics(self.data.signature.generic_types)
+
         return f'''/**{self.generate_doc()} * @noSelf
  */
-export declare function {self.data.name}{args_brackets}: {self.generate_return_type()};'''
+export declare function {self.data.name}{generics}{args_brackets}: {self.generate_return_type()};'''

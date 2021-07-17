@@ -69,6 +69,7 @@ class FilterFunctionSave(FilterAbstract):
             'Timer',
             'HandleFunction',
             'FetchRemoteCallback',
+            'GenericEventHandler',
         ]
     )
 
