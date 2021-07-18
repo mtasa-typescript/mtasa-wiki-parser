@@ -9,14 +9,14 @@ from to_python.filters.data_list.raw_post_process import FilterRawPostProcess
 from to_python.filters.data_list.side import FilterParseSide
 from to_python.filters.data_list.signature import FilterParseFunctionSignature
 from to_python.filters.data_list.wtp import FilterWikiTextParser
-from to_python.filters.get_urls import FilterGetUrls
+from to_python.filters.get_urls import FilterGetFunctionUrls, FilterGetEventUrls
 from to_python.filters.save import FilterSaveData
 
 FILTER_CHAIN: List[FilterAbstract]
 
 FILTER_CHAIN = [
-    FilterGetUrls(),
-    FilterCollectDumpFiles(),
+    FilterGetFunctionUrls(),
+    FilterCollectDumpFiles('events'),
     FilterInitInternalList(),
     FilterRawPostProcess(),
     FilterParseSide(),
@@ -25,4 +25,7 @@ FILTER_CHAIN = [
     FilterParseFunctionSignature(),
     FilterParseFunctionOOP(),
     FilterSaveData(),
+
+    FilterGetEventUrls(),
+    FilterCollectDumpFiles('functions'),
 ]

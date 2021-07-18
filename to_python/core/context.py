@@ -1,6 +1,6 @@
 import abc
 import enum
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional, Tuple, Any, Dict
 
 from wikitextparser import WikiText
@@ -41,24 +41,38 @@ class WikiSide(IterableSide):
 
 
 @dataclass
-class Context:
+class ContextData:
+    """
+    Context about set of pages
+    """
+
     # Contains <function name, file path>
-    functions: Dict[str, str]
+    pages: Dict[str, str] = field(default_factory=dict)
 
     # Parsed functions
-    parsed: Dict[str, CompoundFunctionData]
+    parsed: Dict[str, CompoundFunctionData] = field(default_factory=dict)
 
     # Raw data <function name, data>
-    raw_data: Dict[str, str]
+    raw_data: Dict[str, str] = field(default_factory=dict)
 
     # Side data <function name, side data>
-    side_data: Dict[str, RawSide]
+    side_data: Dict[str, RawSide] = field(default_factory=dict)
 
     # Raw data parsed by wtp
-    wiki_raw: Dict[str, WikiText]
+    wiki_raw: Dict[str, WikiText] = field(default_factory=dict)
 
     # Side data parsed by wtp
-    wiki_side: Dict[str, WikiSide]
+    wiki_side: Dict[str, WikiSide] = field(default_factory=dict)
 
     # URLs from URL List
-    urls: Dict[str, PageUrl]
+    urls: Dict[str, PageUrl] = field(default_factory=dict)
+
+
+@dataclass
+class Context:
+    """
+    Context with functions and events data
+    """
+
+    functions: ContextData
+    events: ContextData
