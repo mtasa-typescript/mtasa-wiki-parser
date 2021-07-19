@@ -1,15 +1,10 @@
 from to_python.chain import FILTER_CHAIN
-from to_python.core.context import Context
+from to_python.core.context import Context, ContextData
 
 
 def main():
-    context = Context(functions=dict(),
-                      parsed=dict(),
-                      raw_data=dict(),
-                      side_data=dict(),
-                      urls=dict(),
-                      wiki_raw=dict(),
-                      wiki_side=dict(), )
+    context = Context(functions=ContextData(),
+                      events=ContextData(), )
 
     for filt in FILTER_CHAIN:
         filt.initialize(context)

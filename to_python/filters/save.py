@@ -4,6 +4,7 @@ import re
 from typing import DefaultDict, List, Set
 
 from crawler.filters.save_function_fetched import FilterSaveFetched
+from to_python.core.context import ContextData
 from to_python.core.filter import FilterAbstract
 from to_python.core.types import CompoundFunctionData
 
@@ -19,7 +20,13 @@ class FilterSaveData(FilterAbstract):
     DUMP_FOLDER_ROOT = 'dump'
     DUMP_FOLDER = f'dump/data'
 
-    def __init__(self):
+    def get_context_data(self) -> ContextData:
+        return getattr(self.context, self.context_type)
+
+    def __init__(self, context_type: str):
+        """
+        :param context_type: `functions` or `events`
+        """
         super().__init__()
 
         self.categories: DefaultDict[str, List[CompoundFunctionData]] = collections.defaultdict(lambda: [])

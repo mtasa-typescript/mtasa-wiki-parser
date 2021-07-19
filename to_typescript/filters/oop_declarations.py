@@ -9,6 +9,8 @@ from to_typescript.core.transform.oop import TypeScriptOOPGenerator
 
 class FilterGenerateOOPDeclarations(FilterAbstract):
     def __init__(self):
+        super().__init__()
+
         # < function name, <side, prop list> >
         self.fields_in_class: DefaultDict[str, DefaultDict[str, Set[str]]] = defaultdict(lambda: defaultdict(set))
 

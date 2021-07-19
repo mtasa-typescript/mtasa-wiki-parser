@@ -21,6 +21,8 @@ class WikiPageFetcher():
         :param host: Host URL
         :param batch_size: Amount of pages will be received per one request
         """
+        super().__init__()
+
         self.pages = pages
         self.host = host
         self.batch_size = batch_size

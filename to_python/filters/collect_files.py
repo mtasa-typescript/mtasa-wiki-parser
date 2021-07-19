@@ -15,6 +15,8 @@ class FilterCollectDumpFiles(FilterAbstract):
         """
         :param context_type: `functions` or `events`
         """
+        super().__init__()
+
         self.context_type = context_type
 
     DUMP_DIRECTORY = dict(functions='../crawler/dump_html/functions/**',

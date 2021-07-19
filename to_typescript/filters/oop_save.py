@@ -23,6 +23,8 @@ class FilterOOPSave(FilterAbstract):
         )
 
     def __init__(self):
+        super().__init__()
+
         self.imports = deepcopy(self.imports)
         for key in self.imports['shared']:
             self.imports['client'].append(key)

@@ -33,7 +33,7 @@ class FilterParseFunctionOOP(FilterAbstract):
         """
         Picks media wiki code, containing OOP definition
         """
-        syntax_picker = WikiGetSyntaxSection(self.context, f_name, raw_data, wiki)
+        syntax_picker = WikiGetSyntaxSection(self.context.functions, f_name, raw_data, wiki)
         syntax_picker.get()
         code_inside = syntax_picker.pick_text()
 
@@ -58,17 +58,18 @@ class FilterParseFunctionOOP(FilterAbstract):
 
     def apply(self):
         print('\n\n ============ Parse OOP ============')
+        context = self.context.functions
 
-        for f_name in self.context.parsed:
-            raw_content = self.context.side_data[f_name]
-            wiki_content = self.context.wiki_side[f_name]
+        for f_name in context.parsed:
+            raw_content = context.side_data[f_name]
+            wiki_content = context.wiki_side[f_name]
 
             if raw_content.client is not None:
-                self.context.parsed[f_name].client[0].oop = self.parse_oop(
+                context.parsed[f_name].client[0].oop = self.parse_oop(
                     self.pick_oop(f_name, raw_content.client, wiki_content.client)
                 )
 
             if raw_content.server is not None:
-                self.context.parsed[f_name].server[0].oop = self.parse_oop(
+                context.parsed[f_name].server[0].oop = self.parse_oop(
                     self.pick_oop(f_name, raw_content.server, wiki_content.server)
                 )

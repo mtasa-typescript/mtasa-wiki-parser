@@ -6,6 +6,8 @@ from crawler.core.types import PageUrl
 
 class FilterRemoveDuplicates(FilterAbstract):
     def __init__(self, url_list: List):
+        super().__init__()
+
         self.url_list = url_list
 
     def filter_predicate(self):

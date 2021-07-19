@@ -10,6 +10,14 @@ class FilterRawPostProcess(FilterAbstract):
 
     END_CUTOFF_REGEX = re.compile(r'=+ *(See Also|Examples?) *=+', re.IGNORECASE)
 
+    def __init__(self, context_type: str):
+        """
+        :param context_type: `functions` or `events`
+        """
+        super().__init__()
+
+        self.context_type = context_type
+
     def post_process(self, raw: str) -> str:
         regexp_result = re.search(self.END_CUTOFF_REGEX, raw)
         if regexp_result:
@@ -18,6 +26,7 @@ class FilterRawPostProcess(FilterAbstract):
         return raw
 
     def apply(self):
-        for name in self.context.raw_data:
-            raw = self.context.raw_data[name]
-            self.context.raw_data[name] = self.post_process(raw)
+        context = getattr(self.context, self.context_type)
+        for name in context.raw_data:
+            raw = context.raw_data[name]
+            context.raw_data[name] = self.post_process(raw)

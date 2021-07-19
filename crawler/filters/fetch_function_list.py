@@ -23,6 +23,8 @@ class FilterFetchList(FilterAbstract):
     current_item_category: Optional[str] = None
 
     def __init__(self, list_type: ListType):
+        super().__init__(list_type)
+
         self.list_type = list_type
 
     def process_list_item(self, tag: Tag) -> Optional[PageUrl]:

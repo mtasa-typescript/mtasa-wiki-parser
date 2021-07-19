@@ -6,7 +6,7 @@ from typing import Optional, List, Tuple
 
 from wikitextparser import WikiText, Section
 
-from to_python.core.context import ParseFunctionSide, Context
+from to_python.core.context import ParseFunctionSide, Context, ContextData
 from to_python.core.filter import FilterAbstract
 from to_python.core.format import colorize_token_list
 from to_python.core.signature import SignatureParser, SignatureTokenizer
@@ -21,7 +21,7 @@ class WikiGetSyntaxSection:
 
     # TODO: Think about transforming that utility class into a filter
 
-    def __init__(self, context: Context, f_name: str, raw_data: str, wiki: WikiText):
+    def __init__(self, context: ContextData, f_name: str, raw_data: str, wiki: WikiText):
         self.context = context
         self.f_name = f_name
         self.raw_data = raw_data
@@ -112,7 +112,7 @@ class FilterParseFunctionSignature(FilterAbstract):
         """
         Picks media wiki code, containing signature
         """
-        syntax_picker = WikiGetSyntaxSection(self.context, f_name, raw_data, wiki)
+        syntax_picker = WikiGetSyntaxSection(self.context.functions, f_name, raw_data, wiki)
         syntax_picker.get()
         code_inside = syntax_picker.pick_text()
 
@@ -133,17 +133,18 @@ class FilterParseFunctionSignature(FilterAbstract):
 
     def apply(self):
         print('\n\n ============ Parse functions ============')
+        context = self.context.functions
 
-        for f_name in self.context.parsed:
-            raw_content = self.context.side_data[f_name]
-            wiki_content = self.context.wiki_side[f_name]
+        for f_name in context.parsed:
+            raw_content = context.side_data[f_name]
+            wiki_content = context.wiki_side[f_name]
 
             if raw_content.client is not None:
-                self.context.parsed[f_name].client[0].signature = self.parse_signature(
+                context.parsed[f_name].client[0].signature = self.parse_signature(
                     self.pick_signature(f_name, raw_content.client, wiki_content.client)
                 )
 
             if raw_content.server is not None:
-                self.context.parsed[f_name].server[0].signature = self.parse_signature(
+                context.parsed[f_name].server[0].signature = self.parse_signature(
                     self.pick_signature(f_name, raw_content.server, wiki_content.server)
                 )

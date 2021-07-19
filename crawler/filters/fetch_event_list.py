@@ -23,6 +23,7 @@ class FilterFetchEventList(FilterFetchList):
 
     def __init__(self, list_type: ListType):
         super().__init__(list_type)
+
         self.list_type = list_type
 
     def process_list_item(self, tag: Tag) -> Optional[PageUrl]:

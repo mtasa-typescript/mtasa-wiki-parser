@@ -1,7 +1,7 @@
 import re
 from typing import Optional
 
-from to_python.core.context import ParseFunctionSide, RawSide
+from to_python.core.context import ParseFunctionSide, RawSide, Context, ContextData
 from to_python.core.filter import FilterAbstract
 from to_python.core.types import CompoundFunctionData, FunctionData
 
@@ -10,18 +10,21 @@ class FilterParseSideSharedFileSectionsInvalid(RuntimeError):
     pass
 
 
-class FilterParseSide(FilterAbstract):
+class FilterParseFunctionSide(FilterAbstract):
     """
     Determines function side (client/server/shared).
     Puts client and server content into context.side_data
     """
-
     SHARED_SIGNATURE = re.compile(r'(server[_ ]client|shared)[_ ]function', re.IGNORECASE)
     CLIENT_SIGNATURE = re.compile(r'client[_ ]function', re.IGNORECASE)
     SERVER_SIGNATURE = re.compile(r'server[_ ]function', re.IGNORECASE)
 
     SERVER_SECTION = re.compile(r'<section.+class="server".*?>([\s\S]+?)<\/section>', re.IGNORECASE)
     CLIENT_SECTION = re.compile(r'<section.+class="client".*?>([\s\S]+?)<\/section>', re.IGNORECASE)
+
+    def initialize(self, context: Context):
+        super().initialize(context)
+        self.context: ContextData = context.functions
 
     @staticmethod
     def line_process(line: str) -> str:
@@ -35,7 +38,7 @@ class FilterParseSide(FilterAbstract):
 
     @staticmethod
     def get_side_from_line(line: str) -> Optional[ParseFunctionSide]:
-        line = FilterParseSide.line_process(line)
+        line = FilterParseFunctionSide.line_process(line)
 
         if not line.startswith('{{'):
             return None
@@ -43,11 +46,11 @@ class FilterParseSide(FilterAbstract):
         if 'function' not in line:
             return None
 
-        if re.search(FilterParseSide.SHARED_SIGNATURE, line):
+        if re.search(FilterParseFunctionSide.SHARED_SIGNATURE, line):
             return ParseFunctionSide.SHARED
-        if re.search(FilterParseSide.CLIENT_SIGNATURE, line):
+        if re.search(FilterParseFunctionSide.CLIENT_SIGNATURE, line):
             return ParseFunctionSide.CLIENT
-        if re.search(FilterParseSide.SERVER_SIGNATURE, line):
+        if re.search(FilterParseFunctionSide.SERVER_SIGNATURE, line):
             return ParseFunctionSide.SERVER
 
     def get_file_side(self, raw: str) -> ParseFunctionSide:
