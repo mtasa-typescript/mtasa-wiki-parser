@@ -11,9 +11,7 @@ class FilterWikiTextParser(FilterAbstract):
         """
         :param context_type: `functions` or `events`
         """
-        super().__init__()
-
-        self.context_type = context_type
+        super().__init__(context_type)
 
     @staticmethod
     def parse(code: Optional[str]) -> Optional[wtp.WikiText]:
@@ -23,12 +21,11 @@ class FilterWikiTextParser(FilterAbstract):
         return wtp.parse(code)
 
     def apply(self):
-        context = getattr(self.context, self.context_type)
-        for f_name in context.raw_data:
-            context.wiki_raw[f_name] = self.parse(context.raw_data[f_name])
+        for f_name in self.context_data.raw_data:
+            self.context_data.wiki_raw[f_name] = self.parse(self.context_data.raw_data[f_name])
 
-        for f_name in context.side_data:
-            data = context.side_data[f_name]
-            context.wiki_side[f_name] = WikiSide(side=data.side,
-                                                      server=self.parse(data.server),
-                                                      client=self.parse(data.client))
+        for f_name in self.context_data.side_data:
+            data = self.context_data.side_data[f_name]
+            self.context_data.wiki_side[f_name] = WikiSide(side=data.side,
+                                                           server=self.parse(data.server),
+                                                           client=self.parse(data.client))

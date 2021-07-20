@@ -17,9 +17,7 @@ class FilterParseDocs(FilterAbstract):
         """
         :param context_type: `functions` or `events`
         """
-        super().__init__()
-
-        self.context_type = context_type
+        super().__init__(context_type)
 
     @staticmethod
     def get_sections_title_contains(wiki: WikiText, expected: str) -> List[Tuple[Section, int]]:
@@ -124,9 +122,12 @@ class FilterParseDocs(FilterAbstract):
         Accumulates arguments description
         """
         arg_sections = self.get_sections_title_contains(wiki, 'argument')
+        if not arg_sections:
+            arg_sections = self.get_sections_title_contains(wiki, 'parameters')
 
         result = dict()
         misc_doc = ''
+        # TODO: filter code for events parameters
         for section, _ in arg_sections:
             partial, misc = self.parse_section_to_args(f_name, section)
             misc_doc += misc + '\n'
@@ -147,19 +148,17 @@ class FilterParseDocs(FilterAbstract):
         return self.filter_raw_text(description_raw)
 
     def apply(self):
-        context = getattr(self.context, self.context_type)
-
-        for f_name in context.parsed:
-            raw_content = context.side_data[f_name]
-            wiki_content = context.wiki_side[f_name]
-            description = self.get_docs(context.wiki_raw, f_name)
+        for f_name in self.context_data.parsed:
+            raw_content = self.context_data.side_data[f_name]
+            wiki_content = self.context_data.wiki_side[f_name]
+            description = self.get_docs(self.context_data.wiki_raw, f_name)
             if not description:
                 print(f'[ERROR] Page without a description: {f_name}')
 
             if raw_content.client is not None:
                 return_doc = self.get_return_docs(f_name, raw_content.client, wiki_content.client)
                 args_doc, description_mixin = self.get_args_docs(f_name, raw_content.client, wiki_content.client)
-                context.parsed[f_name].client[0].docs = FunctionDoc(
+                self.context_data.parsed[f_name].client[0].docs = FunctionDoc(
                     description=(description + '\n' + description_mixin).strip(),
                     arguments=args_doc,
                     result=return_doc
@@ -168,7 +167,7 @@ class FilterParseDocs(FilterAbstract):
             if raw_content.server is not None:
                 return_doc = self.get_return_docs(f_name, raw_content.server, wiki_content.server)
                 args_doc, description_mixin = self.get_args_docs(f_name, raw_content.server, wiki_content.server)
-                context.parsed[f_name].server[0].docs = FunctionDoc(
+                self.context_data.parsed[f_name].server[0].docs = FunctionDoc(
                     description=(description + '\n' + description_mixin).strip(),
                     arguments=args_doc,
                     result=return_doc

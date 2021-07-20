@@ -14,9 +14,7 @@ class FilterRawPostProcess(FilterAbstract):
         """
         :param context_type: `functions` or `events`
         """
-        super().__init__()
-
-        self.context_type = context_type
+        super().__init__(context_type)
 
     def post_process(self, raw: str) -> str:
         regexp_result = re.search(self.END_CUTOFF_REGEX, raw)
@@ -26,7 +24,6 @@ class FilterRawPostProcess(FilterAbstract):
         return raw
 
     def apply(self):
-        context = getattr(self.context, self.context_type)
-        for name in context.raw_data:
-            raw = context.raw_data[name]
-            context.raw_data[name] = self.post_process(raw)
+        for name in self.context_data.raw_data:
+            raw = self.context_data.raw_data[name]
+            self.context_data.raw_data[name] = self.post_process(raw)

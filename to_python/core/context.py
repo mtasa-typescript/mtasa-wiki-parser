@@ -1,12 +1,14 @@
 import abc
 import enum
 from dataclasses import dataclass, field
-from typing import Optional, Tuple, Any, Dict
+from typing import Optional, Tuple, Any, Dict, TypeVar, Generic
 
 from wikitextparser import WikiText
 
 from crawler.core.types import PageUrl
-from to_python.core.types import CompoundFunctionData
+from to_python.core.types import CompoundFunctionData, CompoundEventData
+
+CompoundDataType = TypeVar('CompoundDataType')
 
 
 class ParseFunctionSide(enum.Enum):
@@ -41,7 +43,7 @@ class WikiSide(IterableSide):
 
 
 @dataclass
-class ContextData:
+class ContextData(Generic[CompoundDataType]):
     """
     Context about set of pages
     """
@@ -50,7 +52,7 @@ class ContextData:
     pages: Dict[str, str] = field(default_factory=dict)
 
     # Parsed functions
-    parsed: Dict[str, CompoundFunctionData] = field(default_factory=dict)
+    parsed: Dict[str, CompoundDataType] = field(default_factory=dict)
 
     # Raw data <function name, data>
     raw_data: Dict[str, str] = field(default_factory=dict)
@@ -74,5 +76,5 @@ class Context:
     Context with functions and events data
     """
 
-    functions: ContextData
-    events: ContextData
+    functions: ContextData[CompoundFunctionData]
+    events: ContextData[CompoundEventData]

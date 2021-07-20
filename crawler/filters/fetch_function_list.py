@@ -23,7 +23,7 @@ class FilterFetchList(FilterAbstract):
     current_item_category: Optional[str] = None
 
     def __init__(self, list_type: ListType):
-        super().__init__(list_type)
+        super().__init__()
 
         self.list_type = list_type
 

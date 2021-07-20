@@ -13,7 +13,7 @@ class FilterSaveDataError(RuntimeError):
     pass
 
 
-class FilterSaveData(FilterAbstract):
+class FilterSaveFunctionData(FilterAbstract):
     """
     Saves all data into files
     """
@@ -23,11 +23,11 @@ class FilterSaveData(FilterAbstract):
     def get_context_data(self) -> ContextData:
         return getattr(self.context, self.context_type)
 
-    def __init__(self, context_type: str):
+    def __init__(self):
         """
         :param context_type: `functions` or `events`
         """
-        super().__init__()
+        super().__init__('functions')
 
         self.categories: DefaultDict[str, List[CompoundFunctionData]] = collections.defaultdict(lambda: [])
         self.files_to_import: Set[str] = set()
@@ -36,7 +36,7 @@ class FilterSaveData(FilterAbstract):
         """
         Accumulates the data into the self.categories
         """
-        url = self.context.urls[f_name]
+        url = self.get_context_data().urls[f_name]
         if url is None:
             raise FilterSaveDataError(f'Url no found for function name: {f_name}')
 
@@ -116,7 +116,7 @@ DUMP = [
 
         with open(cache_file, 'w', encoding='UTF-8', newline='\n') as cache:
             cache.write(FilterSaveFetched.text_url_list(
-                [self.context.urls[k] for k in self.context.urls]
+                [self.get_context_data().urls[k] for k in self.get_context_data().urls]
             ))
 
     def save_data(self):
@@ -134,8 +134,8 @@ DUMP = [
         print('Save url_list.py file')
 
     def apply(self):
-        for f_name in self.context.parsed:
-            data = self.context.parsed[f_name]
+        for f_name in self.get_context_data().parsed:
+            data = self.get_context_data().parsed[f_name]
             self.collect_by_category(f_name, data)
 
         self.save_data()

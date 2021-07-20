@@ -250,32 +250,22 @@ class EventData:
     """
     Data about the event
     """
-    arguments_values: List[FunctionArgumentValues]
+    arguments: FunctionArgumentValues
     docs: FunctionDoc
     name: str
 
     def __repr__(self):
-        values = f',\n{" " * 20}'.join([repr(v) for v in self.arguments_values])
         return f'''FunctionData(
             name='{self.name}',
             docs={repr(self.docs)},
-            values=[
-                {values}
-            ],
+            arguments={repr(self.arguments)},
         )'''
 
 
 @dataclass
-class CompoundEventData:
+class CompoundEventData(CompoundFunctionData):
     """
     Data about event
     """
-    events: List[EventData] = field(default_factory=list)
-
-    def __repr__(self):
-        events = f',\n{" " * 12}'.join([repr(v) for v in self.events])
-        return f'''CompoundEventData(
-        events=[
-            {events}
-        ],
-    )'''
+    server: List[EventData] = field(default_factory=list)
+    client: List[EventData] = field(default_factory=list)

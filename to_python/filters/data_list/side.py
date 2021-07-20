@@ -1,7 +1,7 @@
 import re
 from typing import Optional
 
-from to_python.core.context import ParseFunctionSide, RawSide, Context, ContextData
+from to_python.core.context import ParseFunctionSide, RawSide
 from to_python.core.filter import FilterAbstract
 from to_python.core.types import CompoundFunctionData, FunctionData
 
@@ -15,16 +15,16 @@ class FilterParseFunctionSide(FilterAbstract):
     Determines function side (client/server/shared).
     Puts client and server content into context.side_data
     """
+
+    def __init__(self):
+        super().__init__('functions')
+
     SHARED_SIGNATURE = re.compile(r'(server[_ ]client|shared)[_ ]function', re.IGNORECASE)
     CLIENT_SIGNATURE = re.compile(r'client[_ ]function', re.IGNORECASE)
     SERVER_SIGNATURE = re.compile(r'server[_ ]function', re.IGNORECASE)
 
     SERVER_SECTION = re.compile(r'<section.+class="server".*?>([\s\S]+?)<\/section>', re.IGNORECASE)
     CLIENT_SECTION = re.compile(r'<section.+class="client".*?>([\s\S]+?)<\/section>', re.IGNORECASE)
-
-    def initialize(self, context: Context):
-        super().initialize(context)
-        self.context: ContextData = context.functions
 
     @staticmethod
     def line_process(line: str) -> str:
@@ -96,7 +96,7 @@ class FilterParseFunctionSide(FilterAbstract):
         Parses file (by filename)
         """
 
-        raw = self.context.raw_data[name]
+        raw = self.context_data.raw_data[name]
         side = self.get_file_side(raw)
 
         if side == ParseFunctionSide.SHARED:
@@ -111,9 +111,9 @@ class FilterParseFunctionSide(FilterAbstract):
                            client=None)
 
     def apply(self):
-        for name in self.context.parsed:
+        for name in self.context_data.parsed:
             data = self.parse_file(name)
-            self.context.side_data[name] = data
+            self.context_data.side_data[name] = data
 
             # Init parsed data objects
             kwargs = dict()
@@ -121,4 +121,4 @@ class FilterParseFunctionSide(FilterAbstract):
                 kwargs['client'] = [FunctionData(None, None, None, name)]
             if data.server is not None:
                 kwargs['server'] = [FunctionData(None, None, None, name)]
-            self.context.parsed[name] = CompoundFunctionData(**kwargs)
+            self.context_data.parsed[name] = CompoundFunctionData(**kwargs)

@@ -11,8 +11,7 @@ class FilterInitInternalList(FilterAbstract):
         """
         :param context_type: `functions` or `events`
         """
-        super().__init__()
-        self.context_type = context_type
+        super().__init__(context_type)
 
     @staticmethod
     def read_file(filepath: str) -> str:
@@ -26,8 +25,7 @@ class FilterInitInternalList(FilterAbstract):
             return CompoundFunctionData()
 
     def apply(self):
-        context = getattr(self.context, self.context_type)
-        for name in context.pages:
-            filepath = context.pages[name]
-            context.parsed[name] = self.initialize_parsed_value()
-            context.raw_data[name] = self.read_file(filepath)
+        for name in self.context_data.pages:
+            filepath = self.context_data.pages[name]
+            self.context_data.parsed[name] = self.initialize_parsed_value()
+            self.context_data.raw_data[name] = self.read_file(filepath)

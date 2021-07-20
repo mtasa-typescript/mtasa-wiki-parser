@@ -1,12 +1,10 @@
-import enum
 import re
 import sys
-from dataclasses import dataclass
-from typing import Optional, List, Tuple
+from typing import Optional
 
 from wikitextparser import WikiText, Section
 
-from to_python.core.context import ParseFunctionSide, Context, ContextData
+from to_python.core.context import ParseFunctionSide, ContextData
 from to_python.core.filter import FilterAbstract
 from to_python.core.format import colorize_token_list
 from to_python.core.signature import SignatureParser, SignatureTokenizer
@@ -51,12 +49,12 @@ class WikiGetSyntaxSection:
         self.section, self.section_index = section_list[0]
         self.start_index = self.section.span[0]
 
-    def get(self) -> Optional[Section]:
+    def get(self, paragraph_title_part: str = 'syntax') -> Optional[Section]:
         """
         Finds syntax section in wiki page (or part of wiki page)
         :return:
         """
-        syntax = FilterParseDocs.get_sections_title_contains(self.wiki, 'syntax')
+        syntax = FilterParseDocs.get_sections_title_contains(self.wiki, paragraph_title_part)
         if not syntax:
             self.no_syntax_section()
         else:
@@ -82,6 +80,9 @@ class FilterParseFunctionSignature(FilterAbstract):
     """
     Parses function signature
     """
+
+    def __init__(self):
+        super().__init__('functions')
 
     @staticmethod
     def clean_code(code: str) -> str:
@@ -112,7 +113,7 @@ class FilterParseFunctionSignature(FilterAbstract):
         """
         Picks media wiki code, containing signature
         """
-        syntax_picker = WikiGetSyntaxSection(self.context.functions, f_name, raw_data, wiki)
+        syntax_picker = WikiGetSyntaxSection(self.context_data, f_name, raw_data, wiki)
         syntax_picker.get()
         code_inside = syntax_picker.pick_text()
 
@@ -132,19 +133,18 @@ class FilterParseFunctionSignature(FilterAbstract):
         return signature.strip()
 
     def apply(self):
-        print('\n\n ============ Parse functions ============')
-        context = self.context.functions
+        print('\n\n ============ Parse Functions ============')
 
-        for f_name in context.parsed:
-            raw_content = context.side_data[f_name]
-            wiki_content = context.wiki_side[f_name]
+        for f_name in self.context_data.parsed:
+            raw_content = self.context_data.side_data[f_name]
+            wiki_content = self.context_data.wiki_side[f_name]
 
             if raw_content.client is not None:
-                context.parsed[f_name].client[0].signature = self.parse_signature(
+                self.context_data.parsed[f_name].client[0].signature = self.parse_signature(
                     self.pick_signature(f_name, raw_content.client, wiki_content.client)
                 )
 
             if raw_content.server is not None:
-                context.parsed[f_name].server[0].signature = self.parse_signature(
+                self.context_data.parsed[f_name].server[0].signature = self.parse_signature(
                     self.pick_signature(f_name, raw_content.server, wiki_content.server)
                 )
