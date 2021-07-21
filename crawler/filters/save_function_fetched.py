@@ -33,12 +33,12 @@ class FilterSaveFetched(FilterAbstract):
             cache.write(result)
 
     @staticmethod
-    def text_url_list(url_list: List[PageUrl]) -> str:
+    def text_url_list(url_list: List[PageUrl], variable_name: str = 'URL_LIST') -> str:
         """
         Converts URL List into a text
         """
         text = 'from crawler.core.types import PageUrl, ListType\n\n'
-        text += 'URL_LIST = [\n    ' + ',\n    '.join(repr(v) for v in url_list) + '\n]\n'
+        text += f'{variable_name} = [\n    ' + ',\n    '.join(repr(v) for v in url_list) + '\n]\n'
 
         return text
 

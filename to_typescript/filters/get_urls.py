@@ -1,4 +1,4 @@
-from to_python.core.filter import FilterAbstract
+from to_typescript.core.filter import FilterAbstract
 
 
 class FilterGetUrls(FilterAbstract):

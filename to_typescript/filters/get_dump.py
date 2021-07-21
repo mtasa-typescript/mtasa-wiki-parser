@@ -6,9 +6,11 @@ class FilterGetDump(FilterAbstract):
         """
         Gets dumped
         """
-        from to_python.dump import DUMP
+        from to_python.dump import DUMP_FUNCTIONS
+        from to_python.dump import DUMP_EVENTS
 
-        self.context.functions = DUMP
+        self.context.functions = DUMP_FUNCTIONS
+        self.context.events = DUMP_EVENTS
 
     def apply(self):
         self.get_dump()

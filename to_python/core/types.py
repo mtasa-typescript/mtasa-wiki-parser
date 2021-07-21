@@ -255,7 +255,7 @@ class EventData:
     name: str
 
     def __repr__(self):
-        return f'''FunctionData(
+        return f'''EventData(
             name='{self.name}',
             docs={repr(self.docs)},
             arguments={repr(self.arguments)},

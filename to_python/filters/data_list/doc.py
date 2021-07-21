@@ -1,5 +1,6 @@
 import re
 import sys
+from copy import deepcopy
 from typing import Dict, Optional, Tuple, List
 
 from wikitextparser import WikiText, Section
@@ -121,9 +122,16 @@ class FilterParseDocs(FilterAbstract):
         """
         Accumulates arguments description
         """
+        from to_python.filters.data_list.signature import FilterParseFunctionSignature
+
         arg_sections = self.get_sections_title_contains(wiki, 'argument')
         if not arg_sections:
-            arg_sections = self.get_sections_title_contains(wiki, 'parameters')
+            arg_sections = deepcopy(self.get_sections_title_contains(wiki, 'parameters'))
+
+            # Clear section from code
+            for section_info in arg_sections:
+                section_info[0].contents = \
+                    re.sub(FilterParseFunctionSignature.SELECT_CODE_REGEX, "", section_info[0].contents)
 
         result = dict()
         misc_doc = ''
@@ -153,8 +161,9 @@ class FilterParseDocs(FilterAbstract):
             wiki_content = self.context_data.wiki_side[f_name]
             description = self.get_docs(self.context_data.wiki_raw, f_name)
             if not description:
-                print(f'[ERROR] Page without a description: {f_name}')
+                print(f'[ERROR] Page without a description: {f_name}', file=sys.stderr)
 
+            # TODO: refactor
             if raw_content.client is not None:
                 return_doc = self.get_return_docs(f_name, raw_content.client, wiki_content.client)
                 args_doc, description_mixin = self.get_args_docs(f_name, raw_content.client, wiki_content.client)
