@@ -43,3 +43,7 @@ class Context:
 
     # Generated declarations
     declarations: ContextDeclarations = field(default_factory=ContextDeclarations)
+
+    # Events by side
+    # < category , < client/server, [event data] > >
+    events_declarations: 'ContextDeclarations.DictType' = field(default_factory=default_dict_factory)
