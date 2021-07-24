@@ -87,7 +87,7 @@ export class {class_name}{inherit_inline} {{
         keys = set(self.context.declarations.oop_methods.keys())
         keys.update(set(self.context.declarations.oop_fields.keys()))
 
-        for key in keys:
+        for key in sorted(keys):
             for side in ['client', 'server']:
                 self.save_file_category(class_name=key,
                                         side=side,

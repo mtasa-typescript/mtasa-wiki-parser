@@ -95,6 +95,7 @@ class TypeConverter:
         # Primitives
         'int': 'number',
         'float': 'number',
+        'double': 'number',
         'uint': 'number',
         'color': 'number',
         'str': 'string',

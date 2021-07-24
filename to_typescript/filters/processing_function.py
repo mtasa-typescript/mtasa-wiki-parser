@@ -1,7 +1,7 @@
 from copy import copy
 from typing import List
 
-from to_python.core.types import FunctionSignature, FunctionData, FunctionDoc
+from to_python.core.types import FunctionData, FunctionDoc, FunctionArgument, FunctionType
 from to_typescript.core.filter import FilterAbstract
 from to_typescript.core.transform.extra_rules import TypeConverter
 
@@ -33,11 +33,11 @@ class FilterDumpProcessFunctions(FilterAbstract):
             index += 1
 
     @staticmethod
-    def prepare_argument_names(signature: FunctionSignature):
+    def prepare_argument_names(arguments: List[List[FunctionArgument]]):
         """
         Cleans the argument names from forbidden characters  for a single function
         """
-        for argument_list in signature.arguments.arguments:
+        for argument_list in arguments:
             for argument in argument_list:
                 name = argument.name
                 if name:
@@ -49,19 +49,26 @@ class FilterDumpProcessFunctions(FilterAbstract):
                     argument.name = argument.name.replace('-', '_')
 
     @staticmethod
-    def prepare_types(signature: FunctionSignature):
+    def prepare_argument_types(arguments: List[List[FunctionArgument]]):
         """
         Convert types for a single function
         """
-        # Argument types
-        for argument_list in signature.arguments.arguments:
+
+        for argument_list in arguments:
             for argument in argument_list:
                 types = argument.argument_type
                 if types:
                     types.names = [TypeConverter(name).convert() for name in types.names]
 
+    @staticmethod
+    def prepare_return_types(return_types: List[FunctionType]):
+        """
+        Convert types for a single function
+        """
+        # Argument types
+
         # Return types
-        for return_type in signature.return_types.return_types:
+        for return_type in return_types:
             return_type.names = [TypeConverter(name).convert() for name in return_type.names]
 
     @staticmethod
@@ -137,8 +144,9 @@ class FilterDumpProcessFunctions(FilterAbstract):
         increment = 1
 
         data = data_list[data_list_index]
-        self.prepare_argument_names(data.signature)
-        self.prepare_types(data.signature)
+        self.prepare_argument_names(data.signature.arguments.arguments)
+        self.prepare_argument_types(data.signature.arguments.arguments)
+        self.prepare_return_types(data.signature.return_types.return_types)
 
         increment = +self.resolve_multiple_signatures(data_list=data_list,
                                                       index_in_list=data_list_index)

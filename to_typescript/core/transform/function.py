@@ -2,7 +2,8 @@ from copy import copy
 from typing import List
 
 from crawler.core.types import PageUrl
-from to_python.core.types import FunctionData, FunctionType, FunctionArgument, FunctionDoc, FunctionGeneric
+from to_python.core.types import FunctionData, FunctionType, FunctionArgument, FunctionDoc, FunctionGeneric, \
+    FunctionArgumentValues
 from to_typescript.core.transform.extra_rules import is_varargs_type
 
 
@@ -144,11 +145,11 @@ class TypeScriptFunctionGenerator:
         type_str = ' | '.join(type_names)
         return f'{name}: {type_str}'
 
-    def generate_arguments(self) -> str:
+    @staticmethod
+    def generate_arguments(arguments: FunctionArgumentValues) -> str:
         """
         Generates TypeScript function arguments
         """
-        arguments = self.data.signature.arguments
         arg_list = arguments.arguments.copy()
 
         postfix = ''
@@ -165,7 +166,7 @@ class TypeScriptFunctionGenerator:
 
         args = []
         for arg in arg_list:
-            args.append(self.function_arg_text(arg))
+            args.append(TypeScriptFunctionGenerator.function_arg_text(arg))
 
         if postfix:
             args.append(postfix)
@@ -199,7 +200,7 @@ class TypeScriptFunctionGenerator:
         """
         Generates function declaration
         """
-        args = self.generate_arguments()
+        args = self.generate_arguments(self.data.signature.arguments)
         args_brackets = f'''(
     {args}
 )'''

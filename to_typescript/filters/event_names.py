@@ -28,7 +28,7 @@ class FilterEventSaveNames(FilterAbstract):
         Generated .d.ts with enum with all event names (for client / server side)
         """
         result = FilterEventSaveNames.FILE_STARTER
-        result += 'export const enum EventName {\n'
+        result += 'export const enum EventNames {\n'
 
         for data in data_list:
             variable_name = FilterEventSaveNames.normalize_enum_variable_name(data[0].name)
@@ -58,3 +58,5 @@ class FilterEventSaveNames(FilterAbstract):
             content = self.generate_file_content(all_events_by_side)
             self.save_file(folder=self.DUMP_FOLDERS[side],
                            content=content, )
+
+    print('Generated event name declaration files')

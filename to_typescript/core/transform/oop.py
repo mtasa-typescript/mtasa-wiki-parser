@@ -57,7 +57,7 @@ class TypeScriptOOPGenerator:
         if self.data.oop.method_name is None:
             return None
 
-        args = self.generator.generate_arguments()
+        args = self.generator.generate_arguments(self.generator.data.signature.arguments)
         args_brackets = f'''(
     {args}
 )'''

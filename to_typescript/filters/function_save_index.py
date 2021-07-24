@@ -1,7 +1,6 @@
 import os
 
 from to_typescript.core.filter import FilterAbstract
-from to_typescript.filters.function_save import FilterFunctionSave
 
 
 class FilterFunctionSaveIndex(FilterAbstract):
@@ -28,9 +27,10 @@ export * from './variables';
         cache_file = os.path.join(self.DUMP_FOLDERS[side], self.FILE_NAME)
 
         text = self.FILE_STARTER
+        function_names = self.context.declarations.function_names
 
         # Functions index
-        for category in self.context.declarations.function_names:
+        for category in sorted(function_names):
             data = self.context.declarations.function_names[category]
             if side not in data:
                 continue
@@ -43,7 +43,7 @@ export * from './variables';
         keys.update(set(filter(lambda x: self.context.declarations.oop_fields[x].get(side),
                                self.context.declarations.oop_fields.keys())))
 
-        for key in keys:
+        for key in sorted(keys):
             path = f'./oop/{"gui/" if "Gui" in key else ""}{key}'
             text += FilterFunctionSaveIndex.generate_exports(path) + '\n'
 

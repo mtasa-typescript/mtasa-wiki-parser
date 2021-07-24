@@ -251,7 +251,7 @@ def test_function_generate_arguments(function_generator_fixture: TypeScriptFunct
     z: float | string,
     citiesonly?: bool,
     ...varargs: any[]'''
-    result = function_generator_fixture.generate_arguments()
+    result = function_generator_fixture.generate_arguments(function_generator_fixture.data.signature.arguments)
 
     assert result == expected
 
@@ -272,7 +272,7 @@ def test_function_generate_arguments_last_varargs_cut(function_generator_fixture
     z: float | string,
     citiesonly?: bool,
     ...varargs: any[]'''
-    result = function_generator_fixture.generate_arguments()
+    result = function_generator_fixture.generate_arguments(function_generator_fixture.data.signature.arguments)
 
     assert result == expected
 
@@ -281,7 +281,7 @@ def test_function_generate_arguments_no_args(function_generator_fixture: TypeScr
     function_generator_fixture.data.signature.arguments.arguments = []
     function_generator_fixture.data.signature.arguments.variable_length = False
     expected = ''
-    result = function_generator_fixture.generate_arguments()
+    result = function_generator_fixture.generate_arguments(function_generator_fixture.data.signature.arguments)
 
     assert result == expected
 

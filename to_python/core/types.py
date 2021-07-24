@@ -51,6 +51,7 @@ class FunctionArgumentValues:
     """
     Function arguments
     """
+    # First list for different argument names, second (inner) list for different types of one arguments
     arguments: List[List[FunctionArgument]]
     variable_length: bool
 
