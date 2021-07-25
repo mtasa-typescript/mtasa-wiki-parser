@@ -84,14 +84,15 @@ DUMP_PARTIAL = [
         Generates __init__.py file
         """
         cache_file = os.path.join(self.DUMP_FOLDER_ROOT, '__init__.py')
+        files = sorted(self.files_to_import)
 
         sections_text = '\n'.join(
             f'from to_python.dump.events.{category} import DUMP_PARTIAL as DP_E_{category.upper()}'
-            for category in self.files_to_import
+            for category in files
         )
         dump_text = f',\n{" " * 4}'.join(
             f'*DP_E_{category.upper()}'
-            for category in self.files_to_import
+            for category in files
         )
         text = f'''
 
