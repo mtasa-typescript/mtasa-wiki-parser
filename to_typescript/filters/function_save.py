@@ -70,6 +70,7 @@ class FilterFunctionSave(FilterAbstract):
             'HandleFunction',
             'FetchRemoteCallback',
             'GenericEventHandler',
+            'CommandHandler',
         ]
     )
 

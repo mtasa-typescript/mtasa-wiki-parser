@@ -138,6 +138,7 @@ class TypeScriptFunctionGenerator:
         for a in arg:
             type_names.extend(a.argument_type.names)
 
+        # TODO: add exception, if empty list resolved
         name = arg[0].name
         if arg[0].argument_type.is_optional:
             name += '?'
