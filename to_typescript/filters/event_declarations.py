@@ -36,6 +36,12 @@ import { EventNames } from './all_event_names';
                 )
         )
 
+        # TODO: split declaration generator and file composer into separated filter classes
+        data_list = sorted(
+            data_list,
+            key=lambda x: x[0].name
+        )
+
         for data_list in data_list:
             data = data_list[0]
             name = FilterEventSaveNames.normalize_enum_variable_name(data.name)
