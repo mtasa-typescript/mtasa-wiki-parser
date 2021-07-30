@@ -68,6 +68,7 @@ class FilterFunctionSave(FilterAbstract):
             'Water',
             'Timer',
             'HandleFunction',
+            'TimerCallbackFunction',
             'FetchRemoteCallback',
             'GenericEventHandler',
             'CommandHandler',
