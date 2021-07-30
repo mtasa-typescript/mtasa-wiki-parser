@@ -1,4 +1,4 @@
-from copy import copy, deepcopy
+from copy import deepcopy
 from typing import Optional
 
 from crawler.core.types import PageUrl
@@ -73,6 +73,8 @@ class TypeScriptOOPGenerator:
             return_type = ''
 
         generics = TypeScriptFunctionGenerator.generate_generics(self.data.signature.generic_types)
+        if self.data.oop.method_name == 'constructor':
+            generics = ''
 
         return f'''/**{self.generator.generate_doc()} */
 {static}{self.data.oop.method_name}{generics}{args_brackets}{return_type};'''

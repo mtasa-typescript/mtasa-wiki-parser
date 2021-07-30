@@ -24,6 +24,9 @@ class ContextDeclarations:
     oop_methods: 'ContextDeclarations.DictType' = field(default_factory=default_dict_factory)
     oop_fields: 'ContextDeclarations.DictType' = field(default_factory=default_dict_factory)
 
+    # < class name, <client/server, <template_data> >
+    oop_class_templates: 'ContextDeclarations.DictType' = field(default_factory=default_dict_factory)
+
     # Just names for mtasa.d.ts file
     # <category, <client/server, [function name]>>
     function_names: 'ContextDeclarations.DictType' = field(default_factory=default_dict_factory)

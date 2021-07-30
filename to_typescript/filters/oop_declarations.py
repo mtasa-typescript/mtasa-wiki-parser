@@ -4,6 +4,7 @@ from typing import Set, DefaultDict
 from crawler.core.types import PageUrl
 from to_python.core.types import CompoundFunctionData
 from to_typescript.core.filter import FilterAbstract
+from to_typescript.core.transform.function import TypeScriptFunctionGenerator
 from to_typescript.core.transform.oop import TypeScriptOOPGenerator
 
 
@@ -37,6 +38,12 @@ class FilterGenerateOOPDeclarations(FilterAbstract):
 
                 if declaration_method:
                     self.context.declarations.oop_methods[file_name][side].append(declaration_method)
+
+                    # Adds class generic (template) string
+                    if data.oop.method_name == 'constructor':
+                        self.context.declarations.oop_class_templates[file_name][side].append(
+                            TypeScriptFunctionGenerator.generate_generics(data.signature.generic_types)
+                        )
 
     def apply(self):
         """

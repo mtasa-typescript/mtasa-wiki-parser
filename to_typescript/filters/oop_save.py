@@ -31,7 +31,7 @@ class FilterOOPSave(FilterAbstract):
             self.imports['server'].append(key)
 
     @staticmethod
-    def get_class_begin(class_name: str) -> str:
+    def get_class_begin(class_name: str, generic_string: str) -> str:
         inherit = ClassInheritance(class_name).get_child()
         if inherit:
             inherit_inline = f' extends {inherit}'
@@ -40,14 +40,18 @@ class FilterOOPSave(FilterAbstract):
 
         return f'''
 /** @customConstructor {class_name} */
-export class {class_name}{inherit_inline} {{
+export class {class_name}{generic_string}{inherit_inline} {{
 '''
 
     @staticmethod
     def get_class_end() -> str:
         return '}\n'
 
-    def save_file_category(self, class_name: str, side: str, fields: List[str], methods: List[str]):
+    def save_file_category(self,
+                           class_name: str, side: str,
+                           fields: List[str],
+                           methods: List[str],
+                           class_templates: List[str]):
         if not fields and not methods:
             return
 
@@ -61,7 +65,8 @@ export class {class_name}{inherit_inline} {{
         if class_name in imports:
             imports.remove(class_name)
 
-        class_started = self.get_class_begin(class_name)
+        class_started = self.get_class_begin(class_name,
+                                             '\n'.join(class_templates))
 
         text = (
                 self.FILE_STARTER +
@@ -89,9 +94,12 @@ export class {class_name}{inherit_inline} {{
 
         for key in sorted(keys):
             for side in ['client', 'server']:
-                self.save_file_category(class_name=key,
-                                        side=side,
-                                        fields=self.context.declarations.oop_fields[key].get(side, []),
-                                        methods=self.context.declarations.oop_methods[key].get(side, []))
+                self.save_file_category(
+                    class_name=key,
+                    side=side,
+                    fields=self.context.declarations.oop_fields[key].get(side, []),
+                    methods=self.context.declarations.oop_methods[key].get(side, []),
+                    class_templates=self.context.declarations.oop_class_templates[key].get(side, []),
+                )
 
         print('Generated .d.ts files with OOP')
