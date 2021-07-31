@@ -2,11 +2,9 @@ from typing import List
 
 from to_typescript.core.filter import FilterAbstract
 from to_typescript.filters.event_declarations import FilterEventSaveDeclarations
-from to_typescript.filters.event_declarations_sort import FilterSortOOPDeclarations
 from to_typescript.filters.event_index import FilterEventSaveIndex
 from to_typescript.filters.event_names import FilterEventSaveNames
 from to_typescript.filters.function_declarations import FilterGenerateFunctionDeclarations
-from to_typescript.filters.function_declarations_sort import FilterSortFunctionDeclarations
 from to_typescript.filters.function_save import FilterFunctionSave
 from to_typescript.filters.function_save_index import FilterFunctionSaveIndex
 from to_typescript.filters.get_dump import FilterGetDump
@@ -30,11 +28,9 @@ FILTER_CHAIN = [
     FilterDumpProcessPost(),
 
     FilterGenerateFunctionDeclarations(),
-    FilterSortFunctionDeclarations(),
     FilterFunctionSave(),
 
     FilterGenerateOOPDeclarations(),
-    FilterSortOOPDeclarations(),
     FilterOOPSave(),
 
     FilterFunctionSaveIndex(),
