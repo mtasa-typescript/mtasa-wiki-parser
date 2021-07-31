@@ -409,6 +409,80 @@ def set_timer(processor: FilterDumpProcessPost):
 
 
 @register_post_process
+def bind_key(processor: FilterDumpProcessPost):
+    processor.set_signature_variable_length(
+        ListType.SHARED,
+        'bindKey',
+        False,
+    )
+    processor.remove_signature_argument(
+        ListType.SHARED,
+        'bindKey',
+        'arguments',
+    )
+    processor.replace_signature_argument(
+        ListType.SHARED,
+        'bindKey',
+        'handlerFunction',
+        [FunctionArgument(
+            name='handlerFunction',
+            argument_type=FunctionType(
+                names=['CallbackType'],
+                is_optional=False
+            ),
+            default_value=None,
+        )]
+    )
+    processor.replace_signature_argument(
+        ListType.SHARED,
+        'bindKey',
+        'key',
+        [FunctionArgument(
+            name='key',
+            argument_type=FunctionType(
+                names=['ControlName', 'KeyName'],
+                is_optional=False
+            ),
+            default_value=None,
+        )]
+    )
+    processor.replace_signature_argument(
+        ListType.SHARED,
+        'bindKey',
+        'keyState',
+        [FunctionArgument(
+            name='keyState',
+            argument_type=FunctionType(
+                names=['KeyState'],
+                is_optional=False
+            ),
+            default_value=None,
+        )]
+    )
+    processor.add_signature_argument(
+        ListType.SHARED,
+        'bindKey',
+        [FunctionArgument(
+            name='...arguments',
+            argument_type=FunctionType(
+                names=['Parameters<CallbackType>'],
+                is_optional=False
+            ),
+            default_value=None,
+        )]
+    )
+    processor.add_generic_type(
+        ListType.SHARED,
+        'bindKey',
+        FunctionGeneric(
+            name='CallbackType',
+            extends='BindKeyCallback',
+            default_value='BindKeyCallback'
+        )
+    )
+
+
+@register_post_process
 def add_command_handler(processor: FilterDumpProcessPost):
     processor.replace_signature_argument(
         ListType.SHARED,
@@ -419,6 +493,23 @@ def add_command_handler(processor: FilterDumpProcessPost):
             argument_type=FunctionType(
                 names=['CommandHandler'],
                 is_optional=False,
+            ),
+            default_value=None,
+        )]
+    )
+
+
+@register_post_process
+def remove_command_handler(processor: FilterDumpProcessPost):
+    processor.replace_signature_argument(
+        ListType.SHARED,
+        'removeCommandHandler',
+        'handlerFunction',
+        [FunctionArgument(
+            name='handlerFunction',
+            argument_type=FunctionType(
+                names=['CommandHandler'],
+                is_optional=True,
             ),
             default_value=None,
         )]
