@@ -136,9 +136,11 @@ class TypeScriptFunctionGenerator:
         """
         type_names = []
         for a in arg:
+            if a.argument_type is None:
+                raise TypeScriptFunctionGeneratorError(f'No type information for argument "{a.name}"')
+
             type_names.extend(a.argument_type.names)
 
-        # TODO: add exception, if empty list resolved
         name = arg[0].name
         if arg[0].argument_type.is_optional:
             name += '?'
@@ -194,7 +196,7 @@ class TypeScriptFunctionGenerator:
             generic_strs.append(string)
 
         result = '<\n    '
-        result += '\n    ,'.join(generic_strs)
+        result += ',\n    '.join(generic_strs)
         return result + '\n>'
 
     def generate(self) -> str:

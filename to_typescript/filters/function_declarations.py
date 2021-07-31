@@ -52,4 +52,4 @@ class FilterGenerateFunctionDeclarations(FilterAbstract):
 
             self.save_function_for_index(function, url)
 
-        print('Function Declarations generated')
+        print('Function Declarations generated\u001b[0m')

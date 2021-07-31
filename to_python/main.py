@@ -10,7 +10,7 @@ def main():
         filt.initialize(context)
         filt.apply()
 
-    print('Complete')
+    print('\u001b[32mComplete\u001b[0m')
 
 
 if __name__ == '__main__':

@@ -13,4 +13,4 @@ class FilterSortOOPDeclarations(FilterAbstract):
             for side in function:
                 function[side] = sorted(function[side])
 
-        print('Function OOP fields and methods sorted')
+        print('Function OOP fields and methods sorted\u001b[0m')

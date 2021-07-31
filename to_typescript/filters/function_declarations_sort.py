@@ -8,4 +8,4 @@ class FilterSortFunctionDeclarations(FilterAbstract):
             for side in function:
                 function[side] = sorted(function[side])
 
-        print('Function Declarations sorted')
+        print('Function Declarations sorted\u001b[0m')

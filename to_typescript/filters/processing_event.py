@@ -37,3 +37,5 @@ class FilterDumpProcessEvents(FilterAbstract):
 
                 self.prepare_event(data_list_index=0,
                                    data_list=data)
+
+        print('\u001b[32mEvents processing complete\u001b[0m')

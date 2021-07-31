@@ -10,7 +10,7 @@ def main():
         filter_item.initialize(context)
         filter_item.apply()
 
-    print('Complete')
+    print('\u001b[1m\u001b[32mChain complete\u001b[0m')
 
 
 if __name__ == '__main__':

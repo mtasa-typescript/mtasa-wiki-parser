@@ -59,4 +59,4 @@ class FilterEventSaveNames(FilterAbstract):
             self.save_file(folder=self.DUMP_FOLDERS[side],
                            content=content, )
 
-    print('Generated event name declaration files')
+        print('Generated event name declaration files\u001b[0m')

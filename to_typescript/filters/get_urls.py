@@ -17,4 +17,4 @@ class FilterGetUrls(FilterAbstract):
 
     def apply(self):
         self.get_urls()
-        print(f'Got all URLs (functions and events): {len(self.context.urls)}')
+        print(f'Got all URLs (functions and events): \u001b[34m{len(self.context.urls)}\u001b[0m')

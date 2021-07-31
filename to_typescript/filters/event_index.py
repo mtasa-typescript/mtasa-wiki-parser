@@ -53,9 +53,9 @@ export { Event };
         for side in ['client', 'server']:
             FilterEventSaveIndex.append_index(side)
 
-        print(f'Append event data into {self.FILE_NAME} (index file)')
+        print(f'Append event data into {self.FILE_NAME} (index file)\u001b[0m')
 
         for side in ['client', 'server']:
             self.save_file_event(side)
 
-        print(f'Generate event.d.ts files')
+        print(f'Generate event.d.ts files\u001b[0m')

@@ -72,6 +72,10 @@ class FilterFunctionSave(FilterAbstract):
             'FetchRemoteCallback',
             'GenericEventHandler',
             'CommandHandler',
+            'BindKeyCallback',
+            'ControlName',
+            'KeyName',
+            'KeyState',
         ]
     )
 
@@ -122,4 +126,4 @@ class FilterFunctionSave(FilterAbstract):
                                         side=side,
                                         content=functions[category_name][side])
 
-        print('Generated .d.ts files with functions')
+        print('Generated .d.ts files with functions\u001b[0m')

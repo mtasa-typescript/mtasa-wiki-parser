@@ -65,3 +65,5 @@ class FilterDumpProcessOOP(FilterAbstract):
                 while index < len(data_list):
                     index = self.prepare_oop_definition(data_list_index=index,
                                                         data_list=data_list)
+
+        print('\u001b[32mOOP Processing complete\u001b[0m')

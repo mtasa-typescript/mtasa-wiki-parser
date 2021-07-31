@@ -54,4 +54,4 @@ export * from './variables';
         for side in ['client', 'server']:
             self.save_file_index(side)
 
-        print(f'Generated {self.FILE_NAME} (index file)')
+        print(f'Generated {self.FILE_NAME} (index file)\u001b[0m')

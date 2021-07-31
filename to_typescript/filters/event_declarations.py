@@ -94,4 +94,4 @@ export interface {name} extends GenericEventHandler {{
                                category=category,
                                content=content, )
 
-        print('Generated event type declaration files')
+        print('Generated event type declaration files\u001b[0m')

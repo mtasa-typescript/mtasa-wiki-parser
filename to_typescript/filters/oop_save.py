@@ -102,4 +102,4 @@ export class {class_name}{generic_string}{inherit_inline} {{
                     class_templates=self.context.declarations.oop_class_templates[key].get(side, []),
                 )
 
-        print('Generated .d.ts files with OOP')
+        print('Generated .d.ts files with OOP\u001b[0m')

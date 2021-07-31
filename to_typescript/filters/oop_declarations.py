@@ -54,4 +54,4 @@ class FilterGenerateOOPDeclarations(FilterAbstract):
             url = self.context.urls[name]
             self.generate_declaration(function, url)
 
-        print('OOP Declarations generated')
+        print('OOP Declarations generated\u001b[0m')

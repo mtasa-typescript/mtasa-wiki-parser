@@ -155,6 +155,8 @@ class FilterDumpProcessFunctions(FilterAbstract):
 
     def apply(self):
         self.remove_utf8()
+        print('\u001b[33mWarning:\u001b[0m UTF8 category has been removed from processing. '
+              'See https://github.com/mtasa-typescript/mtasa-wiki-parser/issues/31\u001b[0m')
 
         for function in self.context.functions:
             for side, data_list in function:
@@ -163,3 +165,6 @@ class FilterDumpProcessFunctions(FilterAbstract):
                 while index < len(data_list):
                     index = self.prepare_function(data_list_index=index,
                                                   data_list=data_list)
+
+        print('\u001b[32mFunction processing complete\u001b[0m')
+
