@@ -1,0 +1,180 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Function Declarations post-processor",
+  "description": "YML Config for Function Declarations Post-Processor",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Config version"
+    },
+    "contributors": {
+      "type": "array",
+      "description": "Config contributors",
+      "items": {
+        "type": "string"
+      }
+    },
+    "data": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "functionName": {
+            "type": "string",
+            "description": "Global function name"
+          },
+          "side": {
+            "type": "string",
+            "enum": [
+              "server",
+              "client",
+              "shared"
+            ],
+            "description": "The global function side"
+          },
+          "actions": {
+            "type": "object",
+            "description": "Actions with this function",
+            "properties": {
+              "addGeneric": {
+                "type": "array",
+                "description": "Add generic parameter",
+                "items": {
+                  "type": "object",
+                  "description": "Generic parameter declaration",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Name of the generic parameter"
+                    },
+                    "extends": {
+                      "type": "string",
+                      "description": "What type does the parameter extend"
+                    },
+                    "default": {
+                      "type": "string",
+                      "description": "Default parameter value"
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ]
+                }
+              },
+              "addArgument": {
+                "type": "array",
+                "description": "Add an argument to the end of the signature",
+                "items": {
+                  "$ref": "#/definitions/FunctionArgument",
+                  "required": [
+                    "name",
+                    "type"
+                  ]
+                }
+              },
+              "replaceArgument": {
+                "type": "array",
+                "description": "Replace the argument by the name",
+                "items": {
+                  "type": "object",
+                  "description": "Argument declaration",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Name of the argument, that will be replaced"
+                    },
+                    "newArgument": {
+                      "$ref": "#/definitions/FunctionArgument",
+                      "required": [
+                        "type"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "name",
+                    "newArgument"
+                  ]
+                }
+              },
+              "removeArgument": {
+                "type": "array",
+                "description": "Remove the argument by name",
+                "items": {
+                  "type": "object",
+                  "description": "Remove the argument by name",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Argument name"
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ]
+                }
+              },
+              "properties": {
+                "type": "object",
+                "properties": {
+                  "variableLength": {
+                    "type": "boolean",
+                    "description": "Sets arguments variable length for the function. Should be disabled, if you are setting custom vararguments type"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "functionName",
+          "side",
+          "actions"
+        ]
+      }
+    }
+  },
+  "required": [
+    "version",
+    "data"
+  ],
+  "definitions": {
+    "FunctionArgument": {
+      "type": "object",
+      "description": "Function argument",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Function argument name"
+        },
+        "default": {
+          "type": "string",
+          "description": "Default argument value"
+        },
+        "type": {
+          "type": "object",
+          "description": "The argument type",
+          "properties": {
+            "names": {
+              "type": "array",
+              "description": "Type names (multiple names, if you would like to provide types Union)",
+              "items": [
+                {
+                  "type": "string"
+                }
+              ],
+              "minItems": 1
+            },
+            "isOptional": {
+              "type": "boolean",
+              "description": "Is the argument optional"
+            }
+          },
+          "required": [
+            "names"
+          ]
+        }
+      }
+    }
+  }
+}

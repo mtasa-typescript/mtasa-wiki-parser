@@ -1,0 +1,217 @@
+version: 1.0.0
+contributors:
+  - "Toliak <a@toliak.ru>"
+
+data:
+  - functionName: fetchRemote
+    side: shared
+    actions:
+      addArgument:
+        - name: '...arguments'
+          type:
+            names:
+              - AdditionalArgs
+      removeArgument:
+        - name: arguments
+      properties:
+        variableLength: false
+      replaceArgument:
+        - name: callbackFunction
+          newArgument:
+            type:
+              names:
+                - FetchRemoteCallback
+      addGeneric:
+        - &genericAdditionalArgs
+          name: AdditionalArgs
+          extends: 'any[]'
+          default: '[]'
+
+  - functionName: addEventHandler
+    side: shared
+    actions:
+      addGeneric:
+        - &eventGeneric
+          name: CallbackType
+          extends: GenericEventHandler
+          default: GenericEventHandler
+      replaceArgument:
+        - name: handlerFunction
+          newArgument: &eventReplaceFunctionArgs
+            type:
+              names:
+                - 'CallbackType["function"]'
+        - name: eventName
+          newArgument: &eventReplaceNameArgs
+            type:
+              names:
+                - 'CallbackType["name"]'
+
+  - functionName: removeEventHandler
+    side: shared
+    actions:
+      addGeneric:
+        - *eventGeneric
+      replaceArgument:
+        - name: eventName
+          newArgument: *eventReplaceNameArgs
+        - name: functionVar
+          newArgument: *eventReplaceFunctionArgs
+
+  - functionName: triggerEvent
+    side: shared
+    actions:
+      addGeneric:
+        - *eventGeneric
+      replaceArgument:
+        - name: eventName
+          newArgument: *eventReplaceNameArgs
+      removeArgument:
+        - name: argument1
+      addArgument:
+        - &eventAddCallbackArgs
+          name: '...args'
+          type:
+            names:
+              - 'Parameters<CallbackType["function"]>'
+      properties:
+        variableLength: false
+
+  - functionName: triggerLatentServerEvent
+    side: client
+    actions:
+      addGeneric:
+        - *eventGeneric
+      replaceArgument:
+        - name: event
+          newArgument: *eventReplaceNameArgs
+      removeArgument:
+        - name: arguments
+      addArgument:
+        - *eventAddCallbackArgs
+      properties:
+        variableLength: false
+
+  - functionName: triggerServerEvent
+    side: client
+    actions:
+      addGeneric:
+        - *eventGeneric
+      replaceArgument:
+        - name: event
+          newArgument: *eventReplaceNameArgs
+      removeArgument:
+        - name: arguments
+      addArgument:
+        - *eventAddCallbackArgs
+      properties:
+        variableLength: false
+
+  - functionName: triggerLatentClientEvent
+    side: server
+    actions:
+      addGeneric:
+        - *eventGeneric
+      replaceArgument:
+        - name: name
+          newArgument: *eventReplaceNameArgs
+      removeArgument:
+        - name: arguments
+      addArgument:
+        - *eventAddCallbackArgs
+      properties:
+        variableLength: false
+
+  - functionName: triggerClientEvent
+    side: server
+    actions:
+      addGeneric:
+        - *eventGeneric
+      replaceArgument:
+        - name: name
+          newArgument: *eventReplaceNameArgs
+      removeArgument:
+        - name: arguments
+      addArgument:
+        - *eventAddCallbackArgs
+      properties:
+        variableLength: false
+
+  - functionName: setTimer
+    side: shared
+    actions:
+      addGeneric:
+        - name: CallbackType
+          extends: TimerCallbackFunction
+          default: TimerCallbackFunction
+      replaceArgument:
+        - name: theFunction
+          newArgument:
+            type:
+              names:
+                - CallbackType
+      removeArgument:
+        - name: arguments
+      addArgument:
+        - name: '...arguments'
+          type:
+            names:
+              - 'Parameters<CallbackType>'
+      properties:
+        variableLength: false
+
+  - functionName: bindKey
+    side: shared
+    actions:
+      addGeneric:
+        - name: CallbackType
+          extends: BindKeyCallback
+          default: BindKeyCallback
+        - *genericAdditionalArgs
+      replaceArgument:
+        - name: handlerFunction
+          newArgument:
+            type:
+              names:
+                - CallbackType
+        - name: key
+          newArgument:
+            type:
+              names:
+                - ControlName
+                - KeyName
+        - name: keyState
+          newArgument:
+            type:
+              names:
+                - KeyState
+      removeArgument:
+        - name: arguments
+      addArgument:
+        - name: '...arguments'
+          type:
+            names:
+              - 'AdditionalArgs'
+      properties:
+        variableLength: false
+
+  - functionName: addCommandHandler
+    side: shared
+    actions:
+      replaceArgument:
+        - name: handlerFunction
+          newArgument:
+            type:
+              names:
+                - CommandHandler
+
+  - functionName: removeCommandHandler
+    side: shared
+    actions:
+      replaceArgument:
+        - name: handler
+          newArgument:
+            type:
+              names:
+                - CommandHandler
+              isOptional: true
