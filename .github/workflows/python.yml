@@ -29,5 +29,6 @@ jobs:
           pip install -r requirements.txt
       - name: Test with pytest
         run: |
-          mkdir -p crawler/dump_html
-          PYTHONPATH=$PWD pytest .
+          mkdir crawler/dump_html
+          export PYTHONPATH=$PWD
+          pytest .
