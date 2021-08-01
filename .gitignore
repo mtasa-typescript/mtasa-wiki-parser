@@ -2,7 +2,6 @@
 .vs
 __pycache__
 local*
-dump
 output
 venv*
 .pytest_cache

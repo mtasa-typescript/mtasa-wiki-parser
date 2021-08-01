@@ -10,7 +10,5 @@ test:
     - pip install -r requirements.txt
 
   script:
-    - mkdir -p dump-html
-    - echo $PYTHONPATH
-    - export PYTHONPATH=$PWD
-    - pytest .
+    - mkdir -p crawler/dump_html
+    - PYTHONPATH=$PWD pytest .

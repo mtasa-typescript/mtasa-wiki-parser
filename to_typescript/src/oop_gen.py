@@ -45,3 +45,6 @@ def method_definition(data: FunctionData) -> str:
                      f': {arg_type}, '
 
     return f'    {data.oop.method_name}({arguments}): {return_type};\n'
+
+class TypeScriptOOPGen:
+    pass
