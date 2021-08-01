@@ -122,3 +122,5 @@ class FilterParseFunctionSide(FilterAbstract):
             if data.server is not None:
                 kwargs['server'] = [FunctionData(None, None, None, name)]
             self.context_data.parsed[name] = CompoundFunctionData(**kwargs)
+
+        print('Functions parse complete\u001b[0m')

@@ -123,13 +123,13 @@ DUMP_FUNCTIONS = [
         """
         for category in self.categories:
             self.save_category_data(category)
-        print('Saved data')
+        print('Saved data\u001b[0m')
 
         self.save_init_file()
-        print('Generated __init__.py file')
+        print('Generated __init__.py file\u001b[0m')
 
         self.save_url_list()
-        print('Save url_list.py file')
+        print('Save url_list.py file\u001b[0m')
 
     def apply(self):
         for f_name in self.get_context_data().parsed:

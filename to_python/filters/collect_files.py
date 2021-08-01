@@ -31,4 +31,4 @@ class FilterCollectDumpFiles(FilterAbstract):
             function_name = os.path.basename(file)
             self.context_data.pages[self.function_name(function_name)] = file
 
-        print(f'Collected HTML files (context {self.context_type}): {len(self.context_data.pages)} items')
+        print(f'Collected HTML files (context \u001b[34m{self.context_type}\u001b[0m): \u001b[34m{len(self.context_data.pages)}\u001b[0m items\u001b[0m')

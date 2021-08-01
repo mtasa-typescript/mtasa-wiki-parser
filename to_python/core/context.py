@@ -78,3 +78,6 @@ class Context:
 
     functions: ContextData[CompoundFunctionData]
     events: ContextData[CompoundEventData]
+
+    # Verbose mode
+    verbose: bool

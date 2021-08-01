@@ -82,3 +82,5 @@ class FilterParseEventSide(FilterAbstract):
             if data.server is not None:
                 kwargs['server'] = [EventData(None, None, name)]
             self.context_data.parsed[name] = CompoundEventData(**kwargs)
+
+        print('Parse event side complete\u001b[0m')

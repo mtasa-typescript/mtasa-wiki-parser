@@ -27,3 +27,5 @@ class FilterRawPostProcess(FilterAbstract):
         for name in self.context_data.raw_data:
             raw = self.context_data.raw_data[name]
             self.context_data.raw_data[name] = self.post_process(raw)
+
+        print('Raw Post Process complete\u001b[0m')

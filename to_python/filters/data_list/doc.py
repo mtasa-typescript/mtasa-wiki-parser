@@ -98,7 +98,7 @@ class FilterParseDocs(FilterAbstract):
             if arg_name is None:
                 if name is None:
                     if 'optional' not in section.title.lower():
-                        print(f'[WARN] Undetermined line in function "{f_name}"', file=sys.stderr)
+                        print(f'\u001b[33m[WARN] \u001b[0mUndetermined line in function "{f_name}"\u001b[0m')
 
                     continue
 
@@ -181,3 +181,5 @@ class FilterParseDocs(FilterAbstract):
                     arguments=args_doc,
                     result=return_doc
                 )
+
+        print('Docs parse complete\u001b[0m')

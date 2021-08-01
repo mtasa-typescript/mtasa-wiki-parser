@@ -29,3 +29,5 @@ class FilterInitInternalList(FilterAbstract):
             filepath = self.context_data.pages[name]
             self.context_data.parsed[name] = self.initialize_parsed_value()
             self.context_data.raw_data[name] = self.read_file(filepath)
+
+        print('Internal list init complete\u001b[0m')

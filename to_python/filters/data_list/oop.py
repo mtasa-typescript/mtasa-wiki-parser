@@ -28,7 +28,8 @@ class FilterParseFunctionOOP(FilterAbstract):
         tokenized = parser.tokenize()
 
         colors = colorize_oop_token_list(tokenized)
-        print(f'{code: <175}', f'{colors: <175}\n', sep='\n')
+        if self.context.verbose:
+            print(f'[V] {code: <175}', f'[V] {colors: <175}\n', sep='\n')
 
         return OOPParser(tokenized).parse()
 
@@ -50,12 +51,12 @@ class FilterParseFunctionOOP(FilterAbstract):
 
         signature_match = re.search(self.OOP_REGEX, container)
         if signature_match is None:
-            print(f'[WARN] OOP Definition not found "{f_name}"', file=sys.stderr)
+            print(f'\u001b[33m[WARN] \u001b[0mOOP Definition not found "{f_name}"\u001b[0m')
             return
 
         signature = signature_match.group(1)
         if len(signature.split('\n')) > 1:
-            print(f'[WARN] Multiple lines in OOP definition "{f_name}"', file=sys.stderr)
+            print(f'\u001b[33m[WARN] \u001b[0mMultiple lines in OOP definition "{f_name}"\u001b[0m')
 
         return signature.strip()
 
@@ -75,3 +76,5 @@ class FilterParseFunctionOOP(FilterAbstract):
                 self.context_data.parsed[f_name].server[0].oop = self.parse_oop(
                     self.pick_oop(f_name, raw_content.server, wiki_content.server)
                 )
+
+        print('Function signature parsing complete\u001b[0m')

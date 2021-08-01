@@ -30,7 +30,8 @@ class FilterParseEventSignature(FilterAbstract):
         tokenized = SignatureTokenizer(code).tokenize()
 
         colors = colorize_token_list(tokenized)
-        print(f'{code: <175}', f'{colors: <175}\n', sep='\n')
+        if self.context.verbose:
+            print(f'[V] {code: <175}', f'[V] {colors: <175}\n', sep='\n')
 
         function_signature = SignatureParser(
             tokenized=tokenized
@@ -80,3 +81,5 @@ class FilterParseEventSignature(FilterAbstract):
                 self.context_data.parsed[f_name].server[0].arguments = self.parse_signature(
                     self.pick_signature(f_name, raw_content.server, wiki_content.server)
                 )
+
+        print('Events parse complete\u001b[0m')

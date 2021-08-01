@@ -17,7 +17,7 @@ class FilterGetFunctionUrls(FilterAbstract):
 
     def apply(self):
         self.get_urls()
-        print('Got all function URLs')
+        print('Got all function URLs\u001b[0m')
 
 
 class FilterGetEventUrls(FilterAbstract):
@@ -36,4 +36,4 @@ class FilterGetEventUrls(FilterAbstract):
 
     def apply(self):
         self.get_urls()
-        print('Got all event URLs')
+        print('Got all event URLs\u001b[0m')

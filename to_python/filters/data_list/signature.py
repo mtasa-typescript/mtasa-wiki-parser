@@ -34,17 +34,17 @@ class WikiGetSyntaxSection:
         Process situation, when the Syntax section have not been found
         """
         if self.context.side_data[self.f_name].side != ParseFunctionSide.SHARED:
-            print(f'[WARN] No Syntax section "{self.f_name}"', file=sys.stderr)
+            print(f'\u001b[33m[WARN] \u001b[0mNo Syntax section "{self.f_name}"\u001b[0m')
 
     def multiple_syntax_section(self, section_list):
         """
         Process situation, when the Syntax section have been found multiple time
         """
         if len(section_list) != 1:
-            print(f'[WARN] Multiple Syntax sections "{self.f_name}". \n[WARN] Selecting the first:',
-                  file=sys.stderr)
+            print(f'\u001b[33m[WARN] \u001b[0mMultiple Syntax sections "{self.f_name}". \u001b[0m\n'
+                  f'\u001b[33m[WARN] \u001b[0mSelecting the first:\u001b[0m')
             for section, index in section_list:
-                print(f'    {index: 2}. {section.title}', file=sys.stderr)
+                print(f'    \u001b[34m{index: 2}.\u001b[0m {section.title}')
 
         self.section, self.section_index = section_list[0]
         self.start_index = self.section.span[0]
@@ -103,7 +103,8 @@ class FilterParseFunctionSignature(FilterAbstract):
         tokenized = SignatureTokenizer(code).tokenize()
 
         colors = colorize_token_list(tokenized)
-        print(f'{code: <175}', f'{colors: <175}\n', sep='\n')
+        if self.context.verbose:
+            print(f'[V] {code: <175}', f'[V] {colors: <175}\n', sep='\n')
 
         return SignatureParser(
             tokenized=tokenized
@@ -148,3 +149,5 @@ class FilterParseFunctionSignature(FilterAbstract):
                 self.context_data.parsed[f_name].server[0].signature = self.parse_signature(
                     self.pick_signature(f_name, raw_content.server, wiki_content.server)
                 )
+
+        print('Function signature parsing complete\u001b[0m')
