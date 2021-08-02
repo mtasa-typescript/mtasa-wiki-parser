@@ -3,7 +3,7 @@ attrs==21.2.0
 beautifulsoup4==4.9.3
 certifi==2021.5.30
 chardet==4.0.0
-charset-normalizer==2.0.3
+charset-normalizer==2.0.4
 colorama==0.4.4
 idna==3.2
 importlib-metadata==4.6.1
