@@ -119,7 +119,7 @@ def docs_string(data: FunctionData) -> str:
 
     for line in data.docs.description.split('\n'):
         docs += ' * ' + line + '\n'
-    docs += ' * @see {@link https://wiki.multitheftauto.com/wiki/' + data.signature.name + '|MTASA Wiki}\n'
+    docs += ' * @see https://wiki.multitheftauto.com/wiki/' + data.signature.name + '\n'
 
     for arg in data.signature.arguments:
         if arg.name not in data.docs.arguments:
