@@ -21,7 +21,7 @@ requests==2.26.0
 six==1.16.0
 soupsieve==2.2.1
 toml==0.10.2
-typing-extensions==3.10.0.1
+typing-extensions==3.10.0.2
 urllib3==1.26.6
 wcwidth==0.2.5
 wikitextparser==0.47.5
