@@ -33,6 +33,10 @@
             ],
             "description": "The global function side"
           },
+          "includeOOP": {
+            "type": "boolean",
+            "description": "Should these actions work for OOP declarations"
+          },
           "actions": {
             "type": "object",
             "description": "Actions with this function",

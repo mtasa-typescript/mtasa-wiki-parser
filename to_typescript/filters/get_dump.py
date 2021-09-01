@@ -8,9 +8,11 @@ class FilterGetDump(FilterAbstract):
         """
         from to_python.dump import DUMP_FUNCTIONS
         from to_python.dump import DUMP_EVENTS
+        from to_python.dump import DUMP_OOPS
 
         self.context.functions = DUMP_FUNCTIONS
         self.context.events = DUMP_EVENTS
+        self.context.oops = DUMP_OOPS
 
     def apply(self):
         self.get_dump()

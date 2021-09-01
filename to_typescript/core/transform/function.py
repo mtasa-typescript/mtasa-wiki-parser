@@ -3,7 +3,7 @@ from typing import List
 
 from crawler.core.types import PageUrl
 from to_python.core.types import FunctionData, FunctionType, FunctionArgument, FunctionDoc, FunctionGeneric, \
-    FunctionArgumentValues
+    FunctionArgumentValues, FunctionSignature, FunctionReturnTypes
 from to_typescript.core.transform.extra_rules import is_varargs_type
 
 
@@ -99,35 +99,39 @@ class TypeScriptFunctionGenerator:
 
         return ' | '.join(names)
 
-    def generate_return_type(self) -> str:
-        """
-        Generates return TypeScript type
-        """
-        signature = self.data.signature
-        return_types = copy(signature.return_types.return_types)
+    # TODO
+    @staticmethod
+    def generate_return_type_static(src_return_types: FunctionReturnTypes):
+        return_types = copy(src_return_types.return_types)
 
         # Multiple
-        if signature.return_types.variable_length or len(return_types) > 1:
+        if src_return_types.variable_length or len(return_types) > 1:
             last_arg = return_types[-1]
             if is_varargs_type(last_arg):
                 return_types.pop(-1)
 
             result = 'LuaMultiReturn<[\n'
-            result += ',\n'.join('    ' + self.function_type_text(t)
+            result += ',\n'.join('    ' + TypeScriptFunctionGenerator.function_type_text(t)
                                  for t in return_types)
 
-            if signature.return_types.variable_length:
+            if src_return_types.variable_length:
                 if len(return_types) > 1:
                     result += ',\n'
                 result += '    ' + '...any[]'
             return result + '\n]>'
 
         # Nothing
-        if not signature.return_types.return_types:
+        if not src_return_types.return_types:
             return 'void'
 
         # Single
-        return self.function_type_text(return_types[0])
+        return TypeScriptFunctionGenerator.function_type_text(return_types[0])
+
+    def generate_return_type(self) -> str:
+        """
+        Generates return TypeScript type
+        """
+        return TypeScriptFunctionGenerator.generate_return_type_static(self.data.signature.return_types)
 
     @staticmethod
     def function_arg_text(arg: List[FunctionArgument]) -> str:

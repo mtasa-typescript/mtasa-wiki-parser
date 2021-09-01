@@ -5,6 +5,7 @@ from to_python.filters.collect_files import FilterCollectDumpFiles
 from to_python.filters.data_list.doc import FilterParseDocs
 from to_python.filters.data_list.init import FilterInitInternalList
 from to_python.filters.data_list.oop import FilterParseFunctionOOP
+from to_python.filters.data_list.oop_save import FilterSaveFunctionOOPData
 from to_python.filters.data_list.raw_post_process import FilterRawPostProcess
 from to_python.filters.data_list.save import FilterSaveFunctionData
 from to_python.filters.data_list.side import FilterParseFunctionSide
@@ -25,9 +26,12 @@ FILTER_CHAIN = [
     FilterParseFunctionSide(),
     FilterWikiTextParser('functions'),
     FilterParseDocs('functions'),
+
     FilterParseFunctionSignature(),
-    FilterParseFunctionOOP(),
     FilterSaveFunctionData(),
+
+    FilterParseFunctionOOP(),
+    FilterSaveFunctionOOPData(),
 
     FilterGetEventUrls(),
     FilterCollectDumpFiles('events'),
@@ -36,6 +40,7 @@ FILTER_CHAIN = [
     FilterParseEventSide(),
     FilterWikiTextParser('events'),
     FilterParseDocs('events'),
+
     FilterParseEventSignature(),
     FilterSaveEventData(),
 ]

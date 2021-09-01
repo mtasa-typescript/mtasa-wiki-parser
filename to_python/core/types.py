@@ -1,6 +1,7 @@
+import abc
 from copy import copy
 from dataclasses import dataclass, field
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 
 from crawler.core.types import ListType
 
@@ -156,10 +157,33 @@ class FunctionDoc:
                      + f'\n{" " * 16}}}')
 
         return f'''FunctionDoc(
-                description="""{self.description} """,
+                description={repr(self.description)} ,
                 arguments={dict_text},
-                result="""{self.result} """,
+                result={repr(self.result)} ,
             )'''
+
+
+@dataclass
+class FunctionOOPField:
+    """
+    OOP Field data
+    """
+    name: str
+    types: List[FunctionType]
+
+    def __repr__(self):
+        p_types = f',\n{" " * 36}'.join([repr(v) for v in self.types])
+
+        return f'''FunctionOOPField(
+                                name='{self.name}',
+                                types=[
+                                    {p_types}
+                                ],
+                            )'''
+
+    def __copy__(self):
+        return FunctionOOPField(name=self.name,
+                                types=copy(self.types))
 
 
 @dataclass
@@ -169,19 +193,21 @@ class FunctionOOP:
     """
     description: Optional[str]
     class_name: str
-    method_name: Optional[str]
-    field: Optional[str]
+    base_function_name: str
+    method: Optional['FunctionData']
+    field: Optional['FunctionOOPField']
     is_static: bool
 
     def __repr__(self):
         p_description = f'"""{self.description}"""' if self.description else 'None'
-        p_method_name = f'"""{self.method_name}"""' if self.method_name else 'None'
-        p_field = f'"""{self.field}"""' if self.field else 'None'
+        p_method = repr(self.method) if self.method else 'None'
+        p_field = repr(self.field) if self.field else 'None'
 
         return f'''FunctionOOP(
                 description={p_description},
+                base_function_name="{self.base_function_name}",
                 class_name='{self.class_name}',
-                method_name={p_method_name},
+                method={p_method},
                 field={p_field},
                 is_static={self.is_static},
             )'''
@@ -194,30 +220,30 @@ class FunctionData:
     """
     signature: FunctionSignature
     docs: FunctionDoc
-    oop: Optional[FunctionOOP]
-    name: str
+
+    @property
+    def name(self):
+        return self.signature.name
 
     def __repr__(self):
         return f'''FunctionData(
             signature={repr(self.signature)},
-            docs={repr(self.docs)},
-            oop={repr(self.oop)},
-            name='{self.name}',
+            docs={repr(self.docs)}
         )'''
 
 
 @dataclass
-class CompoundFunctionData:
+class CompoundDataAbstract(metaclass=abc.ABCMeta):
     """
     Data about client-side and server-side function
     """
-    server: List[FunctionData] = field(default_factory=list)
-    client: List[FunctionData] = field(default_factory=list)
+    server: List[Any] = field(default_factory=list)
+    client: List[Any] = field(default_factory=list)
 
     def __repr__(self):
         server = f',\n{" " * 12}'.join([repr(v) for v in self.server])
         client = f',\n{" " * 12}'.join([repr(v) for v in self.client])
-        return f'''CompoundFunctionData(
+        return f'''{self.__class__.__name__}(
         server=[
             {server}
         ],
@@ -247,6 +273,29 @@ class CompoundFunctionData:
 
 
 @dataclass
+class CompoundFunctionData(CompoundDataAbstract):
+    """
+    Data about client-side and server-side function
+    """
+    server: List[FunctionData] = field(default_factory=list)
+    client: List[FunctionData] = field(default_factory=list)
+
+    def __repr__(self):
+        return super().__repr__()
+
+
+@dataclass
+class CompoundOOPData(CompoundDataAbstract):
+    """
+    Data about client-side and server-side oop fields and methods
+    """
+    server: List[FunctionOOP] = field(default_factory=list)
+    client: List[FunctionOOP] = field(default_factory=list)
+
+    def __repr__(self):
+        return super().__repr__()
+
+@dataclass
 class EventData:
     """
     Data about the event
@@ -264,9 +313,12 @@ class EventData:
 
 
 @dataclass
-class CompoundEventData(CompoundFunctionData):
+class CompoundEventData(CompoundDataAbstract):
     """
     Data about event
     """
     server: List[EventData] = field(default_factory=list)
     client: List[EventData] = field(default_factory=list)
+
+    def __repr__(self):
+        return super().__repr__()

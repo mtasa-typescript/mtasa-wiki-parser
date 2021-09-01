@@ -102,8 +102,8 @@ class FilterParseFunctionSignature(FilterAbstract):
 
         tokenized = SignatureTokenizer(code).tokenize()
 
-        colors = colorize_token_list(tokenized)
         if self.context.verbose:
+            colors = colorize_token_list(tokenized)
             print(f'[V] {code: <175}', f'[V] {colors: <175}\n', sep='\n')
 
         return SignatureParser(

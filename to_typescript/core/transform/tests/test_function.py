@@ -101,8 +101,6 @@ def function_generator_fixture() -> TypeScriptFunctionGenerator:
             },
             result="""returns the string of the zone name """,
         ),
-        oop=None,
-        name='getZoneName',
     )
     url = PageUrl(
         url="/wiki/GetZoneName",

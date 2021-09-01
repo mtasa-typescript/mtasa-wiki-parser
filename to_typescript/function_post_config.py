@@ -4,20 +4,44 @@ from typing import Dict, Any, List
 import yaml
 from jsonschema import validate
 
-from to_python.core.types import FunctionGeneric, FunctionType, FunctionArgument
+from crawler.core.types import ListType as CrawlerListType
+from to_python.core.types import FunctionGeneric, FunctionType, FunctionArgument, FunctionData, CompoundOOPData
 from to_typescript.filters.processing_post import FilterDumpProcessPost, ListType, FilterDumpProcessPostError
+
+
+class FunctionPostConfigException(Exception):
+    pass
 
 
 def parse_side(side: str) -> ListType:
     return ListType[side.upper()]
 
 
+def get_oop_functions(oops: List[CompoundOOPData], side: ListType, function_name: str) -> List[List[FunctionData]]:
+    original_sides = [CrawlerListType[side.name]] if side != ListType.SHARED else [
+        CrawlerListType.CLIENT,
+        CrawlerListType.SERVER
+    ]
+
+    return [
+        [data.method]
+        for data_list in [
+            oop[original_side]
+            for oop in oops
+            for original_side in original_sides
+            if oop[original_side]
+            if oop[original_side][0].base_function_name == function_name
+        ]
+        for data in data_list
+        if data.method
+    ]
+
+
 def apply_actions(processor: FilterDumpProcessPost,
                   function_name: str,
+                  functions: List[List[FunctionData]],
                   side: ListType,
                   actions: Dict[str, Any]):
-    functions = processor.get_functions(side, function_name)
-
     if 'properties' in actions:
         properties: Dict[str, Any] = actions['properties']
 
@@ -35,8 +59,7 @@ def apply_actions(processor: FilterDumpProcessPost,
             name = generic['name']
             extends = generic.get('extends')
             default = generic.get('default')
-            processor.add_generic_type(side,
-                                       function_name,
+            processor.add_generic_type(functions,
                                        FunctionGeneric(
                                            name=name,
                                            extends=extends,
@@ -51,8 +74,7 @@ def apply_actions(processor: FilterDumpProcessPost,
         argument_list: List[Dict[str, Any]] = actions['replaceArgument']
         for argument in argument_list:
             name = argument['name']
-            arguments = processor.get_signature_arguments_by_name(side,
-                                                                  function_name,
+            arguments = processor.get_signature_arguments_by_name(functions,
                                                                   name)
 
             if not arguments:
@@ -102,8 +124,7 @@ def apply_actions(processor: FilterDumpProcessPost,
             arg = FunctionArgument(name=arg_name,
                                    argument_type=f_arg_type,
                                    default_value=arg_default)
-            processor.add_signature_argument(side,
-                                             function_name,
+            processor.add_signature_argument(functions,
                                              [arg])
 
             print(f'    Add argument:')
@@ -116,7 +137,7 @@ def apply_actions(processor: FilterDumpProcessPost,
         for argument in argument_list:
             arg_name = argument.get('name')
             processor.remove_signature_argument(side,
-                                                function_name,
+                                                functions,
                                                 arg_name)
 
             print(f'    Removed argument  \u001b[34m{arg_name}\u001b[0m')
@@ -138,10 +159,28 @@ def apply_post_process(processor: FilterDumpProcessPost):
     for data in config["data"]:
         function_name = data["functionName"]
         side = parse_side(data["side"])
-        print(f'Applying actions to  \u001b[34m{function_name} \u001b[35m({side})\u001b[0m')
+        print(f'Applying actions to \u001b[34m{function_name} \u001b[35m({side})\u001b[0m')
 
-        apply_actions(processor,
-                      function_name,
-                      side,
-                      data["actions"], )
+        functions = processor.get_functions(side, function_name)
+        if not functions:
+            raise FunctionPostConfigException(f'No functions found for name {function_name}')
+
+        apply_actions(processor=processor,
+                      function_name=function_name,
+                      functions=functions,
+                      side=side,
+                      actions=data["actions"], )
         print('')
+
+        if data.get('includeOOP', False):
+            print(f'Applying actions to OOP with base name \u001b[34m{function_name} \u001b[35m({side})\u001b[0m')
+            functions = get_oop_functions(processor.context.oops, side, function_name)
+            if not functions:
+                raise FunctionPostConfigException(f'No OOP functions found for name {function_name}')
+
+            apply_actions(processor=processor,
+                          function_name=function_name,
+                          functions=functions,
+                          side=side,
+                          actions=data["actions"], )
+            print('')

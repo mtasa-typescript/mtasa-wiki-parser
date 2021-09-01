@@ -1,10 +1,9 @@
 import enum
 import re
 from dataclasses import dataclass
-from typing import List, Any, Dict
+from typing import List, Optional
 
 from to_python.core.signature import SignatureTokenizer
-from to_python.core.types import FunctionOOP
 
 
 class OOPTokenizerError(RuntimeError):
@@ -200,6 +199,18 @@ class OOPParser:
 
     TokenType = OOPTokenizer.TokenType
 
+    @dataclass
+    class MethodData:
+        class_name: Optional[str]
+        method_name: Optional[str]
+        is_static: Optional[bool]
+
+    @dataclass
+    class OutputData:
+        misc_description: Optional[str]
+        field_name: Optional[str]
+        method_data: 'OOPParser.MethodData'
+
     def __init__(self, tokenized: List[SignatureTokenizer.Token]):
         self.tokenized: List[SignatureTokenizer.Token] = tokenized
 
@@ -209,11 +220,9 @@ class OOPParser:
         return code.strip()
 
     @staticmethod
-    def parse_method(text: str) -> Dict[str, Any]:
+    def parse_method(text: str) -> 'OOPParser.MethodData':
         """
         Selects method data
-        :param text:
-        :return:
         """
         text = OOPParser.clean_method(text)
 
@@ -222,18 +231,18 @@ class OOPParser:
             if not text:
                 raise OOPParserError(f'Wrong method content: {text}')
 
-            return dict(class_name=text,
-                        method_name=None,
-                        is_static=True)
+            return OOPParser.MethodData(class_name=text,
+                                        method_name=None,
+                                        is_static=True)
 
-        return dict(class_name=match.group(1),
-                    method_name=match.group(2),
-                    is_static='.' in text, )
+        return OOPParser.MethodData(class_name=match.group(1),
+                                    method_name=match.group(2),
+                                    is_static='.' in text, )
 
-    def parse(self) -> FunctionOOP:
+    def parse(self) -> 'OOPParser.OutputData':
         misc_description = None
         field_name = None
-        method_data = dict(
+        method_data = OOPParser.MethodData(
             class_name=None,
             method_name=None,
             is_static=None,
@@ -247,6 +256,6 @@ class OOPParser:
             elif token.type == self.TokenType.METHOD:
                 method_data = self.parse_method(token.value)
 
-        return FunctionOOP(description=misc_description,
-                           field=field_name,
-                           **method_data)
+        return OOPParser.OutputData(misc_description=misc_description,
+                                    field_name=field_name,
+                                    method_data=method_data)

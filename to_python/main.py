@@ -3,6 +3,7 @@ from typing import List
 
 from to_python.chain import FILTER_CHAIN
 from to_python.core.context import Context, ContextData
+from to_python.core.types import CompoundOOPData
 
 
 def main(argc: int, argv: List[str]):
@@ -12,6 +13,7 @@ def main(argc: int, argv: List[str]):
         verbose_mode = 'v' in argv[1]
 
     context = Context(functions=ContextData(),
+                      oops=dict(),
                       events=ContextData(),
                       verbose=verbose_mode)
 

@@ -1,5 +1,5 @@
 import os
-from copy import copy
+from copy import copy, deepcopy
 from typing import List
 
 from to_python.core.types import EventData, FunctionArgument, FunctionType
@@ -45,7 +45,7 @@ import { EventNames } from './all_event_names';
         for data_list in data_list:
             data = data_list[0]
             name = FilterEventSaveNames.normalize_enum_variable_name(data.name)
-            arguments = copy(data.arguments)
+            arguments = deepcopy(data.arguments)
 
             # Add this:void argument
             arguments.arguments.insert(

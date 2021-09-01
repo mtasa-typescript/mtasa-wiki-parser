@@ -1,4 +1,4 @@
-from copy import copy
+from copy import copy, deepcopy
 from typing import List
 
 from to_python.core.types import FunctionData, FunctionDoc, FunctionArgument, FunctionType
@@ -109,7 +109,7 @@ class FilterDumpProcessFunctions(FilterAbstract):
 
                 # There were optional arguments. And the current is a required argument
                 index_should_be_increased = False
-                new_signature = copy(signature)
+                new_signature = deepcopy(signature)
 
                 # Remove (index - first_optional_index - 1) arguments from the new signature
                 for _ in range(first_optional_index, index):
@@ -124,12 +124,10 @@ class FilterDumpProcessFunctions(FilterAbstract):
                         arg.argument_type.is_optional = False
 
                 # Save the new signature
-                data_list.append(FunctionData(name=data.name,
-                                              signature=new_signature,
+                data_list.append(FunctionData(signature=new_signature,
                                               docs=FunctionDoc(description='',
                                                                arguments=dict(),
-                                                               result='', ),
-                                              oop=None, ), )
+                                                               result='', ), ), )
                 first_optional_index = -1
 
         return index_should_be_increased

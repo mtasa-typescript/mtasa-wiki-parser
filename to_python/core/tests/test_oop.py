@@ -1,7 +1,10 @@
 import pytest
 
-from to_python.core.oop import OOPTokenizer
+from to_python.core.oop import OOPTokenizer, OOPParser
 from to_python.core.tests.utils import compare_lists
+from to_python.core.types import FunctionType, FunctionReturnTypes, FunctionData, FunctionSignature, \
+    FunctionArgumentValues, FunctionArgument, FunctionDoc, FunctionOOPField
+from to_python.filters.data_list.oop import FilterParseFunctionOOP
 
 TokenType = OOPTokenizer.TokenType
 
@@ -65,3 +68,137 @@ TokenType = OOPTokenizer.TokenType
 ])
 def test_oop_tokenizer(code, expected):
     compare_lists(OOPTokenizer(code).tokenize(), expected)
+
+
+def test_oop_parse_metadata():
+    oop_code = '{{OOP||[[light]]:getColor|color|setLightColor}}'
+    result = OOPParser(OOPTokenizer(oop_code).tokenize()).parse()
+    assert result == OOPParser.OutputData(
+        misc_description=None,
+        field_name='color',
+        method_data=OOPParser.MethodData(
+            class_name='light',
+            is_static=False,
+            method_name='getColor',
+        )
+    )
+
+
+def test_oop_parse_method_and_field():
+    oop_code = '{{OOP||[[light]]:getColor|color|setLightColor}}'
+
+    function_data = FunctionData(
+        signature=FunctionSignature(
+            name='getLightColor',
+            return_types=FunctionReturnTypes(
+                return_types=[
+                    FunctionType(
+                        names=['int'],
+                        is_optional=False,
+                    ),
+                    FunctionType(
+                        names=['int'],
+                        is_optional=False,
+                    ),
+                    FunctionType(
+                        names=['int'],
+                        is_optional=False,
+                    )
+                ],
+                variable_length=False,
+            ),
+            arguments=FunctionArgumentValues(
+                arguments=[
+                    [
+                        FunctionArgument(
+                            name='theLight',
+                            argument_type=FunctionType(
+                                names=['light'],
+                                is_optional=False,
+                            ),
+                            default_value=None,
+                        )
+                    ]
+                ],
+                variable_length=False,
+            ),
+            generic_types=[
+
+            ],
+        ),
+        docs=FunctionDoc(
+            description='',
+            arguments={},
+            result='',
+        ),
+    )
+    oop_metadata = OOPParser(OOPTokenizer(oop_code).tokenize()).parse()
+
+    method = FilterParseFunctionOOP.prepare_oop_method(oop_metadata, function_data)
+    field = FilterParseFunctionOOP.prepare_oop_field(oop_metadata, function_data.signature.return_types)
+
+    assert method == FunctionData(
+        signature=FunctionSignature(
+            name='getColor',
+            return_types=FunctionReturnTypes(
+                return_types=[
+                    FunctionType(
+                        names=['int'],
+                        is_optional=False,
+                    ),
+                    FunctionType(
+                        names=['int'],
+                        is_optional=False,
+                    ),
+                    FunctionType(
+                        names=['int'],
+                        is_optional=False,
+                    )
+                ],
+                variable_length=False,
+            ),
+            arguments=FunctionArgumentValues(
+                arguments=[
+                    [
+                        FunctionArgument(
+                            name='theLight',
+                            argument_type=FunctionType(
+                                names=['light'],
+                                is_optional=False,
+                            ),
+                            default_value=None,
+                        )
+                    ]
+                ],
+                variable_length=False,
+            ),
+            generic_types=[
+
+            ],
+        ),
+        docs=FunctionDoc(
+            description='',
+            arguments={
+
+            },
+            result='',
+        )
+    )
+
+    assert field == FunctionOOPField(
+        name='color',
+        types=[
+            FunctionType(
+                names=['int'],
+                is_optional=False,
+            ),
+            FunctionType(
+                names=['int'],
+                is_optional=False,
+            ),
+            FunctionType(
+                names=['int'],
+                is_optional=False,
+            )
+        ],
+    )

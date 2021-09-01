@@ -1,3 +1,6 @@
+# The config is being used for light changes (like, change argument type or add / remove an argument)
+# Works only for global function. Does not work for OOP implementations
+
 version: 1.0.0
 contributors:
   - "Toliak <a@toliak.ru>"
@@ -60,6 +63,7 @@ data:
 
   - functionName: triggerEvent
     side: shared
+#    includeOOP: true
     actions:
       addGeneric:
         - *eventGeneric
@@ -139,6 +143,7 @@ data:
 
   - functionName: setTimer
     side: shared
+    includeOOP: true
     actions:
       addGeneric:
         - name: CallbackType

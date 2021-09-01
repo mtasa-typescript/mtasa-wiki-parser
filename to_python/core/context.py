@@ -6,7 +6,7 @@ from typing import Optional, Tuple, Any, Dict, TypeVar, Generic
 from wikitextparser import WikiText
 
 from crawler.core.types import PageUrl
-from to_python.core.types import CompoundFunctionData, CompoundEventData
+from to_python.core.types import CompoundFunctionData, CompoundEventData, CompoundOOPData
 
 CompoundDataType = TypeVar('CompoundDataType')
 
@@ -77,6 +77,7 @@ class Context:
     """
 
     functions: ContextData[CompoundFunctionData]
+    oops: Dict[str, CompoundOOPData]
     events: ContextData[CompoundEventData]
 
     # Verbose mode

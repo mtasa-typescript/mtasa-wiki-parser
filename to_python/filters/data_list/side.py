@@ -118,9 +118,15 @@ class FilterParseFunctionSide(FilterAbstract):
             # Init parsed data objects
             kwargs = dict()
             if data.client is not None:
-                kwargs['client'] = [FunctionData(None, None, None, name)]
+                kwargs['client'] = [
+                    FunctionData(None, None)
+                ]
+
             if data.server is not None:
-                kwargs['server'] = [FunctionData(None, None, None, name)]
+                kwargs['server'] = [
+                    FunctionData(None, None)
+                ]
+
             self.context_data.parsed[name] = CompoundFunctionData(**kwargs)
 
         print('Functions parse complete\u001b[0m')

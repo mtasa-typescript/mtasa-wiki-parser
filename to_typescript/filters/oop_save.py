@@ -61,7 +61,7 @@ export class {class_name}{generic_string}{inherit_inline} {{
             f'{class_name}.d.ts'
         )
 
-        imports: List[str] = copy(self.imports[side])
+        imports: List[str] = deepcopy(self.imports[side])
         if class_name in imports:
             imports.remove(class_name)
 
