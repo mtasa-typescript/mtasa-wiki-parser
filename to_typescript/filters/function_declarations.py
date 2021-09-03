@@ -46,7 +46,7 @@ class FilterGenerateFunctionDeclarations(FilterAbstract):
 
     def apply(self):
         for function in self.context.functions:
-            name = (function.server or function.client)[0].name
+            name = (function.server or function.client)[0].url
             url = self.context.urls[name]
             self.generate_declaration(function, url)
 

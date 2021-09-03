@@ -51,12 +51,7 @@ class FilterGenerateOOPDeclarations(FilterAbstract):
                 oop_list: List[FunctionOOP]
 
                 for oop_data in oop_list:
-                    url = self.context.urls.get(oop_data.base_function_name, PageUrl(
-                        url='',
-                        name='',
-                        category='',
-                        type=ListType[side.upper()]
-                    ))
+                    url = self.context.urls[oop_data.method.url]
                     self.generate_declaration(side=side,
                                               oop_data=oop_data,
                                               url=url)

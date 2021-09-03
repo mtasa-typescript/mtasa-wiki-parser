@@ -1,8 +1,8 @@
 import enum
-from typing import List
+from typing import List, Tuple
 
 from crawler.core.types import ListType as ListTypeOneSide
-from to_python.core.types import FunctionData, FunctionGeneric, FunctionArgument
+from to_python.core.types import FunctionData, FunctionGeneric, FunctionArgument, CompoundFunctionData
 from to_typescript.core.filter import FilterAbstract
 
 
@@ -22,6 +22,30 @@ class ListType(enum.Enum):
             return ListTypeOneSide.SERVER
 
 
+def get_functions_from_list_by_name(f_list: List[CompoundFunctionData],
+                                    function_type: ListType,
+                                    function_name: str) -> List[Tuple[CompoundFunctionData, ListTypeOneSide]]:
+    """
+    Gets function data list
+    """
+    if function_type == ListType.SHARED:
+        return (
+                get_functions_from_list_by_name(f_list,
+                                                ListType.SERVER,
+                                                function_name)
+                + get_functions_from_list_by_name(f_list,
+                                                  ListType.CLIENT,
+                                                  function_name)
+        )
+
+    function_type_original = function_type.normalize()
+    return [
+        (f, function_type_original)
+        for f in f_list
+        if f[function_type_original] and f[function_type_original][0].name == function_name
+    ]
+
+
 class FilterDumpProcessPost(FilterAbstract):
     """
     Post-post processing for dumps.
@@ -37,20 +61,10 @@ class FilterDumpProcessPost(FilterAbstract):
         :param function_name:
         :return:
         """
-        if function_type == ListType.SHARED:
-            return (
-                    self.get_functions(ListType.SERVER, function_name)
-                    + self.get_functions(ListType.CLIENT, function_name)
-            )
-
-        function_type_original = function_type.normalize()
-        return list(map(
-            lambda f: f[function_type_original],
-            filter(
-                lambda f: f[function_type_original] and f[function_type_original][0].name == function_name,
-                self.context.functions,
-            )
-        ))
+        return [
+            data[0][data[1]]
+            for data in get_functions_from_list_by_name(self.context.functions, function_type, function_name)
+        ]
 
     @staticmethod
     def iter_functions_arg_groups(functions: List[List[FunctionData]]):
@@ -64,8 +78,7 @@ class FilterDumpProcessPost(FilterAbstract):
                                         argument_name: str) -> List[List[FunctionArgument]]:
         """
         Returns arguments by name
-        :param function_type: SERVER / CLIENT
-        :param function_name: Function Name
+        :param functions: Function list
         :param argument_name: Name of the target argument
         """
         result: List[List[FunctionArgument]] = []
@@ -84,6 +97,7 @@ class FilterDumpProcessPost(FilterAbstract):
                                    new_function_argument: List[FunctionArgument]):
         """
         Replaces argument type
+        :param functions: Function list
         :param argument_name: Name of the target argument
         :param new_function_argument: New function argument object
         """
@@ -108,8 +122,7 @@ class FilterDumpProcessPost(FilterAbstract):
                                       variable_length: bool):
         """
         Replaces argument type
-        :param function_type: SERVER / CLIENT
-        :param function_name: Function Name
+        :param functions: Function list
         :param variable_length: Is there a variable arguments
         """
         for function in functions:

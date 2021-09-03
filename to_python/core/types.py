@@ -220,6 +220,7 @@ class FunctionData:
     """
     signature: FunctionSignature
     docs: FunctionDoc
+    url: str
 
     @property
     def name(self):
@@ -228,7 +229,8 @@ class FunctionData:
     def __repr__(self):
         return f'''FunctionData(
             signature={repr(self.signature)},
-            docs={repr(self.docs)}
+            docs={repr(self.docs)},
+            url={repr(self.url)},
         )'''
 
 

@@ -1,4 +1,4 @@
-from copy import copy, deepcopy
+from copy import deepcopy
 from typing import List
 
 from to_python.core.types import FunctionData, FunctionDoc, FunctionArgument, FunctionType
@@ -127,7 +127,9 @@ class FilterDumpProcessFunctions(FilterAbstract):
                 data_list.append(FunctionData(signature=new_signature,
                                               docs=FunctionDoc(description='',
                                                                arguments=dict(),
-                                                               result='', ), ), )
+                                                               result='', ),
+                                              url=data.url, ),
+                                 )
                 first_optional_index = -1
 
         return index_should_be_increased
@@ -165,4 +167,3 @@ class FilterDumpProcessFunctions(FilterAbstract):
                                                   data_list=data_list)
 
         print('\u001b[32mFunction processing complete\u001b[0m')
-
