@@ -63,7 +63,7 @@ data:
 
   - functionName: triggerEvent
     side: shared
-#    includeOOP: true
+    #    includeOOP: true
     actions:
       addGeneric:
         - *eventGeneric
@@ -220,3 +220,10 @@ data:
               names:
                 - CommandHandler
               isOptional: true
+
+  - functionName: dxCreateTexture
+    side: client
+    actions:
+      replaceReturnType:
+        values:
+        - DxTexture

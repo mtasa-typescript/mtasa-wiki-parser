@@ -3,6 +3,7 @@ from to_python.core.types import FunctionData, FunctionDoc, FunctionSignature, F
     FunctionArgumentValues, FunctionType, FunctionArgument
 
 dx_create_texture_function: FunctionData = FunctionData(
+    url='dxCreateTexture',
     docs=FunctionDoc(
         description='This function creates a texture element that can be used in the dxDraw functions',
         arguments={},
@@ -14,7 +15,7 @@ dx_create_texture_function: FunctionData = FunctionData(
             return_types=[
                 FunctionType(
                     is_optional=False,
-                    names=['Element']
+                    names=['DxTexture']
                 )
             ],
             variable_length=False,

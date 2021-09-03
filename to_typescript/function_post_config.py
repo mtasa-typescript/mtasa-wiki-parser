@@ -142,6 +142,21 @@ def apply_actions(processor: FilterDumpProcessPost,
 
             print(f'    Removed argument  \u001b[34m{arg_name}\u001b[0m')
 
+    if 'replaceReturnType' in actions:
+        return_types: List[str] = actions['replaceReturnType']['values']
+
+        for f_inner in functions:
+            for f in f_inner:
+                f.signature.return_types.return_types = [
+                    FunctionType(
+                        is_optional=False,
+                        names=[value],
+                    )
+                    for value in return_types
+                ]
+
+            print(f'    Replaced return types\u001b[0m')
+
 
 def apply_post_process(processor: FilterDumpProcessPost):
     print('\nLoading PostProcess config from  \u001b[34mfunction-config.yml\u001b[0m')
