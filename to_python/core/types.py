@@ -274,7 +274,7 @@ class CompoundDataAbstract(metaclass=abc.ABCMeta):
         return None
 
 
-@dataclass
+@dataclass(repr=False)
 class CompoundFunctionData(CompoundDataAbstract):
     """
     Data about client-side and server-side function
@@ -282,11 +282,8 @@ class CompoundFunctionData(CompoundDataAbstract):
     server: List[FunctionData] = field(default_factory=list)
     client: List[FunctionData] = field(default_factory=list)
 
-    def __repr__(self):
-        return super().__repr__()
 
-
-@dataclass
+@dataclass(repr=False)
 class CompoundOOPData(CompoundDataAbstract):
     """
     Data about client-side and server-side oop fields and methods
@@ -294,8 +291,6 @@ class CompoundOOPData(CompoundDataAbstract):
     server: List[FunctionOOP] = field(default_factory=list)
     client: List[FunctionOOP] = field(default_factory=list)
 
-    def __repr__(self):
-        return super().__repr__()
 
 @dataclass
 class EventData:
@@ -314,13 +309,10 @@ class EventData:
         )'''
 
 
-@dataclass
+@dataclass(repr=False)
 class CompoundEventData(CompoundDataAbstract):
     """
     Data about event
     """
     server: List[EventData] = field(default_factory=list)
     client: List[EventData] = field(default_factory=list)
-
-    def __repr__(self):
-        return super().__repr__()
