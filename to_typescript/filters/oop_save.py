@@ -9,9 +9,9 @@ from to_typescript.filters.function_save import FilterFunctionSave
 
 class FilterOOPSave(FilterAbstract):
     FILE_STARTER = FilterFunctionSave.FILE_STARTER
-    DUMP_FOLDERS = dict(server='output/types/mtasa/server/oop',
-                        client='output/types/mtasa/client/oop',
-                        client_gui='output/types/mtasa/client/oop/gui')
+    DUMP_FOLDERS = dict(server='output/server/oop',
+                        client='output/client/oop',
+                        client_gui='output/client/oop/gui')
 
     imports = FilterFunctionSave.imports
 

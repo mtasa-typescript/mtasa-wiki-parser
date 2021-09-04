@@ -10,8 +10,8 @@ class FilterFunctionSave(FilterAbstract):
 // DO NOT EDIT. ANY CHANGES WILL BE OVERWRITTEN
 
 '''
-    DUMP_FOLDERS = dict(server='output/types/mtasa/server/function',
-                        client='output/types/mtasa/client/function')
+    DUMP_FOLDERS = dict(server='output/server/function',
+                        client='output/client/function')
 
     imports = dict(
         server=[
@@ -32,7 +32,6 @@ class FilterFunctionSave(FilterAbstract):
             'PrimitiveType',
             'DxTexture',
             'ObjectGroup',
-            'Matrix',
             'Browser',
             'Light',
             'Effect',
@@ -76,6 +75,10 @@ class FilterFunctionSave(FilterAbstract):
             'ControlName',
             'KeyName',
             'KeyState',
+            'Vector2',
+            'Vector3',
+            'Vector4',
+            'Matrix',
         ]
     )
 

@@ -14,8 +14,8 @@ class FilterFunctionSaveIndex(FilterAbstract):
 export * from './variables';
 '''
 
-    DUMP_FOLDERS = dict(server='output/types/mtasa/server/',
-                        client='output/types/mtasa/client/')
+    DUMP_FOLDERS = dict(server='output/server/',
+                        client='output/client/')
 
     FILE_NAME = 'mtasa.d.ts'
 

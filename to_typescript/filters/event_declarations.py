@@ -21,8 +21,8 @@ class FilterEventSaveDeclarations(FilterAbstract):
 import { EventNames } from './all_event_names';
 '''
 
-    DUMP_FOLDERS = dict(server='output/types/mtasa/server/event',
-                        client='output/types/mtasa/client/event')
+    DUMP_FOLDERS = dict(server='output/server/event',
+                        client='output/client/event')
 
     imports = FilterFunctionSave().imports
 

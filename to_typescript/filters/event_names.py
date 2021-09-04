@@ -15,8 +15,8 @@ class FilterEventSaveNames(FilterAbstract):
 
 '''
 
-    DUMP_FOLDERS = dict(server='output/types/mtasa/server/event',
-                        client='output/types/mtasa/client/event')
+    DUMP_FOLDERS = dict(server='output/server/event',
+                        client='output/client/event')
 
     @staticmethod
     def normalize_enum_variable_name(name: str) -> str:
@@ -32,7 +32,7 @@ class FilterEventSaveNames(FilterAbstract):
 
         for data in data_list:
             variable_name = FilterEventSaveNames.normalize_enum_variable_name(data[0].name)
-            result += f'    {variable_name} = "{data[0].name}",\n'
+            result += f'    {variable_name} = \'{data[0].name}\',\n'
 
         result += '}\n'
 
