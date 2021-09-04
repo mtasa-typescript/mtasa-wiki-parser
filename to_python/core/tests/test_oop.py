@@ -88,6 +88,7 @@ def test_oop_parse_method_and_field():
     oop_code = '{{OOP||[[light]]:getColor|color|setLightColor}}'
 
     function_data = FunctionData(
+        url='getLightColor',
         signature=FunctionSignature(
             name='getLightColor',
             return_types=FunctionReturnTypes(
@@ -138,6 +139,7 @@ def test_oop_parse_method_and_field():
     field = FilterParseFunctionOOP.prepare_oop_field(oop_metadata, function_data.signature.return_types)
 
     assert method == FunctionData(
+        url='getLightColor',
         signature=FunctionSignature(
             name='getColor',
             return_types=FunctionReturnTypes(

@@ -83,6 +83,7 @@ def function_generator_fixture() -> TypeScriptFunctionGenerator:
                 variable_length=True,
             ),
         ),
+        url='getZoneName',
         docs=FunctionDoc(
             description="""This function allows you to retrieve the zone name of a certain location. """,
             arguments={
