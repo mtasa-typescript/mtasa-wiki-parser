@@ -18,7 +18,7 @@ class FilterSaveEventData(FilterAbstract):
     Saves all data into files
     """
     DUMP_FOLDER_ROOT = 'dump'
-    DUMP_FOLDER = f'dump/events'
+    DUMP_FOLDER = 'dump/events'
 
     def get_context_data(self) -> ContextData:
         return getattr(self.context, self.context_type)
@@ -26,7 +26,8 @@ class FilterSaveEventData(FilterAbstract):
     def __init__(self):
         super().__init__('events')
 
-        self.categories: DefaultDict[str, List[CompoundEventData]] = collections.defaultdict(lambda: [])
+        self.categories: DefaultDict[
+            str, List[CompoundEventData]] = collections.defaultdict(lambda: [])
         self.files_to_import: Set[str] = set()
 
     def collect_by_category(self, f_name: str, data: CompoundEventData):
@@ -35,7 +36,8 @@ class FilterSaveEventData(FilterAbstract):
         """
         url = self.get_context_data().urls[f_name]
         if url is None:
-            raise FilterSaveEventDataError(f'Url no found for event name: {f_name}')
+            raise FilterSaveEventDataError(
+                f'Url no found for event name: {f_name}')
 
         self.categories[url.category].append(data)
 
@@ -71,7 +73,7 @@ from to_python.core.types import FunctionType, \\
     FunctionDoc, \\
     EventData, \\
     CompoundEventData
-    
+
 DUMP_PARTIAL = [
     {list_text}
 ]
@@ -87,7 +89,8 @@ DUMP_PARTIAL = [
         files = sorted(self.files_to_import)
 
         sections_text = '\n'.join(
-            f'from to_python.dump.events.{category} import DUMP_PARTIAL as DP_E_{category.upper()}'
+            f'from to_python.dump.events.{category} '
+            f'import DUMP_PARTIAL as DP_E_{category.upper()}'
             for category in files
         )
         dump_text = f',\n{" " * 4}'.join(
@@ -115,7 +118,8 @@ DUMP_EVENTS = [
         with open(cache_file, 'a', encoding='UTF-8', newline='\n') as cache:
             cache.write('\n\n')
             cache.write(FilterSaveFetchedEvents.text_url_list(
-                [self.get_context_data().urls[k] for k in self.get_context_data().urls],
+                [self.get_context_data().urls[k] for k in
+                 self.get_context_data().urls],
                 variable_name='URL_LIST_EVENT'
             ))
 

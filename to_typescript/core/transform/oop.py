@@ -21,7 +21,8 @@ class TypeScriptOOPGenerator:
         self.data = deepcopy(data)
         self.url = url
         self.host_name = host_name
-        self.generator = TypeScriptFunctionGenerator(data.method, self.url, self.host_name)
+        self.generator = TypeScriptFunctionGenerator(data.method, self.url,
+                                                     self.host_name)
 
     def generate_field(self) -> Optional[str]:
         """
@@ -36,11 +37,18 @@ class TypeScriptOOPGenerator:
 
         doc = f'''/**{self.generator.generate_doc_description(self.data.method.docs)}
  */'''
-        return f'''{doc}
-{static}{self.data.field.name}: {self.generator.generate_return_type_static(FunctionReturnTypes(
-            return_types=self.data.field.types,
-            variable_length=False,
-        ))};'''
+
+        return_type_static = self.generator.generate_return_type_static(
+            FunctionReturnTypes(
+                return_types=self.data.field.types,
+                variable_length=False,
+            )
+        )
+        return (
+            f'{doc}\n'
+            f'{static}{self.data.field.name}: '
+            f'{return_type_static};'
+        )
 
     def generate_method(self) -> Optional[str]:
         """
@@ -49,7 +57,8 @@ class TypeScriptOOPGenerator:
         if self.data.method.name is None:
             return None
 
-        args = TypeScriptFunctionGenerator.generate_arguments(self.generator.data.signature.arguments)
+        args = TypeScriptFunctionGenerator.generate_arguments(
+            self.generator.data.signature.arguments)
         args_brackets = f'''(
     {args}
 )'''
@@ -64,7 +73,8 @@ class TypeScriptOOPGenerator:
         if self.data.method.name == 'constructor':
             return_type = ''
 
-        generics = TypeScriptFunctionGenerator.generate_generics(self.data.method.signature.generic_types)
+        generics = TypeScriptFunctionGenerator.generate_generics(
+            self.data.method.signature.generic_types)
         if self.data.method.name == 'constructor':
             generics = ''
 

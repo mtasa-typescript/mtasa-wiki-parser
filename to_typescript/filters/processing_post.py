@@ -2,7 +2,8 @@ import enum
 from typing import List, Tuple
 
 from crawler.core.types import ListType as ListTypeOneSide
-from to_python.core.types import FunctionData, FunctionGeneric, FunctionArgument, CompoundFunctionData, CompoundOOPData
+from to_python.core.types import FunctionData, FunctionGeneric, \
+    FunctionArgument, CompoundFunctionData, CompoundOOPData
 from to_typescript.core.filter import FilterAbstract
 
 
@@ -24,7 +25,8 @@ class ListType(enum.Enum):
 
 def get_functions_from_list_by_name(f_list: List[CompoundFunctionData],
                                     function_type: ListType,
-                                    function_name: str) -> List[Tuple[CompoundFunctionData, ListTypeOneSide]]:
+                                    function_name: str) -> \
+        List[Tuple[CompoundFunctionData, ListTypeOneSide]]:
     """
     Gets function data list
     """
@@ -42,13 +44,15 @@ def get_functions_from_list_by_name(f_list: List[CompoundFunctionData],
     return [
         (f, function_type_original)
         for f in f_list
-        if f[function_type_original] and f[function_type_original][0].name == function_name
+        if f[function_type_original]
+        and f[function_type_original][0].name == function_name
     ]
 
 
 def get_oops_from_list_by_name(f_list: List[CompoundOOPData],
                                function_type: ListType,
-                               function_name: str) -> List[Tuple[CompoundOOPData, ListTypeOneSide]]:
+                               function_name: str) -> \
+        List[Tuple[CompoundOOPData, ListTypeOneSide]]:
     """
     Gets function data list
     """
@@ -66,7 +70,8 @@ def get_oops_from_list_by_name(f_list: List[CompoundOOPData],
     return [
         (f, function_type_original)
         for f in f_list
-        if f[function_type_original] and f[function_type_original][0].base_function_name == function_name
+        if f[function_type_original] and f[function_type_original][
+            0].base_function_name == function_name
     ]
 
 
@@ -87,7 +92,9 @@ class FilterDumpProcessPost(FilterAbstract):
         """
         return [
             data[0][data[1]]
-            for data in get_functions_from_list_by_name(self.context.functions, function_type, function_name)
+            for data in get_functions_from_list_by_name(self.context.functions,
+                                                        function_type,
+                                                        function_name)
         ]
 
     @staticmethod
@@ -99,7 +106,8 @@ class FilterDumpProcessPost(FilterAbstract):
 
     def get_signature_arguments_by_name(self,
                                         functions: List[List[FunctionData]],
-                                        argument_name: str) -> List[List[FunctionArgument]]:
+                                        argument_name: str) -> \
+            List[List[FunctionArgument]]:
         """
         Returns arguments by name
         :param functions: Function list
@@ -118,7 +126,8 @@ class FilterDumpProcessPost(FilterAbstract):
     def replace_signature_argument(self,
                                    functions: List[List[FunctionData]],
                                    argument_name: str,
-                                   new_function_argument: List[FunctionArgument]):
+                                   new_function_argument: List[
+                                       FunctionArgument]):
         """
         Replaces argument type
         :param functions: Function list
@@ -152,14 +161,16 @@ class FilterDumpProcessPost(FilterAbstract):
         for function in functions:
             for declaration in function:
                 if variable_length is not None:
-                    declaration.signature.arguments.variable_length = variable_length
+                    declaration.signature.arguments.variable_length = \
+                        variable_length
 
     def add_signature_argument(self,
                                functions: List[List[FunctionData]],
                                new_function_argument: List[FunctionArgument]):
         for function in functions:
             for declaration in function:
-                declaration.signature.arguments.arguments.append(new_function_argument)
+                declaration.signature.arguments.arguments.append(
+                    new_function_argument)
 
     def remove_signature_argument(self,
                                   function_type: ListType,
@@ -186,10 +197,13 @@ class FilterDumpProcessPost(FilterAbstract):
                     index += 1
 
         if not removed:
-            raise FilterDumpProcessPostError(f'No arguments was removed.\n'
-                                             f'Side: {function_type}, argument: {argument_name}')
+            raise FilterDumpProcessPostError(
+                f'No arguments was removed.\n'
+                f'Side: {function_type}, argument: {argument_name}'
+            )
 
-    def add_generic_type(self, functions: List[List[FunctionData]], generic: FunctionGeneric):
+    def add_generic_type(self, functions: List[List[FunctionData]],
+                         generic: FunctionGeneric):
         """
         Adds generic type into the function
         :param function_type: SERVER / CLIENT

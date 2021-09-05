@@ -16,4 +16,7 @@ class FilterGetDump(FilterAbstract):
 
     def apply(self):
         self.get_dump()
-        print(f'Got all Dumps:  \u001b[34m{len(self.context.functions)}\u001b[0m')
+        print(
+            f'Got all Dumps: '
+            f'\u001b[34m{len(self.context.functions)}\u001b[0m'
+        )

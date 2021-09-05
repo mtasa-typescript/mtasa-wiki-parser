@@ -98,8 +98,10 @@ class FilterFunctionSave(FilterAbstract):
 }} from '{filename}';
 '''
 
-    def save_file_category(self, category_name: str, side: str, content: List[str]):
-        cache_file = os.path.join(self.DUMP_FOLDERS[side], f'{category_name}.d.ts')
+    def save_file_category(self, category_name: str, side: str,
+                           content: List[str]):
+        cache_file = os.path.join(self.DUMP_FOLDERS[side],
+                                  f'{category_name}.d.ts')
 
         text = (self.FILE_STARTER +
                 self.generate_imports(self.imports[side], '../structure')

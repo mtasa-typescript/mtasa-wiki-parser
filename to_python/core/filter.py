@@ -21,7 +21,8 @@ class FilterAbstract(metaclass=abc.ABCMeta):
         :param context: Global context
         """
         self.context = context
-        self.context_data: ContextData[Union[CompoundFunctionData, CompoundEventData]] = \
+        self.context_data: ContextData[
+            Union[CompoundFunctionData, CompoundEventData]] = \
             getattr(context, self.context_type)
 
     @abc.abstractmethod

@@ -2,8 +2,14 @@ from copy import copy
 from typing import List
 
 from crawler.core.types import PageUrl
-from to_python.core.types import FunctionData, FunctionType, FunctionArgument, FunctionDoc, FunctionGeneric, \
-    FunctionArgumentValues, FunctionSignature, FunctionReturnTypes
+from to_python.core.types import \
+    FunctionData, \
+    FunctionType, \
+    FunctionArgument, \
+    FunctionDoc, \
+    FunctionGeneric, \
+    FunctionArgumentValues, \
+    FunctionReturnTypes
 from to_typescript.core.transform.extra_rules import is_varargs_type
 
 
@@ -41,7 +47,9 @@ class TypeScriptFunctionGenerator:
 
             if len(line) > TypeScriptFunctionGenerator.MAX_DOC_LINE_LENGTH:
                 index_to_cut = TypeScriptFunctionGenerator.MAX_DOC_LINE_LENGTH
-                for i in range(TypeScriptFunctionGenerator.MAX_DOC_LINE_LENGTH):
+                for i in range(
+                        TypeScriptFunctionGenerator.MAX_DOC_LINE_LENGTH
+                ):
                     if line[i] == ' ':
                         index_to_cut = i
 
@@ -58,7 +66,8 @@ class TypeScriptFunctionGenerator:
         """
         Generates JSDoc function description
         """
-        description = TypeScriptFunctionGenerator.cut_doc_lines(docs.description)
+        description = TypeScriptFunctionGenerator.cut_doc_lines(
+            docs.description)
 
         if not description:
             return ''
@@ -76,7 +85,10 @@ class TypeScriptFunctionGenerator:
         doc_param_list = []
         for arg_name in docs.arguments:
             arg_desc = docs.arguments[arg_name]
-            doc_param_list.append(f' * @param {arg_name} {self.cut_doc_lines(arg_desc)}'.rstrip())
+            doc_param_list.append(
+                f' * @param {arg_name} '
+                f'{self.cut_doc_lines(arg_desc)}'.rstrip()
+            )
 
         doc_params = '\n'.join(doc_param_list)
         doc_params += '\n' if doc_param_list else ''
@@ -111,8 +123,9 @@ class TypeScriptFunctionGenerator:
                 return_types.pop(-1)
 
             result = 'LuaMultiReturn<[\n'
-            result += ',\n'.join('    ' + TypeScriptFunctionGenerator.function_type_text(t)
-                                 for t in return_types)
+            result += ',\n'.join(
+                '    ' + TypeScriptFunctionGenerator.function_type_text(t)
+                for t in return_types)
 
             if src_return_types.variable_length:
                 if len(return_types) > 1:
@@ -131,7 +144,8 @@ class TypeScriptFunctionGenerator:
         """
         Generates return TypeScript type
         """
-        return TypeScriptFunctionGenerator.generate_return_type_static(self.data.signature.return_types)
+        return TypeScriptFunctionGenerator.generate_return_type_static(
+            self.data.signature.return_types)
 
     @staticmethod
     def function_arg_text(arg: List[FunctionArgument]) -> str:
@@ -141,7 +155,8 @@ class TypeScriptFunctionGenerator:
         type_names = []
         for a in arg:
             if a.argument_type is None:
-                raise TypeScriptFunctionGeneratorError(f'No type information for argument "{a.name}"')
+                raise TypeScriptFunctionGeneratorError(
+                    f'No type information for argument "{a.name}"')
 
             type_names.extend(a.argument_type.names)
 
@@ -164,7 +179,9 @@ class TypeScriptFunctionGenerator:
         if arguments.variable_length:
             if len(arg_list[-1]) > 1:
                 raise TypeScriptFunctionGeneratorError(
-                    'Varargs: Cannot transpile multiple arguments at the last position')
+                    'Varargs: Cannot transpile '
+                    'multiple arguments at the last position'
+                )
 
             last_arg = arg_list[-1][0]
             if is_varargs_type(last_arg.argument_type):
@@ -216,6 +233,10 @@ class TypeScriptFunctionGenerator:
 
         generics = self.generate_generics(self.data.signature.generic_types)
 
-        return f'''/**{self.generate_doc()} * @noSelf
- */
-export declare function {self.data.name}{generics}{args_brackets}: {self.generate_return_type()};'''
+        return (
+            f'/**{self.generate_doc()} * @noSelf\n'
+            f' */\n'
+            f'export declare function '
+            f'{self.data.name}{generics}{args_brackets}: '
+            f'{self.generate_return_type()};'
+        )

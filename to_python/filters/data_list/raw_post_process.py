@@ -8,7 +8,8 @@ class FilterRawPostProcess(FilterAbstract):
     Cleans raw data (from context.raw_data)
     """
 
-    END_CUTOFF_REGEX = re.compile(r'=+ *(See Also|Examples?) *=+', re.IGNORECASE)
+    END_CUTOFF_REGEX = re.compile(r'=+ *(See Also|Examples?) *=+',
+                                  re.IGNORECASE)
 
     def __init__(self, context_type: str):
         """

@@ -1,7 +1,8 @@
 import enum
 from typing import List, Optional
 
-from to_python.core.types import FunctionOOP, FunctionOOPField, FunctionData, FunctionType, FunctionArgument
+from to_python.core.types import FunctionOOP, FunctionOOPField, FunctionData, \
+    FunctionType, FunctionArgument
 from to_typescript.core.filter import FilterAbstract
 
 
@@ -14,12 +15,15 @@ class VectorizableType(enum.Enum):
 
 class FilterDumpProcessVectorizeOOP(FilterAbstract):
     @staticmethod
-    def is_vectorizable_field(oop: FunctionOOP) -> Optional[VectorizableType]:
+    def is_vectorizable_field(oop: FunctionOOP) -> \
+            Optional[VectorizableType]:
         if not oop.field:
             return None
 
-        if oop.class_name.lower() in {'element', 'player', 'ped', 'object', 'vehicle', 'camera', 'searchlight'}:
-            if oop.field.name.lower() in {'position', 'rotation', 'velocity', 'angularvelocity', 'scale'}:
+        if oop.class_name.lower() in {'element', 'player', 'ped', 'object',
+                                      'vehicle', 'camera', 'searchlight'}:
+            if oop.field.name.lower() in {'position', 'rotation', 'velocity',
+                                          'angularvelocity', 'scale'}:
                 return VectorizableType.Vector3D
 
         if oop.class_name.lower() in {'marker'}:
@@ -34,14 +38,21 @@ class FilterDumpProcessVectorizeOOP(FilterAbstract):
             return VectorizableType.Matrix
 
     @staticmethod
-    def is_vectorizable_method_args(oop: FunctionOOP) -> Optional[VectorizableType]:
+    def is_vectorizable_method_args(oop: FunctionOOP) -> \
+            Optional[VectorizableType]:
         if not oop.method:
             return None
 
         if not oop.method.name.startswith('set'):
             return None
 
-        if oop.class_name.lower() in {'element', 'player', 'ped', 'mtasaobject', 'vehicle', 'camera', 'marker',
+        if oop.class_name.lower() in {'element',
+                                      'player',
+                                      'ped',
+                                      'mtasaobject',
+                                      'vehicle',
+                                      'camera',
+                                      'marker',
                                       'searchlight'}:
             if 'position' in oop.method.name.lower() \
                     or 'rotation' in oop.method.name.lower() \
@@ -64,14 +75,21 @@ class FilterDumpProcessVectorizeOOP(FilterAbstract):
             return VectorizableType.Matrix
 
     @staticmethod
-    def is_vectorizable_method_return_type(oop: FunctionOOP) -> Optional[VectorizableType]:
+    def is_vectorizable_method_return_type(oop: FunctionOOP) -> \
+            Optional[VectorizableType]:
         if not oop.method:
             return None
 
         if not oop.method.name.startswith('get'):
             return None
 
-        if oop.class_name.lower() in {'element', 'player', 'ped', 'mtasaobject', 'vehicle', 'camera', 'marker',
+        if oop.class_name.lower() in {'element',
+                                      'player',
+                                      'ped',
+                                      'mtasaobject',
+                                      'vehicle',
+                                      'camera',
+                                      'marker',
                                       'searchlight'}:
             if 'position' in oop.method.name.lower() \
                     or 'rotation' in oop.method.name.lower() \
@@ -94,7 +112,8 @@ class FilterDumpProcessVectorizeOOP(FilterAbstract):
             return VectorizableType.Matrix
 
     @staticmethod
-    def vectorize_field(field: FunctionOOPField, how: VectorizableType) -> None:
+    def vectorize_field(field: FunctionOOPField, how: VectorizableType) -> \
+            None:
         field.types = [
             FunctionType(
                 names=[how.value],
@@ -103,7 +122,8 @@ class FilterDumpProcessVectorizeOOP(FilterAbstract):
         ]
 
     @staticmethod
-    def vectorize_method_args(method: FunctionData, how: VectorizableType) -> None:
+    def vectorize_method_args(method: FunctionData,
+                              how: VectorizableType) -> None:
         method.signature.arguments.arguments = [
             [FunctionArgument(
                 name='vectorized',
@@ -113,11 +133,13 @@ class FilterDumpProcessVectorizeOOP(FilterAbstract):
                 ),
                 default_value=None,
             )],
-            *method.signature.arguments.arguments[6 if how == VectorizableType.Matrix else 3:]
+            *method.signature.arguments.arguments[
+             6 if how == VectorizableType.Matrix else 3:]
         ]
 
     @staticmethod
-    def vectorize_method_return_type(method: FunctionData, how: VectorizableType) -> None:
+    def vectorize_method_return_type(method: FunctionData,
+                                     how: VectorizableType) -> None:
         method.signature.return_types.return_types = [
             FunctionType(
                 names=[how.value],
@@ -130,17 +152,26 @@ class FilterDumpProcessVectorizeOOP(FilterAbstract):
         if field_vectorize:
             self.vectorize_field(oop.field, field_vectorize)
 
-            print(f'    Vectorized field \x1b[34m{oop.class_name}.{oop.field.name}\x1b[0m')
+            print(
+                f'    Vectorized field '
+                f'\x1b[34m{oop.class_name}.{oop.field.name}\x1b[0m'
+            )
 
         method_vectorize = self.is_vectorizable_method_args(oop)
         if method_vectorize:
             self.vectorize_method_args(oop.method, method_vectorize)
-            print(f'    Vectorized method args \x1b[34m{oop.class_name}.{oop.method.name}\x1b[0m')
+            print(
+                f'    Vectorized method args '
+                f'\x1b[34m{oop.class_name}.{oop.method.name}\x1b[0m'
+            )
 
         method_vectorize = self.is_vectorizable_method_return_type(oop)
         if method_vectorize:
             self.vectorize_method_return_type(oop.method, method_vectorize)
-            print(f'    Vectorized method return types \x1b[34m{oop.class_name}.{oop.method.name}\x1b[0m')
+            print(
+                f'    Vectorized method return types '
+                f'\x1b[34m{oop.class_name}.{oop.method.name}\x1b[0m'
+            )
 
     def apply(self):
         for oop in self.context.oops:
@@ -150,4 +181,6 @@ class FilterDumpProcessVectorizeOOP(FilterAbstract):
                 for oop_inner in data:
                     self.vectorize_oop_if_possible(oop_inner)
 
-        print('Generated vectorized definitions for OOP declarations\u001b[0m')
+        print(
+            'Generated vectorized definitions for OOP declarations\u001b[0m'
+        )

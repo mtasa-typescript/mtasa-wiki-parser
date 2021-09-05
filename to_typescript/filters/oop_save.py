@@ -1,5 +1,5 @@
 import os
-from copy import deepcopy, copy
+from copy import deepcopy
 from typing import List
 
 from to_typescript.core.filter import FilterAbstract
@@ -70,7 +70,8 @@ export class {class_name}{generic_string}{inherit_inline} {{
 
         text = (
                 self.FILE_STARTER +
-                FilterFunctionSave.generate_imports(imports, ('../' if is_gui else '') + '../structure') +
+                FilterFunctionSave.generate_imports(imports, (
+                    '../' if is_gui else '') + '../structure') +
                 class_started
         )
         if fields:
@@ -97,9 +98,19 @@ export class {class_name}{generic_string}{inherit_inline} {{
                 self.save_file_category(
                     class_name=key,
                     side=side,
-                    fields=self.context.declarations.oop_fields[key].get(side, []),
-                    methods=self.context.declarations.oop_methods[key].get(side, []),
-                    class_templates=self.context.declarations.oop_class_templates[key].get(side, []),
+                    fields=self.context.declarations.oop_fields[key].get(
+                        side,
+                        []
+                    ),
+                    methods=self.context.declarations.oop_methods[key].get(
+                        side,
+                        []
+                    ),
+                    class_templates=self.context.declarations
+                                        .oop_class_templates[key].get(
+                                            side,
+                                            []
+                                        ),
                 )
 
         print('Generated .d.ts files with OOP\u001b[0m')

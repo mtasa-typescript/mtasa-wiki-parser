@@ -1,6 +1,3 @@
-import sys
-
-
 def compare_lists(actual, expected):
     assert len(actual) == len(expected)
 

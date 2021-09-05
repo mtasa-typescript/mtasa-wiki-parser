@@ -69,7 +69,8 @@ class OOPTokenizer:
 
     def references_tokenize(self):
         """
-        Make everything inside reference brackets and braces a reference or an undefined
+        Make everything inside reference brackets
+          and braces a reference or an undefined
         Example: [[something|somethingelse]]
         """
         bracket_counter = 0
@@ -112,7 +113,10 @@ class OOPTokenizer:
                 counter += 1
 
         if counter > 5:
-            raise OOPTokenizerError(f'Expected less than 5 delimiters, got {counter}. Code:\n{self.code}')
+            raise OOPTokenizerError(
+                f'Expected less than 5 delimiters, got {counter}. '
+                f'Code:\n{self.code}'
+            )
 
     def content_tokenize(self):
         """
@@ -157,7 +161,8 @@ class OOPTokenizer:
         for index, token in enumerate(self.tokenized):
             if token.type != self.TokenType.UNDEFINED:
                 continue
-            raise OOPTokenizerError('Undefined token. Function signature: \n' + self.code)
+            raise OOPTokenizerError(
+                'Undefined token. Function signature: \n' + self.code)
 
     def trim_tokenize(self):
         """
@@ -177,14 +182,16 @@ class OOPTokenizer:
         self.content_tokenize()
 
         self.delimiters_check()
-        SignatureTokenizer.concat_neighbours_tokenize(tokenized=self.tokenized,
-                                                      allowed={
-                                                          self.TokenType.UNUSED,
-                                                          self.TokenType.NOTE,
-                                                          self.TokenType.METHOD,
-                                                          self.TokenType.FIELD,
-                                                          self.TokenType.COUNTERPART_METHOD,
-                                                      })
+        SignatureTokenizer.concat_neighbours_tokenize(
+            tokenized=self.tokenized,
+            allowed={
+                self.TokenType.UNUSED,
+                self.TokenType.NOTE,
+                self.TokenType.METHOD,
+                self.TokenType.FIELD,
+                self.TokenType.COUNTERPART_METHOD,
+            }
+        )
 
         self.trim_tokenize()
         self.final_check()

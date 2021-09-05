@@ -226,4 +226,4 @@ data:
     actions:
       replaceReturnType:
         values:
-        - DxTexture
+          - DxTexture

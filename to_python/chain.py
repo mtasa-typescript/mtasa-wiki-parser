@@ -13,8 +13,10 @@ from to_python.filters.data_list.signature import FilterParseFunctionSignature
 from to_python.filters.data_list.wtp import FilterWikiTextParser
 from to_python.filters.event_data_list.save import FilterSaveEventData
 from to_python.filters.event_data_list.side import FilterParseEventSide
-from to_python.filters.event_data_list.signature import FilterParseEventSignature
-from to_python.filters.get_urls import FilterGetFunctionUrls, FilterGetEventUrls
+from to_python.filters.event_data_list.signature import \
+    FilterParseEventSignature
+from to_python.filters.get_urls import FilterGetFunctionUrls, \
+    FilterGetEventUrls
 
 FILTER_CHAIN: List[FilterAbstract]
 

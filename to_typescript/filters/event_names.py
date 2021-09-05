@@ -25,13 +25,16 @@ class FilterEventSaveNames(FilterAbstract):
     @staticmethod
     def generate_file_content(data_list: List[List[EventData]]) -> str:
         """
-        Generated .d.ts with enum with all event names (for client / server side)
+        Generated .d.ts with enum with all event names
+          (for client / server side)
         """
         result = FilterEventSaveNames.FILE_STARTER
         result += 'export const enum EventNames {\n'
 
         for data in data_list:
-            variable_name = FilterEventSaveNames.normalize_enum_variable_name(data[0].name)
+            variable_name = FilterEventSaveNames.normalize_enum_variable_name(
+                data[0].name
+            )
             result += f'    {variable_name} = \'{data[0].name}\',\n'
 
         result += '}\n'
@@ -49,14 +52,17 @@ class FilterEventSaveNames(FilterAbstract):
         for side in ['client', 'server']:
             all_events_by_side: List[List[EventData]] = []
             for category in self.context.events_declarations:
-                data: List[List[EventData]] = self.context.events_declarations[category][side]
+                data: List[List[EventData]] = \
+                    self.context.events_declarations[category][side]
                 if not data:
                     continue
 
                 all_events_by_side.extend(data)
 
             content = self.generate_file_content(all_events_by_side)
-            self.save_file(folder=self.DUMP_FOLDERS[side],
-                           content=content, )
+            self.save_file(
+                folder=self.DUMP_FOLDERS[side],
+                content=content,
+            )
 
         print('Generated event name declaration files\u001b[0m')

@@ -69,7 +69,8 @@ class WikiPageFetcher():
         """
         Fetches all passed pages
         """
-        batches = [self.pages[x:x + self.batch_size] for x in range(0, len(self.pages), self.batch_size)]
+        batches = [self.pages[x:x + self.batch_size] for x in
+                   range(0, len(self.pages), self.batch_size)]
         for batch in batches:
             result = self.fetch_batch(batch)
 
@@ -89,7 +90,8 @@ class FilterFetchFunctions(FilterAbstract):
     def generate_url_list_dict(self,
                                url_list: List[PageUrl],
                                start_from: Optional[Tuple[ListType, str]],
-                               blacklist: Collection[str]) -> Dict[str, PageUrl]:
+                               blacklist: Collection[str]) -> \
+            Dict[str, PageUrl]:
         """
         Generates dictionary with URLs
         :return: Dictionary. Key is the name (string), value is the PageUrl
@@ -99,7 +101,10 @@ class FilterFetchFunctions(FilterAbstract):
             print('All pages will be cached')
             enable_fetch = True
         else:
-            print(f'Pages will begin to be cached from the "{start_from[1]}", "{start_from[0]}"')
+            print(
+                f'Pages will begin to be cached from '
+                f'the "{start_from[1]}", "{start_from[0]}"'
+            )
 
         result = dict()
 
@@ -108,7 +113,8 @@ class FilterFetchFunctions(FilterAbstract):
                 print(f'Blacklisted {url.name}')
                 continue
 
-            if not enable_fetch and url.name == start_from[1] and url.type == start_from[0]:
+            if not enable_fetch and url.name == start_from[1] and url.type == \
+                    start_from[0]:
                 enable_fetch = True
             if not enable_fetch:
                 print(f'Skipped "{url.name}", {url.type.name}')
@@ -121,19 +127,32 @@ class FilterFetchFunctions(FilterAbstract):
     def apply(self):
         print('Functions fetch began')
 
-        url_dict = self.generate_url_list_dict(url_list=self.context.url_list,
-                                               blacklist=self.context.blacklist,
-                                               start_from=self.context.fetch_start_from, )
+        url_dict = self.generate_url_list_dict(
+            url_list=self.context.url_list,
+            blacklist=self.context.blacklist,
+            start_from=self.context.fetch_start_from,
+        )
         keys = list(url_dict.keys())
 
         counter = 0
-        for name, content in WikiPageFetcher(keys, self.context.host_url, self.context.fetch_batch_size).fetch():
+        for name, content in WikiPageFetcher(
+                keys,
+                self.context.host_url,
+                self.context.fetch_batch_size
+        ).fetch():
             if name not in url_dict:
-                raise FilterFetchFunctionsError(f'Not found key {name} in url_dict. Have you normalized the URL names?')
+                raise FilterFetchFunctionsError(
+                    f'Not found key {name} in url_dict. '
+                    f'Have you normalized the URL names?'
+                )
 
             url_object = url_dict[name]
             counter += 1
 
-            print(f'Fetched [{counter}/{len(url_dict)}] "{url_object.name}", {url_object.type.name}')
+            print(
+                f'Fetched [{counter}/{len(url_dict)}] '
+                f'"{url_object.name}", '
+                f'{url_object.type.name}'
+            )
 
             self.context.fetched.append((url_dict[name], content))

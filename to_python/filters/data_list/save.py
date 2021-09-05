@@ -18,7 +18,7 @@ class FilterSaveFunctionData(FilterAbstract):
     Saves all data into files
     """
     DUMP_FOLDER_ROOT = 'dump'
-    DUMP_FOLDER = f'dump/functions'
+    DUMP_FOLDER = 'dump/functions'
 
     def get_context_data(self) -> ContextData:
         return getattr(self.context, self.context_type)
@@ -26,8 +26,12 @@ class FilterSaveFunctionData(FilterAbstract):
     def __init__(self):
         super().__init__('functions')
 
-        self.categories: DefaultDict[str, List[CompoundFunctionData]] = collections.defaultdict(lambda: [])
-        self.oop_categories: DefaultDict[str, List[CompoundFunctionData]] = collections.defaultdict(lambda: [])
+        self.categories: DefaultDict[
+            str, List[CompoundFunctionData]] = collections.defaultdict(
+            lambda: [])
+        self.oop_categories: DefaultDict[
+            str, List[CompoundFunctionData]] = collections.defaultdict(
+            lambda: [])
         self.files_to_import: Set[str] = set()
 
     def collect_by_category(self, f_name: str, data: CompoundFunctionData):
@@ -36,7 +40,8 @@ class FilterSaveFunctionData(FilterAbstract):
         """
         url = self.get_context_data().urls[f_name]
         if url is None:
-            raise FilterSaveFunctionDataError(f'Url no found for function name: {f_name}')
+            raise FilterSaveFunctionDataError(
+                f'Url no found for function name: {f_name}')
 
         self.categories[url.category].append(data)
 
@@ -72,7 +77,7 @@ from to_python.core.types import FunctionType, \\
     FunctionDoc, \\
     FunctionData, \\
     CompoundFunctionData
-     
+
 DUMP_PARTIAL = [
     {list_text}
 ]
@@ -88,7 +93,8 @@ DUMP_PARTIAL = [
         files = sorted(self.files_to_import)
 
         sections_text = '\n'.join(
-            f'from to_python.dump.functions.{category} import DUMP_PARTIAL as DP_F_{category.upper()}'
+            f'from to_python.dump.functions.{category} '
+            f'import DUMP_PARTIAL as DP_F_{category.upper()}'
             for category in files
         )
         dump_text = f',\n{" " * 4}'.join(
@@ -114,7 +120,8 @@ DUMP_FUNCTIONS = [
 
         with open(cache_file, 'w', encoding='UTF-8', newline='\n') as cache:
             cache.write(FilterSaveFetched.text_url_list(
-                [self.get_context_data().urls[k] for k in self.get_context_data().urls]
+                [self.get_context_data().urls[k] for k in
+                 self.get_context_data().urls]
             ))
 
     def save_data(self):

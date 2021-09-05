@@ -5,8 +5,10 @@ import yaml
 from jsonschema import validate
 
 from crawler.core.types import ListType as CrawlerListType
-from to_python.core.types import FunctionGeneric, FunctionType, FunctionArgument, FunctionData, CompoundOOPData
-from to_typescript.filters.processing_post import FilterDumpProcessPost, ListType, FilterDumpProcessPostError
+from to_python.core.types import FunctionGeneric, FunctionType, \
+    FunctionArgument, FunctionData, CompoundOOPData
+from to_typescript.filters.processing_post import FilterDumpProcessPost, \
+    ListType, FilterDumpProcessPostError
 
 
 class FunctionPostConfigException(Exception):
@@ -17,8 +19,10 @@ def parse_side(side: str) -> ListType:
     return ListType[side.upper()]
 
 
-def get_oop_functions(oops: List[CompoundOOPData], side: ListType, function_name: str) -> List[List[FunctionData]]:
-    original_sides = [CrawlerListType[side.name]] if side != ListType.SHARED else [
+def get_oop_functions(oops: List[CompoundOOPData], side: ListType,
+                      function_name: str) -> List[List[FunctionData]]:
+    original_sides = [
+        CrawlerListType[side.name]] if side != ListType.SHARED else [
         CrawlerListType.CLIENT,
         CrawlerListType.SERVER
     ]
@@ -51,7 +55,10 @@ def apply_actions(processor: FilterDumpProcessPost,
                 for declaration in function:
                     declaration.signature.arguments.variable_length = False
 
-            print(f'    Applied variable_length = \u001b[34m{variable_length}\u001b[0m')
+            print(
+                f'    Applied variable_length ='
+                f' \u001b[34m{variable_length}\u001b[0m'
+            )
 
     if 'addGeneric' in actions:
         generic_list: List[Dict[str, str]] = actions['addGeneric']
@@ -65,7 +72,7 @@ def apply_actions(processor: FilterDumpProcessPost,
                                            extends=extends,
                                            default_value=default,
                                        ))
-            print(f'    Add generic parameter:')
+            print('    Add generic parameter:')
             print(f'        Name: \u001b[34m{name}\u001b[0m')
             print(f'        Extends: \u001b[34m{extends}\u001b[0m')
             print(f'        Default: \u001b[34m{default}\u001b[0m')
@@ -78,8 +85,11 @@ def apply_actions(processor: FilterDumpProcessPost,
                                                                   name)
 
             if not arguments:
-                raise FilterDumpProcessPostError(f'No arguments found.\n'
-                                                 f'Side: {side}, name: {function_name}, argument: {name}')
+                raise FilterDumpProcessPostError(
+                    'No arguments found.\n'
+                    f'Side: {side}, name: '
+                    f'{function_name}, argument: {name}'
+                )
             argument_data = argument['newArgument']
             for inner_argument in arguments:
                 to_replace = inner_argument[0]
@@ -127,7 +137,7 @@ def apply_actions(processor: FilterDumpProcessPost,
             processor.add_signature_argument(functions,
                                              [arg])
 
-            print(f'    Add argument:')
+            print('    Add argument:')
             print(f'        Name:  \u001b[34m{arg_name}\u001b[0m')
             print(f'        Extends:  \u001b[34m{arg_default}\u001b[0m')
             print(f'        Type:  \u001b[34m{arg_type}\u001b[0m')
@@ -155,11 +165,14 @@ def apply_actions(processor: FilterDumpProcessPost,
                     for value in return_types
                 ]
 
-            print(f'    Replaced return types\u001b[0m')
+            print('    Replaced return types\u001b[0m')
 
 
 def apply_post_process(processor: FilterDumpProcessPost):
-    print('\nLoading PostProcess config from  \u001b[34mfunction-config.yml\u001b[0m')
+    print(
+        '\nLoading PostProcess config from '
+        '\u001b[34mfunction-config.yml\u001b[0m'
+    )
 
     with open('function-config.yml') as file:
         config = yaml.safe_load(file.read())
@@ -174,11 +187,15 @@ def apply_post_process(processor: FilterDumpProcessPost):
     for data in config["data"]:
         function_name = data["functionName"]
         side = parse_side(data["side"])
-        print(f'Applying actions to \u001b[34m{function_name} \u001b[35m({side})\u001b[0m')
+        print(
+            f'Applying actions to '
+            f'\u001b[34m{function_name} \u001b[35m({side})\u001b[0m'
+        )
 
         functions = processor.get_functions(side, function_name)
         if not functions:
-            raise FunctionPostConfigException(f'No functions found for name {function_name}')
+            raise FunctionPostConfigException(
+                f'No functions found for name {function_name}')
 
         apply_actions(processor=processor,
                       function_name=function_name,
@@ -188,10 +205,15 @@ def apply_post_process(processor: FilterDumpProcessPost):
         print('')
 
         if data.get('includeOOP', False):
-            print(f'Applying actions to OOP with base name \u001b[34m{function_name} \u001b[35m({side})\u001b[0m')
-            functions = get_oop_functions(processor.context.oops, side, function_name)
+            print(
+                f'Applying actions to OOP with base name '
+                f'\u001b[34m{function_name} \u001b[35m({side})\u001b[0m'
+            )
+            functions = get_oop_functions(processor.context.oops, side,
+                                          function_name)
             if not functions:
-                raise FunctionPostConfigException(f'No OOP functions found for name {function_name}')
+                raise FunctionPostConfigException(
+                    f'No OOP functions found for name {function_name}')
 
             apply_actions(processor=processor,
                           function_name=function_name,

@@ -18,7 +18,7 @@ class FilterSaveFunctionOOPData(FilterAbstract):
     Saves all data into files
     """
     DUMP_FOLDER_ROOT = 'dump'
-    DUMP_FOLDER = f'dump/oops'
+    DUMP_FOLDER = 'dump/oops'
 
     def get_context_data(self) -> ContextData:
         return getattr(self.context, self.context_type)
@@ -26,7 +26,8 @@ class FilterSaveFunctionOOPData(FilterAbstract):
     def __init__(self):
         super().__init__('functions')
 
-        self.categories: DefaultDict[str, List[CompoundOOPData]] = collections.defaultdict(lambda: [])
+        self.categories: DefaultDict[
+            str, List[CompoundOOPData]] = collections.defaultdict(lambda: [])
         self.files_to_import: Set[str] = set()
 
     def collect_by_category(self, f_name: str, data: CompoundOOPData):
@@ -35,7 +36,8 @@ class FilterSaveFunctionOOPData(FilterAbstract):
         """
         url = self.get_context_data().urls[f_name]
         if url is None:
-            raise FilterSaveFunctionDataError(f'Url no found for function name: {f_name}')
+            raise FilterSaveFunctionDataError(
+                f'Url no found for function name: {f_name}')
 
         self.categories[url.category].append(data)
 
@@ -74,7 +76,7 @@ from to_python.core.types import FunctionType, \\
     CompoundOOPData, \\
     FunctionData, \\
     CompoundFunctionData
-    
+
 DUMP_PARTIAL = [
     {list_text}
 ]
@@ -90,7 +92,8 @@ DUMP_PARTIAL = [
         files = sorted(self.files_to_import)
 
         sections_text = '\n'.join(
-            f'from to_python.dump.oops.{category} import DUMP_PARTIAL as DP_O_{category.upper()}'
+            f'from to_python.dump.oops.{category} import '
+            f'DUMP_PARTIAL as DP_O_{category.upper()}'
             for category in files
         )
         dump_text = f',\n{" " * 4}'.join(
@@ -117,7 +120,8 @@ DUMP_OOPS = [
 
         with open(cache_file, 'w', encoding='UTF-8', newline='\n') as cache:
             cache.write(FilterSaveFetched.text_url_list(
-                [self.get_context_data().urls[k] for k in self.get_context_data().urls]
+                [self.get_context_data().urls[k] for k in
+                 self.get_context_data().urls]
             ))
 
     def save_data(self):

@@ -1,5 +1,4 @@
 import re
-import sys
 from typing import Optional
 
 from wikitextparser import WikiText, Section
@@ -19,7 +18,8 @@ class WikiGetSyntaxSection:
 
     # TODO: Think about transforming that utility class into a filter
 
-    def __init__(self, context: ContextData, f_name: str, raw_data: str, wiki: WikiText):
+    def __init__(self, context: ContextData, f_name: str, raw_data: str,
+                 wiki: WikiText):
         self.context = context
         self.f_name = f_name
         self.raw_data = raw_data
@@ -33,16 +33,25 @@ class WikiGetSyntaxSection:
         """
         Process situation, when the Syntax section have not been found
         """
-        if self.context.side_data[self.f_name].side != ParseFunctionSide.SHARED:
-            print(f'\u001b[33m[WARN] \u001b[0mNo Syntax section "{self.f_name}"\u001b[0m')
+        if self.context.side_data[self.f_name].side != \
+                ParseFunctionSide.SHARED:
+            print(
+                f'\u001b[33m[WARN] \u001b[0m'
+                f'No Syntax section "{self.f_name}"\u001b[0m'
+            )
 
     def multiple_syntax_section(self, section_list):
         """
-        Process situation, when the Syntax section have been found multiple time
+        Process situation, when the Syntax section
+          have been found multiple time
         """
         if len(section_list) != 1:
-            print(f'\u001b[33m[WARN] \u001b[0mMultiple Syntax sections "{self.f_name}". \u001b[0m\n'
-                  f'\u001b[33m[WARN] \u001b[0mSelecting the first:\u001b[0m')
+            print(
+                f'\u001b[33m[WARN] \u001b[0m'
+                f'Multiple Syntax sections "{self.f_name}". \u001b[0m\n'
+                f'\u001b[33m[WARN] \u001b[0m'
+                f'Selecting the first:\u001b[0m'
+            )
             for section, index in section_list:
                 print(f'    \u001b[34m{index: 2}.\u001b[0m {section.title}')
 
@@ -54,7 +63,10 @@ class WikiGetSyntaxSection:
         Finds syntax section in wiki page (or part of wiki page)
         :return:
         """
-        syntax = FilterParseDocs.get_sections_title_contains(self.wiki, paragraph_title_part)
+        syntax = FilterParseDocs.get_sections_title_contains(
+            self.wiki,
+            paragraph_title_part
+        )
         if not syntax:
             self.no_syntax_section()
         else:
@@ -64,7 +76,8 @@ class WikiGetSyntaxSection:
 
     def pick_text(self) -> str:
         try:
-            next_section: Optional[WikiText] = self.wiki.sections[self.section_index + 1]
+            next_section: Optional[WikiText] = self.wiki.sections[
+                self.section_index + 1]
         except IndexError:
             next_section = None
 
@@ -110,22 +123,29 @@ class FilterParseFunctionSignature(FilterAbstract):
             tokenized=tokenized
         ).parse()
 
-    def pick_signature_container(self, f_name: str, raw_data: str, wiki: WikiText) -> str:
+    def pick_signature_container(self, f_name: str, raw_data: str,
+                                 wiki: WikiText) -> str:
         """
         Picks media wiki code, containing signature
         """
-        syntax_picker = WikiGetSyntaxSection(self.context_data, f_name, raw_data, wiki)
+        syntax_picker = WikiGetSyntaxSection(self.context_data, f_name,
+                                             raw_data, wiki)
         syntax_picker.get()
         code_inside = syntax_picker.pick_text()
 
         if 'syntaxhighlight' not in code_inside:
-            raise RuntimeError(f'[ERROR] Result media wiki code does not contain signature. "{f_name}"')
+            raise RuntimeError(
+                f'[ERROR] Result media wiki code '
+                f'does not contain signature. "{f_name}"'
+            )
 
         return code_inside
 
-    SELECT_CODE_REGEX = re.compile(r'<syntaxhighlight[^>]*lua[^>]*>([\s\S]+?)</syntaxhighlight>')
+    SELECT_CODE_REGEX = re.compile(
+        r'<syntaxhighlight[^>]*lua[^>]*>([\s\S]+?)</syntaxhighlight>')
 
-    def pick_signature(self, f_name: str, raw_data: str, wiki: WikiText) -> str:
+    def pick_signature(self, f_name: str, raw_data: str, wiki: WikiText) -> \
+            str:
         """
         Picks out function signature code from an entire data
         """
@@ -141,13 +161,17 @@ class FilterParseFunctionSignature(FilterAbstract):
             wiki_content = self.context_data.wiki_side[f_name]
 
             if raw_content.client is not None:
-                self.context_data.parsed[f_name].client[0].signature = self.parse_signature(
-                    self.pick_signature(f_name, raw_content.client, wiki_content.client)
+                self.context_data.parsed[f_name].client[
+                    0].signature = self.parse_signature(
+                    self.pick_signature(f_name, raw_content.client,
+                                        wiki_content.client)
                 )
 
             if raw_content.server is not None:
-                self.context_data.parsed[f_name].server[0].signature = self.parse_signature(
-                    self.pick_signature(f_name, raw_content.server, wiki_content.server)
+                self.context_data.parsed[f_name].server[
+                    0].signature = self.parse_signature(
+                    self.pick_signature(f_name, raw_content.server,
+                                        wiki_content.server)
                 )
 
         print('Function signature parsing complete\u001b[0m')

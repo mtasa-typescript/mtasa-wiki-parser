@@ -52,7 +52,8 @@ class FunctionArgumentValues:
     """
     Function arguments
     """
-    # First list for different argument names, second (inner) list for different types of one arguments
+    # First list for different argument names,
+    #   second (inner) list for different types of one arguments
     arguments: List[List[FunctionArgument]]
     variable_length: bool
 
@@ -85,7 +86,8 @@ class FunctionReturnTypes:
     variable_length: bool
 
     def __repr__(self):
-        return_types = f',\n{" " * 20}'.join([repr(v) for v in self.return_types])
+        return_types = f',\n{" " * 20}'.join(
+            [repr(v) for v in self.return_types])
         return f'''FunctionReturnTypes(
                     return_types=[
                         {return_types}
@@ -152,9 +154,14 @@ class FunctionDoc:
     result: str
 
     def __repr__(self):
-        dict_text = (f'{{\n{" " * 20}'
-                     + f',\n{" " * 20}'.join(f'"{k}": """{self.arguments[k]} """' for k in self.arguments)
-                     + f'\n{" " * 16}}}')
+        dict_text = (
+                f'{{\n{" " * 20}'
+                f',\n{" " * 20}'.join(
+                    f'"{k}": """{self.arguments[k]} """' for k in
+                    self.arguments
+                )
+                + f'\n{" " * 16}}}'
+        )
 
         return f'''FunctionDoc(
                 description={repr(self.description)} ,
@@ -199,7 +206,8 @@ class FunctionOOP:
     is_static: bool
 
     def __repr__(self):
-        p_description = f'"""{self.description}"""' if self.description else 'None'
+        p_description = f'"""{self.description}"""'\
+            if self.description else 'None'
         p_method = repr(self.method) if self.method else 'None'
         p_field = repr(self.field) if self.field else 'None'
 

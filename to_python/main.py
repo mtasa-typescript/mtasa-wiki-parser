@@ -3,7 +3,6 @@ from typing import List
 
 from to_python.chain import FILTER_CHAIN
 from to_python.core.context import Context, ContextData
-from to_python.core.types import CompoundOOPData
 
 
 def main(argc: int, argv: List[str]):

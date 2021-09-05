@@ -1,13 +1,21 @@
 # See https://github.com/mtasa-typescript/mtasa-wiki-parser/issues/32
-from to_python.core.types import FunctionData, FunctionDoc, FunctionSignature, FunctionReturnTypes, \
-    FunctionArgumentValues, FunctionType, FunctionArgument
+from to_python.core.types import \
+    FunctionData, \
+    FunctionDoc, \
+    FunctionSignature, \
+    FunctionReturnTypes, \
+    FunctionArgumentValues, \
+    FunctionType, \
+    FunctionArgument
 
 dx_create_texture_function: FunctionData = FunctionData(
     url='dxCreateTexture',
     docs=FunctionDoc(
-        description='This function creates a texture element that can be used in the dxDraw functions',
+        description='This function creates a texture '
+                    'element that can be used in the dxDraw functions',
         arguments={},
-        result='Returns a texture if successful, false if invalid arguments were passed to the function.'
+        result='Returns a texture if successful, '
+               'false if invalid arguments were passed to the function.'
     ),
     signature=FunctionSignature(
         name='dxCreateTexture',

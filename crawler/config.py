@@ -23,7 +23,8 @@ BATCH_SIZE = 50
 FUNCTION_SUBFOLDER = 'functions'
 
 # What function will be the start point.
-# (ListType.SERVER, 'setMarkerType'), for example, will start from the setMarkerType function
+# (ListType.SERVER, 'setMarkerType'), for example,
+#   will start from the setMarkerType function
 # Set None to start from the beginning
 FUNCTION_START_FROM = \
     None
@@ -49,7 +50,8 @@ FUNCTION_BLACKLIST = {
 EVENT_SUBFOLDER = 'events'
 
 # What event will be the start point (for fetching function).
-# (ListType.SERVER, 'onMarkerHit'), for example, will start from the onMarkerHit event
+# (ListType.SERVER, 'onMarkerHit'), for example,
+#   will start from the onMarkerHit event
 # Set None to start from the beginning
 EVENT_START_FROM = \
     None

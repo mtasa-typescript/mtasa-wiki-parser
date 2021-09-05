@@ -35,13 +35,18 @@ export * from './variables';
             if side not in data:
                 continue
 
-            text += FilterFunctionSaveIndex.generate_exports(f'./function/{category}') + '\n'
+            text += FilterFunctionSaveIndex.generate_exports(
+                f'./function/{category}') + '\n'
 
         # OOP index
-        keys = set(filter(lambda x: self.context.declarations.oop_methods[x].get(side),
-                          self.context.declarations.oop_methods.keys()))
-        keys.update(set(filter(lambda x: self.context.declarations.oop_fields[x].get(side),
-                               self.context.declarations.oop_fields.keys())))
+        keys = set(
+            filter(
+                lambda x: self.context.declarations.oop_methods[x].get(side),
+                self.context.declarations.oop_methods.keys())
+        )
+        keys.update(set(filter(
+            lambda x: self.context.declarations.oop_fields[x].get(side),
+            self.context.declarations.oop_fields.keys())))
 
         for key in sorted(keys):
             path = f'./oop/{"gui/" if "Gui" in key else ""}{key}'

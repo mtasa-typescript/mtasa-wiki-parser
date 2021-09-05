@@ -19,12 +19,15 @@ class FilterParseFunctionSide(FilterAbstract):
     def __init__(self):
         super().__init__('functions')
 
-    SHARED_SIGNATURE = re.compile(r'(server[_ ]client|shared)[_ ]function', re.IGNORECASE)
+    SHARED_SIGNATURE = re.compile(r'(server[_ ]client|shared)[_ ]function',
+                                  re.IGNORECASE)
     CLIENT_SIGNATURE = re.compile(r'client[_ ]function', re.IGNORECASE)
     SERVER_SIGNATURE = re.compile(r'server[_ ]function', re.IGNORECASE)
 
-    SERVER_SECTION = re.compile(r'<section.+class="server".*?>([\s\S]+?)<\/section>', re.IGNORECASE)
-    CLIENT_SECTION = re.compile(r'<section.+class="client".*?>([\s\S]+?)<\/section>', re.IGNORECASE)
+    SERVER_SECTION = re.compile(
+        r'<section.+class="server".*?>([\s\S]+?)<\/section>', re.IGNORECASE)
+    CLIENT_SECTION = re.compile(
+        r'<section.+class="client".*?>([\s\S]+?)<\/section>', re.IGNORECASE)
 
     @staticmethod
     def line_process(line: str) -> str:
@@ -78,11 +81,13 @@ class FilterParseFunctionSide(FilterAbstract):
                            client=raw)
         server_raw = re.search(self.SERVER_SECTION, raw)
         if not server_raw:
-            raise FilterParseSideSharedFileSectionsInvalid('"Server" section not found')
+            raise FilterParseSideSharedFileSectionsInvalid(
+                '"Server" section not found')
 
         client_raw = re.search(self.CLIENT_SECTION, raw)
         if not client_raw:
-            raise FilterParseSideSharedFileSectionsInvalid('"Client" section not found')
+            raise FilterParseSideSharedFileSectionsInvalid(
+                '"Client" section not found')
 
         server_raw = server_raw.group(1)
         client_raw = client_raw.group(1)

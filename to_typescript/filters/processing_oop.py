@@ -3,10 +3,14 @@ from copy import deepcopy
 from typing import List, Dict
 
 from crawler.core.types import ListType
-from to_python.core.types import FunctionOOP, FunctionData, CompoundFunctionData
+from to_python.core.types import \
+    FunctionOOP, \
+    FunctionData, \
+    CompoundFunctionData
 from to_typescript.core.filter import FilterAbstract
 from to_typescript.core.transform.extra_rules import TypeConverter
-from to_typescript.filters.processing_function import FilterDumpProcessFunctions
+from to_typescript.filters.processing_function import \
+    FilterDumpProcessFunctions
 
 
 class FilterDumpProcessOOP(FilterAbstract):
@@ -28,23 +32,34 @@ class FilterDumpProcessOOP(FilterAbstract):
             FilterDumpProcessFunctions.prepare_return_types(data.field.types)
 
         if data.method:
-            FilterDumpProcessFunctions.prepare_return_types(data.method.signature.return_types.return_types)
-            FilterDumpProcessFunctions.prepare_argument_names(data.method.signature.arguments.arguments)
-            FilterDumpProcessFunctions.prepare_argument_types(data.method.signature.arguments.arguments)
+            FilterDumpProcessFunctions.prepare_return_types(
+                data.method.signature.return_types.return_types
+            )
+            FilterDumpProcessFunctions.prepare_argument_names(
+                data.method.signature.arguments.arguments
+            )
+            FilterDumpProcessFunctions.prepare_argument_types(
+                data.method.signature.arguments.arguments
+            )
 
             # Remove first argument, if method is not static
             # TODO: move into separated method
             if data.method.signature.arguments.arguments:
-                arg_type = data.method.signature.arguments.arguments[0][0].argument_type.names[0]
+                arg_type = data.method.signature.arguments.arguments[0][
+                    0].argument_type.names[0]
                 arg_name = data.method.signature.arguments.arguments[0][0].name
                 if data.class_name != 'constructor' and \
-                        (arg_type.lower() in white_list or arg_type.lower() == data.class_name.lower()):
+                        (
+                                arg_type.lower() in white_list
+                                or arg_type.lower() == data.class_name.lower()
+                        ):
                     data.method.signature.arguments.arguments.pop(0)
 
                     if arg_name in data.method.docs.arguments:
                         del data.method.docs.arguments[arg_name]
 
-    def prepare_resolve_multiple_signatures(self, data: FunctionOOP) -> List[FunctionOOP]:
+    def prepare_resolve_multiple_signatures(self, data: FunctionOOP) -> \
+            List[FunctionOOP]:
         if not data.method:
             return []
 
@@ -73,7 +88,8 @@ class FilterDumpProcessOOP(FilterAbstract):
         Prepares OOP class name
         """
         if '|' in oop.class_name:
-            oop.class_name = re.match(self.CLASS_NAME_SELECTOR, oop.class_name).group(2)
+            oop.class_name = re.match(self.CLASS_NAME_SELECTOR,
+                                      oop.class_name).group(2)
 
         oop.class_name = oop.class_name.lower()
         oop.class_name = TypeConverter(oop.class_name).convert()
@@ -95,7 +111,8 @@ class FilterDumpProcessOOP(FilterAbstract):
                                side: ListType,
                                data_list_index: int,
                                data_list: List[FunctionOOP],
-                               hashed_functions: Dict[str, CompoundFunctionData]) -> int:
+                               hashed_functions: Dict[
+                                   str, CompoundFunctionData]) -> int:
         """
         Calls preparation method for the passed function.
         :return: New index in List[FunctionData]
@@ -141,9 +158,10 @@ class FilterDumpProcessOOP(FilterAbstract):
 
                 index = 0
                 while index < len(data_list):
-                    index = self.prepare_oop_definition(side=ListType[side.upper()],
-                                                        data_list_index=index,
-                                                        data_list=data_list,
-                                                        hashed_functions=hashed_functions)
+                    index = self.prepare_oop_definition(
+                        side=ListType[side.upper()],
+                        data_list_index=index,
+                        data_list=data_list,
+                        hashed_functions=hashed_functions)
 
         print('\u001b[32mOOP Processing complete\u001b[0m')
