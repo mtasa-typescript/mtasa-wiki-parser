@@ -170,9 +170,8 @@ data:
     actions:
       addGeneric:
         - name: CallbackType
-          extends: BindKeyCallback
+          extends: 'BindKeyCallback<any[]>'
           default: BindKeyCallback
-        - *genericAdditionalArgs
       replaceArgument:
         - name: handlerFunction
           newArgument:
@@ -196,7 +195,7 @@ data:
         - name: '...args'
           type:
             names:
-              - 'AdditionalArgs'
+              - 'BindKeyCallbackVarArgs<CallbackType>'
       properties:
         variableLength: false
 

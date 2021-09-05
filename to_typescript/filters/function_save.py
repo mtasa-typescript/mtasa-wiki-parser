@@ -72,6 +72,7 @@ class FilterFunctionSave(FilterAbstract):
             'GenericEventHandler',
             'CommandHandler',
             'BindKeyCallback',
+            'BindKeyCallbackVarArgs',
             'ControlName',
             'KeyName',
             'KeyState',
