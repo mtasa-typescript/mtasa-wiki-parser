@@ -12,6 +12,7 @@ from to_typescript.filters.get_urls import FilterGetUrls
 from to_typescript.filters.oop_declarations import FilterGenerateOOPDeclarations
 from to_typescript.filters.oop_save import FilterOOPSave
 from to_typescript.filters.oop_vectorize import FilterDumpProcessVectorizeOOP
+from to_typescript.filters.prettier import FilterApplyPrettierIfPossible
 from to_typescript.filters.processing_event import FilterDumpProcessEvents
 from to_typescript.filters.processing_function import FilterDumpProcessFunctions
 from to_typescript.filters.processing_oop import FilterDumpProcessOOP
@@ -41,4 +42,6 @@ FILTER_CHAIN = [
     FilterEventSaveNames(),
     FilterEventSaveDeclarations(),
     FilterEventSaveIndex(),
+
+    FilterApplyPrettierIfPossible(),
 ]
