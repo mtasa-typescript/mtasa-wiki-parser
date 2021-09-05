@@ -18,8 +18,16 @@ class FilterDumpProcessVectorizeOOP(FilterAbstract):
         if not oop.field:
             return None
 
-        if oop.class_name.lower() in {'element', 'player', 'ped', 'object', 'vehicle', 'camera'}:
-            if oop.field.name.lower() in {'position', 'rotation'}:
+        if oop.class_name.lower() in {'element', 'player', 'ped', 'object', 'vehicle', 'camera', 'searchlight'}:
+            if oop.field.name.lower() in {'position', 'rotation', 'velocity', 'angularvelocity', 'scale'}:
+                return VectorizableType.Vector3D
+
+        if oop.class_name.lower() in {'marker'}:
+            if 'target' in oop.method.name.lower():
+                return VectorizableType.Vector3D
+
+        if oop.class_name.lower() in {'ped'}:
+            if 'target' in oop.method.name.lower():
                 return VectorizableType.Vector3D
 
         if oop.field.name.lower() in {'matrix'}:
@@ -33,11 +41,22 @@ class FilterDumpProcessVectorizeOOP(FilterAbstract):
         if not oop.method.name.startswith('set'):
             return None
 
-        if oop.class_name.lower() in {'element', 'player', 'ped', 'object', 'vehicle', 'camera', 'marker'}:
-            if 'position' in oop.method.name.lower() or 'rotation' in oop.method.name.lower():
+        if oop.class_name.lower() in {'element', 'player', 'ped', 'mtasaobject', 'vehicle', 'camera', 'marker',
+                                      'searchlight'}:
+            if 'position' in oop.method.name.lower() \
+                    or 'rotation' in oop.method.name.lower() \
+                    or 'velocity' in oop.method.name.lower():
+                return VectorizableType.Vector3D
+
+        if oop.class_name.lower() in {'mtasaobject'}:
+            if 'scale' in oop.method.name.lower():
                 return VectorizableType.Vector3D
 
         if oop.class_name.lower() in {'marker'}:
+            if 'target' in oop.method.name.lower():
+                return VectorizableType.Vector3D
+
+        if oop.class_name.lower() in {'ped'}:
             if 'target' in oop.method.name.lower():
                 return VectorizableType.Vector3D
 
@@ -52,11 +71,22 @@ class FilterDumpProcessVectorizeOOP(FilterAbstract):
         if not oop.method.name.startswith('get'):
             return None
 
-        if oop.class_name.lower() in {'element', 'player', 'ped', 'object', 'vehicle', 'camera', 'marker'}:
-            if 'position' in oop.method.name.lower() or 'rotation' in oop.method.name.lower():
+        if oop.class_name.lower() in {'element', 'player', 'ped', 'mtasaobject', 'vehicle', 'camera', 'marker',
+                                      'searchlight'}:
+            if 'position' in oop.method.name.lower() \
+                    or 'rotation' in oop.method.name.lower() \
+                    or 'velocity' in oop.method.name.lower():
+                return VectorizableType.Vector3D
+
+        if oop.class_name.lower() in {'mtasaobject'}:
+            if 'scale' in oop.method.name.lower():
                 return VectorizableType.Vector3D
 
         if oop.class_name.lower() in {'marker'}:
+            if 'target' in oop.method.name.lower():
+                return VectorizableType.Vector3D
+
+        if oop.class_name.lower() in {'ped'}:
             if 'target' in oop.method.name.lower():
                 return VectorizableType.Vector3D
 

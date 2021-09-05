@@ -2,7 +2,7 @@ import enum
 from typing import List, Tuple
 
 from crawler.core.types import ListType as ListTypeOneSide
-from to_python.core.types import FunctionData, FunctionGeneric, FunctionArgument, CompoundFunctionData
+from to_python.core.types import FunctionData, FunctionGeneric, FunctionArgument, CompoundFunctionData, CompoundOOPData
 from to_typescript.core.filter import FilterAbstract
 
 
@@ -43,6 +43,30 @@ def get_functions_from_list_by_name(f_list: List[CompoundFunctionData],
         (f, function_type_original)
         for f in f_list
         if f[function_type_original] and f[function_type_original][0].name == function_name
+    ]
+
+
+def get_oops_from_list_by_name(f_list: List[CompoundOOPData],
+                               function_type: ListType,
+                               function_name: str) -> List[Tuple[CompoundOOPData, ListTypeOneSide]]:
+    """
+    Gets function data list
+    """
+    if function_type == ListType.SHARED:
+        return (
+                get_oops_from_list_by_name(f_list,
+                                           ListType.SERVER,
+                                           function_name)
+                + get_oops_from_list_by_name(f_list,
+                                             ListType.CLIENT,
+                                             function_name)
+        )
+
+    function_type_original = function_type.normalize()
+    return [
+        (f, function_type_original)
+        for f in f_list
+        if f[function_type_original] and f[function_type_original][0].base_function_name == function_name
     ]
 
 
