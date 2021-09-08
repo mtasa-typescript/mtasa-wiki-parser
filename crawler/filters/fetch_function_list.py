@@ -57,7 +57,8 @@ class FilterFetchList(FilterAbstract):
     def download_list(self) -> List[PageUrl]:
         categorized_links = self.download_list_tags()
 
-        result: List[PageUrl] = [self.process_list_item(tag) for tag in categorized_links]
+        result: List[PageUrl] = [self.process_list_item(tag) for tag in
+                                 categorized_links]
         result = list(filter(lambda v: v is not None, result))
 
         return result

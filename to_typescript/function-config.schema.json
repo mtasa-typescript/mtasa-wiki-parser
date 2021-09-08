@@ -33,6 +33,10 @@
             ],
             "description": "The global function side"
           },
+          "includeOOP": {
+            "type": "boolean",
+            "description": "Should these actions work for OOP declarations"
+          },
           "actions": {
             "type": "object",
             "description": "Actions with this function",
@@ -122,6 +126,23 @@
                     "description": "Sets arguments variable length for the function. Should be disabled, if you are setting custom vararguments type"
                   }
                 }
+              },
+              "replaceReturnType": {
+                "type": "object",
+                "description": "Replace function return type",
+                "properties": {
+                  "values": {
+                    "type": "array",
+                    "description": "Return type list",
+                    "items": {
+                      "type": "string",
+                      "description": "Replace type definition"
+                    }
+                  }
+                },
+                "required": [
+                  "values"
+                ]
               }
             }
           }

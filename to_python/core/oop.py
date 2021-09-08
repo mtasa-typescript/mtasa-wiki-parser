@@ -1,10 +1,9 @@
 import enum
 import re
 from dataclasses import dataclass
-from typing import List, Any, Dict
+from typing import List, Optional
 
 from to_python.core.signature import SignatureTokenizer
-from to_python.core.types import FunctionOOP
 
 
 class OOPTokenizerError(RuntimeError):
@@ -70,7 +69,8 @@ class OOPTokenizer:
 
     def references_tokenize(self):
         """
-        Make everything inside reference brackets and braces a reference or an undefined
+        Make everything inside reference brackets
+          and braces a reference or an undefined
         Example: [[something|somethingelse]]
         """
         bracket_counter = 0
@@ -113,7 +113,10 @@ class OOPTokenizer:
                 counter += 1
 
         if counter > 5:
-            raise OOPTokenizerError(f'Expected less than 5 delimiters, got {counter}. Code:\n{self.code}')
+            raise OOPTokenizerError(
+                f'Expected less than 5 delimiters, got {counter}. '
+                f'Code:\n{self.code}'
+            )
 
     def content_tokenize(self):
         """
@@ -158,7 +161,8 @@ class OOPTokenizer:
         for index, token in enumerate(self.tokenized):
             if token.type != self.TokenType.UNDEFINED:
                 continue
-            raise OOPTokenizerError('Undefined token. Function signature: \n' + self.code)
+            raise OOPTokenizerError(
+                'Undefined token. Function signature: \n' + self.code)
 
     def trim_tokenize(self):
         """
@@ -178,14 +182,16 @@ class OOPTokenizer:
         self.content_tokenize()
 
         self.delimiters_check()
-        SignatureTokenizer.concat_neighbours_tokenize(tokenized=self.tokenized,
-                                                      allowed={
-                                                          self.TokenType.UNUSED,
-                                                          self.TokenType.NOTE,
-                                                          self.TokenType.METHOD,
-                                                          self.TokenType.FIELD,
-                                                          self.TokenType.COUNTERPART_METHOD,
-                                                      })
+        SignatureTokenizer.concat_neighbours_tokenize(
+            tokenized=self.tokenized,
+            allowed={
+                self.TokenType.UNUSED,
+                self.TokenType.NOTE,
+                self.TokenType.METHOD,
+                self.TokenType.FIELD,
+                self.TokenType.COUNTERPART_METHOD,
+            }
+        )
 
         self.trim_tokenize()
         self.final_check()
@@ -200,6 +206,18 @@ class OOPParser:
 
     TokenType = OOPTokenizer.TokenType
 
+    @dataclass
+    class MethodData:
+        class_name: Optional[str]
+        method_name: Optional[str]
+        is_static: Optional[bool]
+
+    @dataclass
+    class OutputData:
+        misc_description: Optional[str]
+        field_name: Optional[str]
+        method_data: 'OOPParser.MethodData'
+
     def __init__(self, tokenized: List[SignatureTokenizer.Token]):
         self.tokenized: List[SignatureTokenizer.Token] = tokenized
 
@@ -209,11 +227,9 @@ class OOPParser:
         return code.strip()
 
     @staticmethod
-    def parse_method(text: str) -> Dict[str, Any]:
+    def parse_method(text: str) -> 'OOPParser.MethodData':
         """
         Selects method data
-        :param text:
-        :return:
         """
         text = OOPParser.clean_method(text)
 
@@ -222,18 +238,18 @@ class OOPParser:
             if not text:
                 raise OOPParserError(f'Wrong method content: {text}')
 
-            return dict(class_name=text,
-                        method_name=None,
-                        is_static=True)
+            return OOPParser.MethodData(class_name=text,
+                                        method_name=None,
+                                        is_static=True)
 
-        return dict(class_name=match.group(1),
-                    method_name=match.group(2),
-                    is_static='.' in text, )
+        return OOPParser.MethodData(class_name=match.group(1),
+                                    method_name=match.group(2),
+                                    is_static='.' in text, )
 
-    def parse(self) -> FunctionOOP:
+    def parse(self) -> 'OOPParser.OutputData':
         misc_description = None
         field_name = None
-        method_data = dict(
+        method_data = OOPParser.MethodData(
             class_name=None,
             method_name=None,
             is_static=None,
@@ -247,6 +263,6 @@ class OOPParser:
             elif token.type == self.TokenType.METHOD:
                 method_data = self.parse_method(token.value)
 
-        return FunctionOOP(description=misc_description,
-                           field=field_name,
-                           **method_data)
+        return OOPParser.OutputData(misc_description=misc_description,
+                                    field_name=field_name,
+                                    method_data=method_data)

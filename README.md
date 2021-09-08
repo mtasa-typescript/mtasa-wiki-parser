@@ -1,32 +1,20 @@
-# MTASA Wiki Parser
+# 🔁 MTASA Wiki Parser
 
-Parses MTASA Wiki functions. Saves parsed data into dump directory.
+Parses MTASA Wiki functions and events. Saves parsed data into dump directory.
 
 Minimal expected Python version: 3.7
 
-## Connect [dump repository](https://github.com/mtasa-typescript/mtasa-wiki-dump)
+# 💠 Prepare the project
 
-### For developers
-
-```shell
-git clone https://github.com/mtasa-typescript/mtasa-wiki-dump to_python/dump
-mkdir -p crawler/dump_html
-git clone https://github.com/mtasa-typescript/mtasa-lua-types to_typescript/output
-```
-
-### For internal developers
+## 📦 Connect Dump Repositories
 
 ```shell
 git clone https://github.com/mtasa-typescript/mtasa-wiki-dump to_python/dump
-git clone https://github.com/mtasa-typescript/mtasa-wiki-dump_html crawler/dump_html
+git clone https://github.com/mtasa-typescript/mtasa-mediawiki-dump crawler/dump_html
 git clone https://github.com/mtasa-typescript/mtasa-lua-types to_typescript/output
 ```
 
-## Install and run
-
-*Warning:* You should edit [main.py](to_python/main.py) `User values` block
-
-### Install venv
+## 🗃 Install venv
 
 For Windows:
 
@@ -48,30 +36,52 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
-### Run parser
+# 🏃‍♂️ Run application
 
-After setting up variables in `User values` in `main.py` execute the command:
+## ▶ Crawler
 
-```shell
-cd parser
+Used for dumping MediaWiki content about functions and events from MTASA Wiki.
+
+### ⏯ Execute
+
+```bash
+cd crawler
 python3 main.py
 ```
 
-# TypeScript types definitions generator
+## ▶ To Python
 
-## How to run
+Tool for transforming Media Wiki content into Python objects.
 
-```shell
+### ⏯ Execute
+
+```bash
+cd to_python
+python3 main.py
+```
+
+## ▶ To TypeScript
+
+Tool for transforming Python objects into TypeScript definitions.
+
+### ⏯ Execute
+
+```bash
 cd to_typescript
 python3 main.py
 ```
 
-## Caveats
+# 🛠 How to contribute
 
-I. **Maybe one day type definitions generator will be moved to separate repository**
+1. Create an issue with the bug or the idea.
+2. If you would like to create the Merge Request (Pull Request), 
+suggest the solution you would like to provide in the issue.
+3. Wait 1-2 days for an answer.
+4. If the maintainer agreed with your suggestion 
+(or if there is no answer in 1-2 days), create the Merge Request 
+with your solution. 
 
-# Definition generation
 
-Please view [Stages Description](docs/FunctionDocPipeline.png) if you to contribute MTASA Function definitions.
-
-**Note:** OOP Declaration should be updated manually (until I write signature replacer)
+Rules:
+- Use `flake8` to validate code style
+- Use `pytest` to cover code with tests

@@ -29,4 +29,8 @@ if __name__ == '__main__':
         print('Expected 1 argv: [functions/events]', file=sys.stderr)
         exit(1)
 
-    main(get_filter_chain if sys.argv[1] == 'functions' else get_event_filter_chain)
+    main(
+        get_filter_chain
+        if sys.argv[1] == 'functions'
+        else get_event_filter_chain
+    )

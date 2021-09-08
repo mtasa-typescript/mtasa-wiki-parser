@@ -3,41 +3,41 @@ import os
 import re
 from typing import DefaultDict, List, Set
 
-from crawler.filters.save_event_fetched import FilterSaveFetchedEvents
+from crawler.filters.save_function_fetched import FilterSaveFetched
 from to_python.core.context import ContextData
 from to_python.core.filter import FilterAbstract
-from to_python.core.types import CompoundEventData
+from to_python.core.types import CompoundOOPData
 
 
-class FilterSaveEventDataError(RuntimeError):
+class FilterSaveFunctionDataError(RuntimeError):
     pass
 
 
-class FilterSaveEventData(FilterAbstract):
+class FilterSaveFunctionOOPData(FilterAbstract):
     """
     Saves all data into files
     """
     DUMP_FOLDER_ROOT = 'dump'
-    DUMP_FOLDER = 'dump/events'
+    DUMP_FOLDER = 'dump/oops'
 
     def get_context_data(self) -> ContextData:
         return getattr(self.context, self.context_type)
 
     def __init__(self):
-        super().__init__('events')
+        super().__init__('functions')
 
         self.categories: DefaultDict[
-            str, List[CompoundEventData]] = collections.defaultdict(lambda: [])
+            str, List[CompoundOOPData]] = collections.defaultdict(lambda: [])
         self.files_to_import: Set[str] = set()
 
-    def collect_by_category(self, f_name: str, data: CompoundEventData):
+    def collect_by_category(self, f_name: str, data: CompoundOOPData):
         """
         Accumulates the data into the self.categories
         """
         url = self.get_context_data().urls[f_name]
         if url is None:
-            raise FilterSaveEventDataError(
-                f'Url no found for event name: {f_name}')
+            raise FilterSaveFunctionDataError(
+                f'Url no found for function name: {f_name}')
 
         self.categories[url.category].append(data)
 
@@ -71,8 +71,11 @@ from to_python.core.types import FunctionType, \\
     FunctionReturnTypes, \\
     FunctionSignature, \\
     FunctionDoc, \\
-    EventData, \\
-    CompoundEventData
+    FunctionOOP, \\
+    FunctionOOPField, \\
+    CompoundOOPData, \\
+    FunctionData, \\
+    CompoundFunctionData
 
 DUMP_PARTIAL = [
     {list_text}
@@ -89,19 +92,19 @@ DUMP_PARTIAL = [
         files = sorted(self.files_to_import)
 
         sections_text = '\n'.join(
-            f'from to_python.dump.events.{category} '
-            f'import DUMP_PARTIAL as DP_E_{category.upper()}'
+            f'from to_python.dump.oops.{category} import '
+            f'DUMP_PARTIAL as DP_O_{category.upper()}'
             for category in files
         )
         dump_text = f',\n{" " * 4}'.join(
-            f'*DP_E_{category.upper()}'
+            f'*DP_O_{category.upper()}'
             for category in files
         )
         text = f'''
 
 {sections_text}
 
-DUMP_EVENTS = [
+DUMP_OOPS = [
     {dump_text}
 ]
 '''
@@ -115,12 +118,10 @@ DUMP_EVENTS = [
         """
         cache_file = os.path.join(self.DUMP_FOLDER_ROOT, 'url_list.py')
 
-        with open(cache_file, 'a', encoding='UTF-8', newline='\n') as cache:
-            cache.write('\n\n')
-            cache.write(FilterSaveFetchedEvents.text_url_list(
+        with open(cache_file, 'w', encoding='UTF-8', newline='\n') as cache:
+            cache.write(FilterSaveFetched.text_url_list(
                 [self.get_context_data().urls[k] for k in
-                 self.get_context_data().urls],
-                variable_name='URL_LIST_EVENT'
+                 self.get_context_data().urls]
             ))
 
     def save_data(self):
@@ -132,14 +133,14 @@ DUMP_EVENTS = [
         print('Saved data\u001b[0m')
 
         self.save_init_file()
-        print('Append data into __init__.py file\u001b[0m')
+        print('Generated __init__.py file\u001b[0m')
 
         self.save_url_list()
-        print('Append data into url_list.py file\u001b[0m')
+        print('Save url_list.py file\u001b[0m')
 
     def apply(self):
-        for f_name in self.get_context_data().parsed:
-            data = self.get_context_data().parsed[f_name]
+        for f_name in self.context.oops:
+            data = self.context.oops[f_name]
             self.collect_by_category(f_name, data)
 
         self.save_data()

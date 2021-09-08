@@ -11,8 +11,12 @@ class FilterSaveFetchedEvents(FilterSaveFetched):
         """
         Converts URL List into a text
         """
-        text = '\n\n' \
-               'EVENT_URL_LIST = [\n    ' + ',\n    '.join(repr(v) for v in url_list) + '\n]\n'
+        text = (
+                '\n\n'
+                'EVENT_URL_LIST = [\n    ' + ',\n    '.join(
+                    repr(v) for v in url_list
+                ) + '\n]\n'
+        )
 
         return text
 
@@ -30,9 +34,10 @@ class FilterSaveFetchedEvents(FilterSaveFetched):
             self.save_file(
                 url,
                 text,
-                os.path.join(self.context.event_subfolder, url.name[2:4].upper())
+                os.path.join(self.context.event_subfolder,
+                             url.name[2:4].upper())
             )
             print(f'Saved "{url.name}", {url.type.name}')
 
         self.save_event_url_list()
-        print(f'Saved URL List')
+        print('Saved URL List')

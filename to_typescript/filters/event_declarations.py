@@ -1,12 +1,13 @@
 import os
-from copy import copy
+from copy import deepcopy
 from typing import List
 
 from to_python.core.types import EventData, FunctionArgument, FunctionType
 from to_typescript.core.filter import FilterAbstract
 from to_typescript.core.transform.function import TypeScriptFunctionGenerator
 from to_typescript.filters.event_names import FilterEventSaveNames
-from to_typescript.filters.function_declarations import FilterGenerateFunctionDeclarations
+from to_typescript.filters.function_declarations import \
+    FilterGenerateFunctionDeclarations
 from to_typescript.filters.function_save import FilterFunctionSave
 
 
@@ -21,13 +22,14 @@ class FilterEventSaveDeclarations(FilterAbstract):
 import { EventNames } from './all_event_names';
 '''
 
-    DUMP_FOLDERS = dict(server='output/types/mtasa/server/event',
-                        client='output/types/mtasa/client/event')
+    DUMP_FOLDERS = dict(server='output/server/event',
+                        client='output/client/event')
 
     imports = FilterFunctionSave().imports
 
     @staticmethod
-    def generate_file_content(data_list: List[List[EventData]], side: str) -> str:
+    def generate_file_content(data_list: List[List[EventData]],
+                              side: str) -> str:
         result = (
                 FilterEventSaveDeclarations.FILE_STARTER +
                 FilterFunctionSave.generate_imports(
@@ -36,7 +38,8 @@ import { EventNames } from './all_event_names';
                 )
         )
 
-        # TODO: split declaration generator and file composer into separated filter classes
+        # TODO: split declaration generator and file
+        #   composer into separated filter classes
         data_list = sorted(
             data_list,
             key=lambda x: x[0].name
@@ -45,7 +48,7 @@ import { EventNames } from './all_event_names';
         for data_list in data_list:
             data = data_list[0]
             name = FilterEventSaveNames.normalize_enum_variable_name(data.name)
-            arguments = copy(data.arguments)
+            arguments = deepcopy(data.arguments)
 
             # Add this:void argument
             arguments.arguments.insert(
@@ -60,7 +63,8 @@ import { EventNames } from './all_event_names';
                 )],
             )
 
-            function_type = TypeScriptFunctionGenerator.generate_arguments(arguments)
+            function_type = TypeScriptFunctionGenerator.generate_arguments(
+                arguments)
             function_type = function_type.replace('\n    ', '\n        ')
 
             result += f'''
@@ -76,7 +80,8 @@ export interface {name} extends GenericEventHandler {{
 
     @staticmethod
     def save_file(folder: str, category: str, content: str):
-        filename = FilterGenerateFunctionDeclarations.get_dts_file_name(category)
+        filename = FilterGenerateFunctionDeclarations.get_dts_file_name(
+            category)
         path = os.path.join(folder, f'{filename}.d.ts')
 
         with open(path, 'w', encoding='UTF-8', newline='\n') as cache:
@@ -85,7 +90,8 @@ export interface {name} extends GenericEventHandler {{
     def apply(self):
         for side in ['client', 'server']:
             for category in self.context.events_declarations:
-                data: List[List[EventData]] = self.context.events_declarations[category][side]
+                data: List[List[EventData]] = \
+                    self.context.events_declarations[category][side]
                 if not data:
                     continue
 

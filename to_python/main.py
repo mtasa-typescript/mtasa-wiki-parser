@@ -12,6 +12,7 @@ def main(argc: int, argv: List[str]):
         verbose_mode = 'v' in argv[1]
 
     context = Context(functions=ContextData(),
+                      oops=dict(),
                       events=ContextData(),
                       verbose=verbose_mode)
 

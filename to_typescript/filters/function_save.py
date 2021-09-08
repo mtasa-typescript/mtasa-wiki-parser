@@ -10,8 +10,8 @@ class FilterFunctionSave(FilterAbstract):
 // DO NOT EDIT. ANY CHANGES WILL BE OVERWRITTEN
 
 '''
-    DUMP_FOLDERS = dict(server='output/types/mtasa/server/function',
-                        client='output/types/mtasa/client/function')
+    DUMP_FOLDERS = dict(server='output/server/function',
+                        client='output/client/function')
 
     imports = dict(
         server=[
@@ -32,7 +32,6 @@ class FilterFunctionSave(FilterAbstract):
             'PrimitiveType',
             'DxTexture',
             'ObjectGroup',
-            'Matrix',
             'Browser',
             'Light',
             'Effect',
@@ -73,9 +72,14 @@ class FilterFunctionSave(FilterAbstract):
             'GenericEventHandler',
             'CommandHandler',
             'BindKeyCallback',
+            'BindKeyCallbackVarArgs',
             'ControlName',
             'KeyName',
             'KeyState',
+            'Vector2',
+            'Vector3',
+            'Vector4',
+            'Matrix',
         ]
     )
 
@@ -95,8 +99,10 @@ class FilterFunctionSave(FilterAbstract):
 }} from '{filename}';
 '''
 
-    def save_file_category(self, category_name: str, side: str, content: List[str]):
-        cache_file = os.path.join(self.DUMP_FOLDERS[side], f'{category_name}.d.ts')
+    def save_file_category(self, category_name: str, side: str,
+                           content: List[str]):
+        cache_file = os.path.join(self.DUMP_FOLDERS[side],
+                                  f'{category_name}.d.ts')
 
         text = (self.FILE_STARTER +
                 self.generate_imports(self.imports[side], '../structure')

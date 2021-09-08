@@ -1,0 +1,3 @@
+[flake8]
+exclude = to_python/dump,crawwler/dump_html,venv,to_typescript/output
+max-complexity = 25

@@ -1,7 +1,8 @@
 import os
 
 from to_typescript.core.filter import FilterAbstract
-from to_typescript.filters.function_declarations import FilterGenerateFunctionDeclarations
+from to_typescript.filters.function_declarations import \
+    FilterGenerateFunctionDeclarations
 from to_typescript.filters.function_save_index import FilterFunctionSaveIndex
 
 
@@ -31,7 +32,8 @@ class FilterEventSaveIndex(FilterAbstract):
             if not data[side]:
                 continue
 
-            filename = FilterGenerateFunctionDeclarations.get_dts_file_name(category)
+            filename = FilterGenerateFunctionDeclarations.get_dts_file_name(
+                category)
             path = f'./event/{filename}'
             text += FilterFunctionSaveIndex.generate_exports(path) + '\n'
 
@@ -58,4 +60,4 @@ export { Event };
         for side in ['client', 'server']:
             self.save_file_event(side)
 
-        print(f'Generate event.d.ts files\u001b[0m')
+        print('Generate event.d.ts files\u001b[0m')

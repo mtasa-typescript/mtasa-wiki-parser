@@ -1,7 +1,8 @@
-from copy import copy
+from copy import deepcopy
 from typing import List
 
-from to_python.core.types import FunctionData, FunctionDoc, FunctionArgument, FunctionType
+from to_python.core.types import FunctionData, FunctionDoc, FunctionArgument, \
+    FunctionType
 from to_typescript.core.filter import FilterAbstract
 from to_typescript.core.transform.extra_rules import TypeConverter
 
@@ -35,7 +36,8 @@ class FilterDumpProcessFunctions(FilterAbstract):
     @staticmethod
     def prepare_argument_names(arguments: List[List[FunctionArgument]]):
         """
-        Cleans the argument names from forbidden characters  for a single function
+        Cleans the argument names from forbidden characters
+          for a single function
         """
         for argument_list in arguments:
             for argument in argument_list:
@@ -58,7 +60,8 @@ class FilterDumpProcessFunctions(FilterAbstract):
             for argument in argument_list:
                 types = argument.argument_type
                 if types:
-                    types.names = [TypeConverter(name).convert() for name in types.names]
+                    types.names = [TypeConverter(name).convert() for name in
+                                   types.names]
 
     @staticmethod
     def prepare_return_types(return_types: List[FunctionType]):
@@ -69,7 +72,8 @@ class FilterDumpProcessFunctions(FilterAbstract):
 
         # Return types
         for return_type in return_types:
-            return_type.names = [TypeConverter(name).convert() for name in return_type.names]
+            return_type.names = [TypeConverter(name).convert() for name in
+                                 return_type.names]
 
     @staticmethod
     def resolve_multiple_signatures(data_list: List[FunctionData],
@@ -88,9 +92,12 @@ class FilterDumpProcessFunctions(FilterAbstract):
 
         first_optional_index = -1
         for index, argument_list in enumerate(signature.arguments.arguments):
-            is_optional = len([argument
-                               for argument in argument_list
-                               if argument.argument_type and argument.argument_type.is_optional]) != 0
+            is_optional = len([
+                argument
+                for argument in argument_list
+                if
+                argument.argument_type and argument.argument_type.is_optional
+            ]) != 0
 
             if len([argument
                     for argument in argument_list
@@ -107,11 +114,13 @@ class FilterDumpProcessFunctions(FilterAbstract):
                 if first_optional_index == -1:
                     continue
 
-                # There were optional arguments. And the current is a required argument
+                # There were optional arguments.
+                #   And the current is a required argument
                 index_should_be_increased = False
-                new_signature = copy(signature)
+                new_signature = deepcopy(signature)
 
-                # Remove (index - first_optional_index - 1) arguments from the new signature
+                # Remove (index - first_optional_index - 1)
+                #   arguments from the new signature
                 for _ in range(first_optional_index, index):
                     new_signature.arguments.arguments.pop(first_optional_index)
 
@@ -124,12 +133,15 @@ class FilterDumpProcessFunctions(FilterAbstract):
                         arg.argument_type.is_optional = False
 
                 # Save the new signature
-                data_list.append(FunctionData(name=data.name,
-                                              signature=new_signature,
-                                              docs=FunctionDoc(description='',
-                                                               arguments=dict(),
-                                                               result='', ),
-                                              oop=None, ), )
+                data_list.append(
+                    FunctionData(
+                        signature=new_signature,
+                        docs=FunctionDoc(description='',
+                                         arguments=dict(),
+                                         result='', ),
+                        url=data.url,
+                    ),
+                )
                 first_optional_index = -1
 
         return index_should_be_increased
@@ -148,23 +160,30 @@ class FilterDumpProcessFunctions(FilterAbstract):
         self.prepare_argument_types(data.signature.arguments.arguments)
         self.prepare_return_types(data.signature.return_types.return_types)
 
-        increment = +self.resolve_multiple_signatures(data_list=data_list,
-                                                      index_in_list=data_list_index)
+        increment = +self.resolve_multiple_signatures(
+            data_list=data_list,
+            index_in_list=data_list_index
+        )
 
         return data_list_index + increment
 
     def apply(self):
         self.remove_utf8()
-        print('\u001b[33mWarning:\u001b[0m UTF8 category has been removed from processing. '
-              'See https://github.com/mtasa-typescript/mtasa-wiki-parser/issues/31\u001b[0m')
+        print(
+            '\u001b[33mWarning:\u001b[0m UTF8 category '
+            'has been removed from processing. '
+            'See https://github.com/mtasa-typescript/'
+            'mtasa-wiki-parser/issues/31\u001b[0m'
+        )
 
         for function in self.context.functions:
             for side, data_list in function:
 
                 index = 0
                 while index < len(data_list):
-                    index = self.prepare_function(data_list_index=index,
-                                                  data_list=data_list)
+                    index = self.prepare_function(
+                        data_list_index=index,
+                        data_list=data_list
+                    )
 
         print('\u001b[32mFunction processing complete\u001b[0m')
-

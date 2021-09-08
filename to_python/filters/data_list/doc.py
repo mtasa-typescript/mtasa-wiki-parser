@@ -21,7 +21,8 @@ class FilterParseDocs(FilterAbstract):
         super().__init__(context_type)
 
     @staticmethod
-    def get_sections_title_contains(wiki: WikiText, expected: str) -> List[Tuple[Section, int]]:
+    def get_sections_title_contains(wiki: WikiText, expected: str) -> \
+            List[Tuple[Section, int]]:
         arg_sections = []
         for index, section in enumerate(wiki.sections):
             if section.title and expected in section.title.lower():
@@ -38,7 +39,9 @@ class FilterParseDocs(FilterAbstract):
         if line == '' or line == '}}':
             return True
 
-        if line.startswith('=') or line.startswith('<!--') or line.endswith('-->'):
+        if line.startswith('=') \
+                or line.startswith('<!--') \
+                or line.endswith('-->'):
             return True
 
         if re.match(r'^\{\{.*\}?\}?$', line):
@@ -79,7 +82,8 @@ class FilterParseDocs(FilterAbstract):
 
     ARG_NAME_REGEX = re.compile(r"\* *'+([^':]+):?'+")
 
-    def parse_section_to_args(self, f_name: str, section) -> Tuple[Dict[str, str], str]:
+    def parse_section_to_args(self, f_name: str, section) -> \
+            Tuple[Dict[str, str], str]:
         """
         Parses single section to arguments dictionary and misc
         :return: Dictionary <argument name, docs> and misc (undetermined)
@@ -98,7 +102,11 @@ class FilterParseDocs(FilterAbstract):
             if arg_name is None:
                 if name is None:
                     if 'optional' not in section.title.lower():
-                        print(f'\u001b[33m[WARN] \u001b[0mUndetermined line in function "{f_name}"\u001b[0m')
+                        print(
+                            f'\u001b[33m[WARN] \u001b[0m'
+                            f'Undetermined line in function '
+                            f'"{f_name}"\u001b[0m'
+                        )
 
                     continue
 
@@ -118,20 +126,24 @@ class FilterParseDocs(FilterAbstract):
 
         return result, misc
 
-    def get_args_docs(self, f_name: str, raw: str, wiki: WikiText) -> Tuple[Dict[str, str], str]:
+    def get_args_docs(self, f_name: str, raw: str, wiki: WikiText) -> \
+            Tuple[Dict[str, str], str]:
         """
         Accumulates arguments description
         """
-        from to_python.filters.data_list.signature import FilterParseFunctionSignature
+        from to_python.filters.data_list.signature import \
+            FilterParseFunctionSignature
 
         arg_sections = self.get_sections_title_contains(wiki, 'argument')
         if not arg_sections:
-            arg_sections = deepcopy(self.get_sections_title_contains(wiki, 'parameters'))
+            arg_sections = deepcopy(
+                self.get_sections_title_contains(wiki, 'parameters'))
 
             # Clear section from code
             for section_info in arg_sections:
                 section_info[0].contents = \
-                    re.sub(FilterParseFunctionSignature.SELECT_CODE_REGEX, "", section_info[0].contents)
+                    re.sub(FilterParseFunctionSignature.SELECT_CODE_REGEX, "",
+                           section_info[0].contents)
 
         result = dict()
         misc_doc = ''
@@ -150,7 +162,8 @@ class FilterParseDocs(FilterAbstract):
         wiki = wiki_raw[f_name]
         description_raw = str(wiki.sections[0])
 
-        description_raw = re.sub(r'__NOTOC__\n?', '', description_raw, re.IGNORECASE)
+        description_raw = re.sub(r'__NOTOC__\n?', '', description_raw,
+                                 re.IGNORECASE)
         description_raw = description_raw.replace(str(wiki.templates[0]), '')
         description_raw = description_raw.strip()
         return self.filter_raw_text(description_raw)
@@ -161,23 +174,36 @@ class FilterParseDocs(FilterAbstract):
             wiki_content = self.context_data.wiki_side[f_name]
             description = self.get_docs(self.context_data.wiki_raw, f_name)
             if not description:
-                print(f'[ERROR] Page without a description: {f_name}', file=sys.stderr)
+                print(f'[ERROR] Page without a description: {f_name}',
+                      file=sys.stderr)
 
             # TODO: refactor
             if raw_content.client is not None:
-                return_doc = self.get_return_docs(f_name, raw_content.client, wiki_content.client)
-                args_doc, description_mixin = self.get_args_docs(f_name, raw_content.client, wiki_content.client)
+                return_doc = self.get_return_docs(f_name, raw_content.client,
+                                                  wiki_content.client)
+                args_doc, description_mixin = self.get_args_docs(
+                    f_name,
+                    raw_content.client,
+                    wiki_content.client
+                )
                 self.context_data.parsed[f_name].client[0].docs = FunctionDoc(
-                    description=(description + '\n' + description_mixin).strip(),
+                    description=(
+                            description + '\n' + description_mixin).strip(),
                     arguments=args_doc,
                     result=return_doc
                 )
 
             if raw_content.server is not None:
-                return_doc = self.get_return_docs(f_name, raw_content.server, wiki_content.server)
-                args_doc, description_mixin = self.get_args_docs(f_name, raw_content.server, wiki_content.server)
+                return_doc = self.get_return_docs(f_name, raw_content.server,
+                                                  wiki_content.server)
+                args_doc, description_mixin = self.get_args_docs(
+                    f_name,
+                    raw_content.server,
+                    wiki_content.server
+                )
                 self.context_data.parsed[f_name].server[0].docs = FunctionDoc(
-                    description=(description + '\n' + description_mixin).strip(),
+                    description=(
+                            description + '\n' + description_mixin).strip(),
                     arguments=args_doc,
                     result=return_doc
                 )

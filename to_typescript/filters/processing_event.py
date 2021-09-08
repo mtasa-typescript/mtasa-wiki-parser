@@ -2,7 +2,8 @@ from typing import List
 
 from to_python.core.types import EventData
 from to_typescript.core.filter import FilterAbstract
-from to_typescript.filters.processing_function import FilterDumpProcessFunctions
+from to_typescript.filters.processing_function import \
+    FilterDumpProcessFunctions
 
 
 class FilterDumpProcessEvents(FilterAbstract):
@@ -22,8 +23,10 @@ class FilterDumpProcessEvents(FilterAbstract):
         increment = 1
 
         data = data_list[data_list_index]
-        FilterDumpProcessFunctions.prepare_argument_names(data.arguments.arguments)
-        FilterDumpProcessFunctions.prepare_argument_types(data.arguments.arguments)
+        FilterDumpProcessFunctions.prepare_argument_names(
+            data.arguments.arguments)
+        FilterDumpProcessFunctions.prepare_argument_types(
+            data.arguments.arguments)
 
         increment = +1
 

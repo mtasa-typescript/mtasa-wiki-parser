@@ -17,7 +17,8 @@ class FilterGenerateFunctionDeclarations(FilterAbstract):
                 .split(' ')[0]
                 .lower())
 
-    def generate_declaration(self, compound: CompoundFunctionData, url: PageUrl):
+    def generate_declaration(self, compound: CompoundFunctionData,
+                             url: PageUrl):
         # TODO: use CompoundFunctionData __iter__ (loop)
 
         sides: Dict[str, List[FunctionData]] = dict()
@@ -28,25 +29,29 @@ class FilterGenerateFunctionDeclarations(FilterAbstract):
 
         for side in sides:
             for data in sides[side]:
-                declaration = TypeScriptFunctionGenerator(host_name=self.context.host_name,
-                                                          data=data,
-                                                          url=url).generate()
+                declaration = TypeScriptFunctionGenerator(
+                    host_name=self.context.host_name,
+                    data=data,
+                    url=url).generate()
 
                 category = self.get_dts_file_name(url.category)
-                self.context.declarations.function[category][side].append(declaration)
+                self.context.declarations.function[category][side].append(
+                    declaration)
 
-    def save_function_for_index(self, compound: CompoundFunctionData, url: PageUrl):
+    def save_function_for_index(self, compound: CompoundFunctionData,
+                                url: PageUrl):
         """
         Generates self.context.declarations.function_names
         """
         category = self.get_dts_file_name(url.category)
 
         for side, data in compound:
-            self.context.declarations.function_names[category][side].append(url.name)
+            self.context.declarations.function_names[category][side].append(
+                url.name)
 
     def apply(self):
         for function in self.context.functions:
-            name = (function.server or function.client)[0].name
+            name = (function.server or function.client)[0].url
             url = self.context.urls[name]
             self.generate_declaration(function, url)
 

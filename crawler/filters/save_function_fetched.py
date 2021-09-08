@@ -9,12 +9,14 @@ from crawler.filters.fetch_function_pages import WikiPageFetcher
 class FilterSaveFetched(FilterAbstract):
     DUMP_FOLDER = 'dump_html'
 
-    def save_file(self, url: PageUrl, result: str, subdir: Optional[str] = None):
+    def save_file(self, url: PageUrl, result: str,
+                  subdir: Optional[str] = None):
         """
         Saves fetched data into a file
         :param url: Data about the function
         :param result: Fetched data
-        :param subdir: Subdirectory with data (relative path, based on DUMP folder)
+        :param subdir: Subdirectory with data
+         (relative path, based on DUMP folder)
         """
         name = WikiPageFetcher.normalize_page_name(url.name)
         if subdir is None:
@@ -33,12 +35,14 @@ class FilterSaveFetched(FilterAbstract):
             cache.write(result)
 
     @staticmethod
-    def text_url_list(url_list: List[PageUrl], variable_name: str = 'URL_LIST') -> str:
+    def text_url_list(url_list: List[PageUrl],
+                      variable_name: str = 'URL_LIST') -> str:
         """
         Converts URL List into a text
         """
         text = 'from crawler.core.types import PageUrl, ListType\n\n'
-        text += f'{variable_name} = [\n    ' + ',\n    '.join(repr(v) for v in url_list) + '\n]\n'
+        text += f'{variable_name} = [\n    ' + ',\n    '.join(
+            repr(v) for v in url_list) + '\n]\n'
 
         return text
 
@@ -56,9 +60,10 @@ class FilterSaveFetched(FilterAbstract):
             self.save_file(
                 url,
                 text,
-                os.path.join(self.context.function_subfolder, url.name[:2].upper())
+                os.path.join(self.context.function_subfolder,
+                             url.name[:2].upper())
             )
             print(f'Saved "{url.name}", {url.type.name}')
 
         self.save_url_list()
-        print(f'Saved URL List')
+        print('Saved URL List')

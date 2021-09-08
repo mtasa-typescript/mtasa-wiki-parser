@@ -19,7 +19,8 @@ class FilterCollectDumpFiles(FilterAbstract):
 
     def get_file_list(self) -> List[str]:
         return [
-            f for f in glob.iglob(self.DUMP_DIRECTORY[self.context_type], recursive=True)
+            f for f in
+            glob.iglob(self.DUMP_DIRECTORY[self.context_type], recursive=True)
             if os.path.isfile(f)
             if not f.endswith('.py')
             if not f.endswith('.gitignore')
@@ -31,4 +32,8 @@ class FilterCollectDumpFiles(FilterAbstract):
             function_name = os.path.basename(file)
             self.context_data.pages[self.function_name(function_name)] = file
 
-        print(f'Collected HTML files (context \u001b[34m{self.context_type}\u001b[0m): \u001b[34m{len(self.context_data.pages)}\u001b[0m items\u001b[0m')
+        print(
+            f'Collected HTML files (context '
+            f'\u001b[34m{self.context_type}\u001b[0m): \u001b[34m'
+            f'{len(self.context_data.pages)}\u001b[0m items\u001b[0m'
+        )

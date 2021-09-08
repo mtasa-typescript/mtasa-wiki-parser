@@ -4,7 +4,8 @@ import sys
 from dataclasses import dataclass
 from typing import Optional, List, Tuple, Dict, Any, Set
 
-from to_python.core.types import FunctionSignature, FunctionArgumentValues, FunctionReturnTypes, FunctionType, \
+from to_python.core.types import FunctionSignature, FunctionArgumentValues, \
+    FunctionReturnTypes, FunctionType, \
     FunctionArgument
 
 
@@ -28,10 +29,12 @@ class SignatureTokenizer:
         self.code = code
         self.tokenized: List[SignatureTokenizer.Token] = []
 
-    def token_should_have_type(self, token: 'SignatureTokenizer.Token', token_type: 'SignatureTokenizer.TokenType'):
+    def token_should_have_type(self, token: 'SignatureTokenizer.Token',
+                               token_type: 'SignatureTokenizer.TokenType'):
         if token.type != token_type:
-            raise SignatureTokenizerError(f'Expected {str(token_type)} token, got {str(token.type)}. '
-                                          f'Function signature:\n{self.code}')
+            raise SignatureTokenizerError(
+                f'Expected {str(token_type)} token, got {str(token.type)}. '
+                f'Function signature:\n{self.code}')
 
     class TokenType(enum.Enum):
         RETURN_TYPE = 'ReturnType'
@@ -113,15 +116,18 @@ class SignatureTokenizer:
             if token.type != self.TokenType.ARGUMENT_START:
                 continue
 
-            self.token_should_have_type(self.tokenized[index - 1], self.TokenType.UNDEFINED)
+            self.token_should_have_type(self.tokenized[index - 1],
+                                        self.TokenType.UNDEFINED)
             self.tokenized[index - 1].type = self.TokenType.FUNCTION_NAME
             for i in range(0, index - 1):
                 in_token = self.tokenized[i]
                 if in_token.type in {
                     self.TokenType.TYPE_UNION_SIGN,  # Example: table/xmlnode
-                    self.TokenType.COMMA_SIGN,  # Example: STRING, STRING getPedAnimation ( ped thePed )
+                    self.TokenType.COMMA_SIGN,
+                    # Example: STRING, STRING getPedAnimation ( ped thePed )
                     self.TokenType.OPTIONAL_START,
-                    self.TokenType.OPTIONAL_END,  # Example: INT, INT [, INT] dxGetMaterialSize
+                    self.TokenType.OPTIONAL_END,
+                    # Example: INT, INT [, INT] dxGetMaterialSize
                 }:
                     continue
 
@@ -144,7 +150,8 @@ class SignatureTokenizer:
                 continue
 
             if self.tokenized[index + 1].type != self.TokenType.DEFAULT_VALUE:
-                self.token_should_have_type(self.tokenized[index + 1], self.TokenType.UNDEFINED)
+                self.token_should_have_type(self.tokenized[index + 1],
+                                            self.TokenType.UNDEFINED)
             self.tokenized[index + 1].type = self.TokenType.DEFAULT_VALUE
 
             # Default value is a function call. Example: getRootElement()
@@ -168,7 +175,8 @@ class SignatureTokenizer:
 
                 in_token.type = self.TokenType.DEFAULT_VALUE
 
-            # Default value is a string. Commas and other chars should be covered. Example: "world,vehicle,object,other"
+            # Default value is a string. Commas and other
+            #   chars should be covered. Example: "world,vehicle,object,other"
             if self.tokenized[index + 1].value == '"':
                 for i in range(index + 2, len(self.tokenized)):
                     in_token = self.tokenized[i]
@@ -180,12 +188,14 @@ class SignatureTokenizer:
     def arguments_tokenize(self):
         """
         Tokenizes function arguments.
-        After comma sign expected: [optional start/optional end] + type + argument name
+        After comma sign expected: [optional start/optional end]
+          + type + argument name
         """
         arguments = False
 
         for index, token in enumerate(self.tokenized):
-            # Works only in round brackets (between TokenType.ARGUMENT_START and TokenType.ARGUMENT_END)
+            # Works only in round brackets
+            #   (between TokenType.ARGUMENT_START and TokenType.ARGUMENT_END)
             if token.type == self.TokenType.ARGUMENT_START:
                 arguments = True
             if token.type == self.TokenType.ARGUMENT_END:
@@ -197,11 +207,13 @@ class SignatureTokenizer:
             if token.type not in {
                 self.TokenType.COMMA_SIGN,  # ,
                 self.TokenType.ARGUMENT_START,  # (
-                self.TokenType.TYPE_UNION_SIGN  # Example object theObject / int modelId
+                self.TokenType.TYPE_UNION_SIGN
+                # Example object theObject / int modelId
             }:
                 continue
 
-            if token.type == self.TokenType.TYPE_UNION_SIGN and self.tokenized[index + 1].type not in {
+            if token.type == self.TokenType.TYPE_UNION_SIGN and self.tokenized[
+                index + 1].type not in {
                 self.TokenType.UNDEFINED
             }:
                 continue
@@ -212,7 +224,8 @@ class SignatureTokenizer:
             current_type = self.TokenType.ARGUMENT_TYPE
             for i in range(index + 1, len(self.tokenized)):
                 in_token = self.tokenized[i]
-                if in_token.type in {self.TokenType.OPTIONAL_START, self.TokenType.OPTIONAL_END}:
+                if in_token.type in {self.TokenType.OPTIONAL_START,
+                                     self.TokenType.OPTIONAL_END}:
                     continue
                 if in_token.type in {
                     self.TokenType.COMMA_SIGN,
@@ -227,7 +240,8 @@ class SignatureTokenizer:
                     current_type = self.TokenType.ARGUMENT_TYPE
                     continue
 
-                self.token_should_have_type(self.tokenized[i], self.TokenType.UNDEFINED)
+                self.token_should_have_type(self.tokenized[i],
+                                            self.TokenType.UNDEFINED)
                 in_token.type = current_type
 
                 if current_type == self.TokenType.ARGUMENT_TYPE:
@@ -258,13 +272,15 @@ class SignatureTokenizer:
 
             # Capture pair ARG_NAME + TYPE_UNION_SIGN
             if not (token.type == self.TokenType.TYPE_UNION_SIGN and
-                    self.tokenized[index - 1].type == self.TokenType.ARGUMENT_NAME):
+                    self.tokenized[
+                        index - 1].type == self.TokenType.ARGUMENT_NAME):
                 index += 1
                 continue
 
             i = index + 1
             while i < len(self.tokenized):
-                # expected TYPE + NAME + UNION + TYPE + NAME + UNION + ... + separator (bracket, comma)
+                # expected TYPE + NAME + UNION + TYPE + NAME + UNION + ... +
+                #   separator (bracket, comma)
                 separators = {self.TokenType.COMMA_SIGN,
                               self.TokenType.ARGUMENT_END,
                               self.TokenType.OPTIONAL_END,
@@ -325,9 +341,11 @@ class SignatureTokenizer:
             for index, token in enumerate(self.tokenized):
                 if token.type == open_bracket:
                     if open_bracket_index is not None:
-                        message = f'Multiple opened brackets {token.type} on position {index}'
+                        message = f'Multiple opened brackets ' \
+                                  f'{token.type} on position {index}'
                         if exception:
-                            raise SignatureTokenizerError(f'{message}. Function signature:\n{self.code}')
+                            raise SignatureTokenizerError(
+                                f'{message}. Function signature:\n{self.code}')
                         else:
                             print(f'[ERROR] {message}', file=sys.stderr)
 
@@ -336,9 +354,11 @@ class SignatureTokenizer:
 
                 if token.type == close_bracket:
                     if close_bracket_index is not None:
-                        message = f'Multiple closed brackets {token.type} on position {index}'
+                        message = f'Multiple closed brackets ' \
+                                  f'{token.type} on position {index}'
                         if exception:
-                            raise SignatureTokenizerError(f'{message}. Function signature:\n{self.code}')
+                            raise SignatureTokenizerError(
+                                f'{message}. Function signature:\n{self.code}')
                         else:
                             print(f'[ERROR] {message}', file=sys.stderr)
 
@@ -355,7 +375,8 @@ class SignatureTokenizer:
         for index, token in enumerate(self.tokenized):
             if token.type != self.TokenType.UNDEFINED:
                 continue
-            raise SignatureTokenizerError('Undefined token. Function signature: \n' + self.code)
+            raise SignatureTokenizerError(
+                'Undefined token. Function signature: \n' + self.code)
 
         # Exactly one FUNCTION_NAME expected
         function_name_counter = 0
@@ -364,9 +385,12 @@ class SignatureTokenizer:
                 continue
             function_name_counter += 1
         if function_name_counter != 1:
-            raise SignatureTokenizerError('Expected only one FUNCTION_NAME. Function signature: \n' + self.code)
+            raise SignatureTokenizerError(
+                'Expected only one FUNCTION_NAME. '
+                'Function signature: \n' + self.code)
 
-        # ARGUMENT_TYPE => ARGUMENT_TYPE + [UNION_TYPE SIGN + ARGUMENT_TYPE] + ARGUMENT_NAME in pair expected
+        # ARGUMENT_TYPE => ARGUMENT_TYPE + [UNION_TYPE SIGN + ARGUMENT_TYPE]
+        #   + ARGUMENT_NAME in pair expected
         for index, token in enumerate(self.tokenized):
             if token.type != self.TokenType.ARGUMENT_TYPE:
                 continue
@@ -375,13 +399,16 @@ class SignatureTokenizer:
             for i in range(index, len(self.tokenized)):
                 in_token = self.tokenized[i]
 
-                if expected_type == self.TokenType.ARGUMENT_NAME and in_token.type == self.TokenType.TYPE_UNION_SIGN:
+                if expected_type == self.TokenType.ARGUMENT_NAME \
+                        and in_token.type == self.TokenType.TYPE_UNION_SIGN:
                     expected_type = self.TokenType.ARGUMENT_TYPE
                     continue
 
                 if in_token.type != expected_type:
                     raise SignatureTokenizerError(
-                        f'Expected {expected_type}, got {in_token.type}. Function signature: \n' + self.code
+                        f'Expected {expected_type}, '
+                        f'got {in_token.type}. Function signature: \n'
+                        f'{self.code}'
                     )
 
                 if expected_type == self.TokenType.ARGUMENT_TYPE:
@@ -429,7 +456,10 @@ class SignatureParser:
 
         raise SignatureParserError('No function name in tokenized function')
 
-    def get_argument(self, index_from: int, argument_context: Dict[str, Any]) -> Tuple[List[FunctionArgument], int]:
+    def get_argument(self,
+                     index_from: int,
+                     argument_context: Dict[str, Any]) -> \
+            Tuple[List[FunctionArgument], int]:
         """
         Parse a single argument
         :param index_from: Index to start
@@ -478,15 +508,19 @@ class SignatureParser:
                         index += 1
                         continue
                     else:
-                        result.append(FunctionArgument(name=partial_name,
-                                                       argument_type=partial_type,
-                                                       default_value=partial_default))
+                        result.append(FunctionArgument(
+                            name=partial_name,
+                            argument_type=partial_type,
+                            default_value=partial_default)
+                        )
                         partial_name = None
                         partial_default = None
                         append = False
 
-                partial_type = FunctionType(names=[token.value],
-                                            is_optional=argument_context['optional_counter'] > 0)
+                partial_type = FunctionType(
+                    names=[token.value],
+                    is_optional=argument_context['optional_counter'] > 0
+                )
 
             elif token.type == self.TokenType.ARGUMENT_NAME:
                 partial_name = token.value
@@ -537,7 +571,8 @@ class SignatureParser:
                 argument_list.append(result)
 
         return FunctionArgumentValues(arguments=argument_list,
-                                      variable_length=argument_context['is_variable_length'])
+                                      variable_length=argument_context[
+                                          'is_variable_length'])
 
     def get_returns(self) -> FunctionReturnTypes:
         """

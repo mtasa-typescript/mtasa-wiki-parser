@@ -1,8 +1,9 @@
 import enum
-from typing import List
+from typing import List, Tuple
 
 from crawler.core.types import ListType as ListTypeOneSide
-from to_python.core.types import FunctionData, FunctionGeneric, FunctionArgument
+from to_python.core.types import FunctionData, FunctionGeneric, \
+    FunctionArgument, CompoundFunctionData, CompoundOOPData
 from to_typescript.core.filter import FilterAbstract
 
 
@@ -22,6 +23,58 @@ class ListType(enum.Enum):
             return ListTypeOneSide.SERVER
 
 
+def get_functions_from_list_by_name(f_list: List[CompoundFunctionData],
+                                    function_type: ListType,
+                                    function_name: str) -> \
+        List[Tuple[CompoundFunctionData, ListTypeOneSide]]:
+    """
+    Gets function data list
+    """
+    if function_type == ListType.SHARED:
+        return (
+                get_functions_from_list_by_name(f_list,
+                                                ListType.SERVER,
+                                                function_name)
+                + get_functions_from_list_by_name(f_list,
+                                                  ListType.CLIENT,
+                                                  function_name)
+        )
+
+    function_type_original = function_type.normalize()
+    return [
+        (f, function_type_original)
+        for f in f_list
+        if f[function_type_original]
+        and f[function_type_original][0].name == function_name
+    ]
+
+
+def get_oops_from_list_by_name(f_list: List[CompoundOOPData],
+                               function_type: ListType,
+                               function_name: str) -> \
+        List[Tuple[CompoundOOPData, ListTypeOneSide]]:
+    """
+    Gets function data list
+    """
+    if function_type == ListType.SHARED:
+        return (
+                get_oops_from_list_by_name(f_list,
+                                           ListType.SERVER,
+                                           function_name)
+                + get_oops_from_list_by_name(f_list,
+                                             ListType.CLIENT,
+                                             function_name)
+        )
+
+    function_type_original = function_type.normalize()
+    return [
+        (f, function_type_original)
+        for f in f_list
+        if f[function_type_original] and f[function_type_original][
+            0].base_function_name == function_name
+    ]
+
+
 class FilterDumpProcessPost(FilterAbstract):
     """
     Post-post processing for dumps.
@@ -37,20 +90,12 @@ class FilterDumpProcessPost(FilterAbstract):
         :param function_name:
         :return:
         """
-        if function_type == ListType.SHARED:
-            return (
-                    self.get_functions(ListType.SERVER, function_name)
-                    + self.get_functions(ListType.CLIENT, function_name)
-            )
-
-        function_type_original = function_type.normalize()
-        return list(map(
-            lambda f: f[function_type_original],
-            filter(
-                lambda f: f[function_type_original] and f[function_type_original][0].name == function_name,
-                self.context.functions,
-            )
-        ))
+        return [
+            data[0][data[1]]
+            for data in get_functions_from_list_by_name(self.context.functions,
+                                                        function_type,
+                                                        function_name)
+        ]
 
     @staticmethod
     def iter_functions_arg_groups(functions: List[List[FunctionData]]):
@@ -60,19 +105,14 @@ class FilterDumpProcessPost(FilterAbstract):
                     yield arg_group
 
     def get_signature_arguments_by_name(self,
-                                        function_type: ListType,
-                                        function_name: str,
-                                        argument_name: str) -> List[List[FunctionArgument]]:
+                                        functions: List[List[FunctionData]],
+                                        argument_name: str) -> \
+            List[List[FunctionArgument]]:
         """
         Returns arguments by name
-        :param function_type: SERVER / CLIENT
-        :param function_name: Function Name
+        :param functions: Function list
         :param argument_name: Name of the target argument
         """
-        functions = self.get_functions(function_type, function_name)
-        if not functions:
-            raise FilterDumpProcessPostError(f'No such function: "{function_type}", "{function_name}"')
-
         result: List[List[FunctionArgument]] = []
         for arg_group in self.iter_functions_arg_groups(functions):
             for arg in arg_group:
@@ -84,25 +124,23 @@ class FilterDumpProcessPost(FilterAbstract):
         return result
 
     def replace_signature_argument(self,
-                                   function_type: ListType,
-                                   function_name: str,
+                                   functions: List[List[FunctionData]],
                                    argument_name: str,
-                                   new_function_argument: List[FunctionArgument]):
+                                   new_function_argument: List[
+                                       FunctionArgument]):
         """
         Replaces argument type
-        :param function_type: SERVER / CLIENT
-        :param function_name: Function Name
+        :param functions: Function list
         :param argument_name: Name of the target argument
         :param new_function_argument: New function argument object
         """
         arguments = self.get_signature_arguments_by_name(
-            function_type,
-            function_name,
+            functions,
             argument_name
         )
         if not arguments:
             raise FilterDumpProcessPostError(f'No arguments found.\n'
-                                             f'Side: {function_type}, name: {function_name}, argument: {argument_name}')
+                                             f'Argument: {argument_name}')
 
         for arg_group in arguments:
             for arg in arg_group:
@@ -113,39 +151,30 @@ class FilterDumpProcessPost(FilterAbstract):
                 break
 
     def set_signature_variable_length(self,
-                                      function_type: ListType,
-                                      function_name: str,
+                                      functions: List[List[FunctionData]],
                                       variable_length: bool):
         """
         Replaces argument type
-        :param function_type: SERVER / CLIENT
-        :param function_name: Function Name
+        :param functions: Function list
         :param variable_length: Is there a variable arguments
         """
-        functions = self.get_functions(function_type, function_name)
-        if not functions:
-            raise FilterDumpProcessPostError(f'No such function: "{function_type}", "{function_name}"')
-
         for function in functions:
             for declaration in function:
                 if variable_length is not None:
-                    declaration.signature.arguments.variable_length = variable_length
+                    declaration.signature.arguments.variable_length = \
+                        variable_length
 
     def add_signature_argument(self,
-                               function_type: ListType,
-                               function_name: str,
+                               functions: List[List[FunctionData]],
                                new_function_argument: List[FunctionArgument]):
-        functions = self.get_functions(function_type, function_name)
-        if not functions:
-            raise FilterDumpProcessPostError(f'No such function: "{function_type}", "{function_name}"')
-
         for function in functions:
             for declaration in function:
-                declaration.signature.arguments.arguments.append(new_function_argument)
+                declaration.signature.arguments.arguments.append(
+                    new_function_argument)
 
     def remove_signature_argument(self,
                                   function_type: ListType,
-                                  function_name: str,
+                                  functions: List[List[FunctionData]],
                                   argument_name: str):
         """
         Removes argument by name
@@ -153,10 +182,6 @@ class FilterDumpProcessPost(FilterAbstract):
         :param function_name: Function Name
         :param argument_name: Name of the argument to be removed
         """
-        functions = self.get_functions(function_type, function_name)
-        if not functions:
-            raise FilterDumpProcessPostError(f'No such function: "{function_type}", "{function_name}"')
-
         removed = 0
         for function in functions:
             for declaration in function:
@@ -172,20 +197,19 @@ class FilterDumpProcessPost(FilterAbstract):
                     index += 1
 
         if not removed:
-            raise FilterDumpProcessPostError(f'No arguments was removed.\n'
-                                             f'Side: {function_type}, name: {function_name}, argument: {argument_name}')
+            raise FilterDumpProcessPostError(
+                f'No arguments was removed.\n'
+                f'Side: {function_type}, argument: {argument_name}'
+            )
 
-    def add_generic_type(self, function_type: ListType, function_name: str, generic: FunctionGeneric):
+    def add_generic_type(self, functions: List[List[FunctionData]],
+                         generic: FunctionGeneric):
         """
         Adds generic type into the function
         :param function_type: SERVER / CLIENT
-        :param function_name: Name of the target function
+        :param functions: List of function lists
         :param generic: Generic type info
         """
-        functions = self.get_functions(function_type, function_name)
-        if not functions:
-            raise FilterDumpProcessPostError(f'No such function: "{function_type}", "{function_name}"')
-
         for function in functions:
             for declaration in function:
                 declaration.signature.generic_types.append(generic)
@@ -197,9 +221,19 @@ class FilterDumpProcessPost(FilterAbstract):
         from to_typescript.function_post_config import apply_post_process
         apply_post_process(self)
 
+    def callback_mixins(self):
+        """
+        Provides mixins
+        """
+        from to_typescript.mixins.oop_mixins import mixin_oop
+        from to_typescript.mixins.function_mixins import mixin_function
+        mixin_oop(self.context.oops)
+        mixin_function(self.context.functions)
+
     def apply(self):
         """
         Applies post processing
         """
         self.callback_functions()
+        self.callback_mixins()
         print('\u001b[32mPost processing complete\u001b[0m')

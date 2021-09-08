@@ -110,7 +110,9 @@ class TypeConverter:
 
         # Utility
 
-        # TODO: see the table https://wiki.multitheftauto.com/wiki/EngineGetObjectGroupPhysicalProperty
+        # TODO: see the table
+        # https://wiki.multitheftauto.com/wiki/
+        # EngineGetObjectGroupPhysicalProperty
         'objectgroup-modifiable': 'string',
     }
 

@@ -7,7 +7,8 @@ class FilterGetFunctionUrls(FilterAbstract):
 
     def get_urls(self):
         """
-        Gets urls, collects them into a dictionary and saves it into the context
+        Gets urls, collects them into a dictionary
+         and saves it into the context
         :return:
         """
         from crawler.dump_html import URL_LIST
@@ -26,7 +27,8 @@ class FilterGetEventUrls(FilterAbstract):
 
     def get_urls(self):
         """
-        Gets urls, collects them into a dictionary and saves it into the context
+        Gets urls, collects them into a dictionary
+         and saves it into the context
         :return:
         """
         from crawler.dump_html import EVENT_URL_LIST

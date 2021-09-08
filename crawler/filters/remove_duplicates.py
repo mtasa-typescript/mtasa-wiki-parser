@@ -12,7 +12,9 @@ class FilterRemoveDuplicates(FilterAbstract):
 
     def filter_predicate(self):
         def predicate(source: PageUrl):
-            for i in range(self.url_list.index(source) + 1, len(self.url_list)):
+            for i in range(self.url_list.index(source) + 1,
+                           len(self.url_list)):
+
                 url = self.url_list[i]
                 # TODO: Decrease complexity (n^2) somehow
                 if url.url == source.url:

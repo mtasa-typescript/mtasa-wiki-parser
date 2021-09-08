@@ -4,20 +4,48 @@ from typing import Dict, Any, List
 import yaml
 from jsonschema import validate
 
-from to_python.core.types import FunctionGeneric, FunctionType, FunctionArgument
-from to_typescript.filters.processing_post import FilterDumpProcessPost, ListType, FilterDumpProcessPostError
+from crawler.core.types import ListType as CrawlerListType
+from to_python.core.types import FunctionGeneric, FunctionType, \
+    FunctionArgument, FunctionData, CompoundOOPData
+from to_typescript.filters.processing_post import FilterDumpProcessPost, \
+    ListType, FilterDumpProcessPostError
+
+
+class FunctionPostConfigException(Exception):
+    pass
 
 
 def parse_side(side: str) -> ListType:
     return ListType[side.upper()]
 
 
+def get_oop_functions(oops: List[CompoundOOPData], side: ListType,
+                      function_name: str) -> List[List[FunctionData]]:
+    original_sides = [
+        CrawlerListType[side.name]] if side != ListType.SHARED else [
+        CrawlerListType.CLIENT,
+        CrawlerListType.SERVER
+    ]
+
+    return [
+        [data.method]
+        for data_list in [
+            oop[original_side]
+            for oop in oops
+            for original_side in original_sides
+            if oop[original_side]
+            if oop[original_side][0].base_function_name == function_name
+        ]
+        for data in data_list
+        if data.method
+    ]
+
+
 def apply_actions(processor: FilterDumpProcessPost,
                   function_name: str,
+                  functions: List[List[FunctionData]],
                   side: ListType,
                   actions: Dict[str, Any]):
-    functions = processor.get_functions(side, function_name)
-
     if 'properties' in actions:
         properties: Dict[str, Any] = actions['properties']
 
@@ -27,7 +55,10 @@ def apply_actions(processor: FilterDumpProcessPost,
                 for declaration in function:
                     declaration.signature.arguments.variable_length = False
 
-            print(f'    Applied variable_length = \u001b[34m{variable_length}\u001b[0m')
+            print(
+                f'    Applied variable_length ='
+                f' \u001b[34m{variable_length}\u001b[0m'
+            )
 
     if 'addGeneric' in actions:
         generic_list: List[Dict[str, str]] = actions['addGeneric']
@@ -35,14 +66,13 @@ def apply_actions(processor: FilterDumpProcessPost,
             name = generic['name']
             extends = generic.get('extends')
             default = generic.get('default')
-            processor.add_generic_type(side,
-                                       function_name,
+            processor.add_generic_type(functions,
                                        FunctionGeneric(
                                            name=name,
                                            extends=extends,
                                            default_value=default,
                                        ))
-            print(f'    Add generic parameter:')
+            print('    Add generic parameter:')
             print(f'        Name: \u001b[34m{name}\u001b[0m')
             print(f'        Extends: \u001b[34m{extends}\u001b[0m')
             print(f'        Default: \u001b[34m{default}\u001b[0m')
@@ -51,13 +81,15 @@ def apply_actions(processor: FilterDumpProcessPost,
         argument_list: List[Dict[str, Any]] = actions['replaceArgument']
         for argument in argument_list:
             name = argument['name']
-            arguments = processor.get_signature_arguments_by_name(side,
-                                                                  function_name,
+            arguments = processor.get_signature_arguments_by_name(functions,
                                                                   name)
 
             if not arguments:
-                raise FilterDumpProcessPostError(f'No arguments found.\n'
-                                                 f'Side: {side}, name: {function_name}, argument: {name}')
+                raise FilterDumpProcessPostError(
+                    'No arguments found.\n'
+                    f'Side: {side}, name: '
+                    f'{function_name}, argument: {name}'
+                )
             argument_data = argument['newArgument']
             for inner_argument in arguments:
                 to_replace = inner_argument[0]
@@ -102,11 +134,10 @@ def apply_actions(processor: FilterDumpProcessPost,
             arg = FunctionArgument(name=arg_name,
                                    argument_type=f_arg_type,
                                    default_value=arg_default)
-            processor.add_signature_argument(side,
-                                             function_name,
+            processor.add_signature_argument(functions,
                                              [arg])
 
-            print(f'    Add argument:')
+            print('    Add argument:')
             print(f'        Name:  \u001b[34m{arg_name}\u001b[0m')
             print(f'        Extends:  \u001b[34m{arg_default}\u001b[0m')
             print(f'        Type:  \u001b[34m{arg_type}\u001b[0m')
@@ -116,14 +147,32 @@ def apply_actions(processor: FilterDumpProcessPost,
         for argument in argument_list:
             arg_name = argument.get('name')
             processor.remove_signature_argument(side,
-                                                function_name,
+                                                functions,
                                                 arg_name)
 
             print(f'    Removed argument  \u001b[34m{arg_name}\u001b[0m')
 
+    if 'replaceReturnType' in actions:
+        return_types: List[str] = actions['replaceReturnType']['values']
+
+        for f_inner in functions:
+            for f in f_inner:
+                f.signature.return_types.return_types = [
+                    FunctionType(
+                        is_optional=False,
+                        names=[value],
+                    )
+                    for value in return_types
+                ]
+
+            print('    Replaced return types\u001b[0m')
+
 
 def apply_post_process(processor: FilterDumpProcessPost):
-    print('\nLoading PostProcess config from  \u001b[34mfunction-config.yml\u001b[0m')
+    print(
+        '\nLoading PostProcess config from '
+        '\u001b[34mfunction-config.yml\u001b[0m'
+    )
 
     with open('function-config.yml') as file:
         config = yaml.safe_load(file.read())
@@ -138,10 +187,37 @@ def apply_post_process(processor: FilterDumpProcessPost):
     for data in config["data"]:
         function_name = data["functionName"]
         side = parse_side(data["side"])
-        print(f'Applying actions to  \u001b[34m{function_name} \u001b[35m({side})\u001b[0m')
+        print(
+            f'Applying actions to '
+            f'\u001b[34m{function_name} \u001b[35m({side})\u001b[0m'
+        )
 
-        apply_actions(processor,
-                      function_name,
-                      side,
-                      data["actions"], )
+        functions = processor.get_functions(side, function_name)
+        if not functions:
+            raise FunctionPostConfigException(
+                f'No functions found for name {function_name}')
+
+        apply_actions(processor=processor,
+                      function_name=function_name,
+                      functions=functions,
+                      side=side,
+                      actions=data["actions"], )
         print('')
+
+        if data.get('includeOOP', False):
+            print(
+                f'Applying actions to OOP with base name '
+                f'\u001b[34m{function_name} \u001b[35m({side})\u001b[0m'
+            )
+            functions = get_oop_functions(processor.context.oops, side,
+                                          function_name)
+            if not functions:
+                raise FunctionPostConfigException(
+                    f'No OOP functions found for name {function_name}')
+
+            apply_actions(processor=processor,
+                          function_name=function_name,
+                          functions=functions,
+                          side=side,
+                          actions=data["actions"], )
+            print('')

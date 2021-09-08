@@ -1,8 +1,8 @@
 from collections import defaultdict
-from typing import Set, DefaultDict
+from typing import Set, DefaultDict, List
 
 from crawler.core.types import PageUrl
-from to_python.core.types import CompoundFunctionData
+from to_python.core.types import FunctionOOP
 from to_typescript.core.filter import FilterAbstract
 from to_typescript.core.transform.function import TypeScriptFunctionGenerator
 from to_typescript.core.transform.oop import TypeScriptOOPGenerator
@@ -13,45 +13,54 @@ class FilterGenerateOOPDeclarations(FilterAbstract):
         super().__init__()
 
         # < function name, <side, prop list> >
-        self.fields_in_class: DefaultDict[str, DefaultDict[str, Set[str]]] = defaultdict(lambda: defaultdict(set))
+        self.fields_in_class: DefaultDict[
+            str, DefaultDict[str, Set[str]]] = defaultdict(
+            lambda: defaultdict(set))
 
-    def generate_declaration(self, compound: CompoundFunctionData, url: PageUrl):
-        for side, data_list in compound:
-            for data in data_list:
-                if data.oop is None:
-                    continue
+    def generate_declaration(self,
+                             side: str,
+                             oop_data: FunctionOOP,
+                             url: PageUrl):
+        file_name = oop_data.class_name
+        field_name = oop_data.field.name if oop_data.field else None
 
-                file_name = data.oop.class_name
-                field_name = data.oop.field
+        generator = TypeScriptOOPGenerator(host_name=self.context.host_name,
+                                           data=oop_data,
+                                           url=url)
+        declaration_field = generator.generate_field()
+        declaration_method = generator.generate_method()
 
-                declaration_field = TypeScriptOOPGenerator(host_name=self.context.host_name,
-                                                           data=data,
-                                                           url=url).generate_field()
-                declaration_method = TypeScriptOOPGenerator(host_name=self.context.host_name,
-                                                            data=data,
-                                                            url=url).generate_method()
+        if declaration_field and field_name not in \
+                self.fields_in_class[file_name][side]:
+            self.fields_in_class[file_name][side].add(field_name)
 
-                if declaration_field and field_name not in self.fields_in_class[file_name][side]:
-                    self.fields_in_class[file_name][side].add(field_name)
+            self.context.declarations.oop_fields[file_name][side].append(
+                declaration_field)
 
-                    self.context.declarations.oop_fields[file_name][side].append(declaration_field)
+        if declaration_method:
+            self.context.declarations.oop_methods[file_name][side].append(
+                declaration_method)
 
-                if declaration_method:
-                    self.context.declarations.oop_methods[file_name][side].append(declaration_method)
-
-                    # Adds class generic (template) string
-                    if data.oop.method_name == 'constructor':
-                        self.context.declarations.oop_class_templates[file_name][side].append(
-                            TypeScriptFunctionGenerator.generate_generics(data.signature.generic_types)
-                        )
+            # Adds class generic (template) string
+            if oop_data.method.name == 'constructor':
+                self.context.declarations.oop_class_templates[file_name][
+                    side].append(
+                    TypeScriptFunctionGenerator.generate_generics(
+                        oop_data.method.signature.generic_types)
+                )
 
     def apply(self):
         """
         Generates OOP declarations
         """
-        for function in self.context.functions:
-            name = (function.server or function.client)[0].name
-            url = self.context.urls[name]
-            self.generate_declaration(function, url)
+        for oop in self.context.oops:
+            for side, oop_list in oop:
+                oop_list: List[FunctionOOP]
+
+                for oop_data in oop_list:
+                    url = self.context.urls[oop_data.method.url]
+                    self.generate_declaration(side=side,
+                                              oop_data=oop_data,
+                                              url=url)
 
         print('OOP Declarations generated\u001b[0m')

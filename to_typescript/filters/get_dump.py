@@ -8,10 +8,15 @@ class FilterGetDump(FilterAbstract):
         """
         from to_python.dump import DUMP_FUNCTIONS
         from to_python.dump import DUMP_EVENTS
+        from to_python.dump import DUMP_OOPS
 
         self.context.functions = DUMP_FUNCTIONS
         self.context.events = DUMP_EVENTS
+        self.context.oops = DUMP_OOPS
 
     def apply(self):
         self.get_dump()
-        print(f'Got all Dumps:  \u001b[34m{len(self.context.functions)}\u001b[0m')
+        print(
+            f'Got all Dumps: '
+            f'\u001b[34m{len(self.context.functions)}\u001b[0m'
+        )
