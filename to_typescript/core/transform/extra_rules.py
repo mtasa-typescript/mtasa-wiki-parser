@@ -21,6 +21,7 @@ class TypeConverter:
         'guimemo': 'GuiMemo',
         'guielement': 'GuiElement',
         'guiedit': 'GuiEdit',
+        'guiradiobutton': 'GuiRadioButton',
         'guiwindow': 'GuiWindow',
         'guicheckbox': 'GuiCheckbox',
         'font': 'DxFont',
