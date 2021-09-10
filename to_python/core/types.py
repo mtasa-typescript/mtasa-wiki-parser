@@ -6,7 +6,7 @@ from typing import List, Dict, Optional, Any
 from crawler.core.types import ListType
 
 
-@dataclass
+@dataclass(repr=False)
 class FunctionType:
     """
     Type description
@@ -25,7 +25,7 @@ class FunctionType:
                             is_optional=self.is_optional)
 
 
-@dataclass
+@dataclass(repr=False)
 class FunctionArgument:
     """
     Argument data
@@ -47,7 +47,7 @@ class FunctionArgument:
                                 default_value=self.default_value)
 
 
-@dataclass
+@dataclass(repr=False)
 class FunctionArgumentValues:
     """
     Function arguments
@@ -77,7 +77,7 @@ class FunctionArgumentValues:
                                       variable_length=self.variable_length)
 
 
-@dataclass
+@dataclass(repr=False)
 class FunctionReturnTypes:
     """
     Function return types
@@ -100,7 +100,7 @@ class FunctionReturnTypes:
                                    variable_length=self.variable_length)
 
 
-@dataclass
+@dataclass(repr=False)
 class FunctionGeneric:
     """
     Generic type information
@@ -117,7 +117,7 @@ class FunctionGeneric:
                     )'''
 
 
-@dataclass
+@dataclass(repr=False)
 class FunctionSignature:
     """
     Function information (default style)
@@ -144,7 +144,7 @@ class FunctionSignature:
                                  arguments=copy(self.arguments))
 
 
-@dataclass
+@dataclass(repr=False)
 class FunctionDoc:
     """
     Docs for function
@@ -156,7 +156,7 @@ class FunctionDoc:
     def __repr__(self):
         dict_text = (
                 f'{{\n{" " * 20}'
-                f',\n{" " * 20}'.join(
+                + f',\n{" " * 20}'.join(
                     f'"{k}": """{self.arguments[k]} """' for k in
                     self.arguments
                 )
@@ -170,7 +170,7 @@ class FunctionDoc:
             )'''
 
 
-@dataclass
+@dataclass(repr=False)
 class FunctionOOPField:
     """
     OOP Field data
@@ -193,7 +193,7 @@ class FunctionOOPField:
                                 types=copy(self.types))
 
 
-@dataclass
+@dataclass(repr=False)
 class FunctionOOP:
     """
     Function OOP information
@@ -206,7 +206,7 @@ class FunctionOOP:
     is_static: bool
 
     def __repr__(self):
-        p_description = f'"""{self.description}"""'\
+        p_description = f'"""{self.description}"""' \
             if self.description else 'None'
         p_method = repr(self.method) if self.method else 'None'
         p_field = repr(self.field) if self.field else 'None'
@@ -221,7 +221,7 @@ class FunctionOOP:
             )'''
 
 
-@dataclass
+@dataclass(repr=False)
 class FunctionData:
     """
     All function data from wiki
@@ -242,7 +242,7 @@ class FunctionData:
         )'''
 
 
-@dataclass
+@dataclass(repr=False)
 class CompoundDataAbstract(metaclass=abc.ABCMeta):
     """
     Data about client-side and server-side function
@@ -300,7 +300,7 @@ class CompoundOOPData(CompoundDataAbstract):
     client: List[FunctionOOP] = field(default_factory=list)
 
 
-@dataclass
+@dataclass(repr=False)
 class EventData:
     """
     Data about the event

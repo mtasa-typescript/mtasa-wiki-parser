@@ -64,7 +64,7 @@ class FilterParseFunctionOOP(FilterAbstract):
             oop_metadata,
             function_data
         )
-        field = FilterParseFunctionOOP.prepare_oop_fiel(
+        field = FilterParseFunctionOOP.prepare_oop_field(
             oop_metadata,
             function_data.signature.return_types
         )
