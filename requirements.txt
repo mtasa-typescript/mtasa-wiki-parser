@@ -9,7 +9,7 @@ flake8==3.9.2
 idna==3.2
 importlib-metadata==4.8.1
 iniconfig==1.1.1
-jsonschema==4.0.1
+jsonschema==4.1.0
 mccabe==0.6.1
 packaging==21.0
 pluggy==1.0.0
