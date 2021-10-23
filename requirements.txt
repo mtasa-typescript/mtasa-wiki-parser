@@ -20,7 +20,7 @@ pyparsing==2.4.7
 pyrsistent==0.18.0
 pytest==6.2.5
 PyYAML==6.0
-regex==2021.10.8
+regex==2021.10.21
 requests==2.26.0
 six==1.16.0
 soupsieve==2.2.1
