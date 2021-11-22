@@ -28,5 +28,5 @@ toml==0.10.2
 typing-extensions==3.10.0.2
 urllib3==1.26.7
 wcwidth==0.2.5
-wikitextparser==0.47.5
+wikitextparser==0.47.8
 zipp==3.6.0
