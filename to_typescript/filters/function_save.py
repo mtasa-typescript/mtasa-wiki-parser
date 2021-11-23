@@ -45,6 +45,7 @@ class FilterFunctionSave(FilterAbstract):
             'GuiWindow',
             'Projectile',
             'Material',
+            'Svg',
         ],
         shared=[  # Appends to client/server list in runtime
             'Userdata',

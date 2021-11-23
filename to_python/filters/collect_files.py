@@ -29,7 +29,13 @@ class FilterCollectDumpFiles(FilterAbstract):
 
     def apply(self):
         for file in self.get_file_list():
-            function_name = os.path.basename(file)
+            function_name = self.function_name(os.path.basename(file))
+
+            # Skip function if it is not defined
+            # in the __init__.py declaration list
+            if function_name not in self.context_data.urls:
+                continue
+
             self.context_data.pages[self.function_name(function_name)] = file
 
         print(

@@ -179,11 +179,9 @@
             "names": {
               "type": "array",
               "description": "Type names (multiple names, if you would like to provide types Union)",
-              "items": [
-                {
-                  "type": "string"
-                }
-              ],
+              "items": {
+                "type": "string"
+              },
               "minItems": 1
             },
             "isOptional": {

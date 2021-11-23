@@ -92,6 +92,7 @@ class TypeConverter:
         'projectile': 'Projectile',
         'queryhandle': 'QueryHandle',
         'xml': 'XML',
+        'svg': 'Svg',
 
         # Primitives
         'int': 'number',
