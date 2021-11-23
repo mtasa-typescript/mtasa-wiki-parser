@@ -14,7 +14,7 @@ mccabe==0.6.1
 packaging==21.3
 pluggy==1.0.0
 py==1.11.0
-pycodestyle==2.7.0
+pycodestyle==2.8.0
 pyflakes==2.3.1
 pyparsing==3.0.6
 pyrsistent==0.18.0
