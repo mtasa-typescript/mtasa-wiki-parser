@@ -15,7 +15,7 @@ packaging==21.3
 pluggy==1.0.0
 py==1.11.0
 pycodestyle==2.7.0
-pyflakes==2.3.1
+pyflakes==2.4.0
 pyparsing==3.0.6
 pyrsistent==0.18.0
 pytest==6.2.5
