@@ -1,5 +1,5 @@
 ﻿atomicwrites==1.4.0
-attrs==21.2.0
+attrs==21.3.0
 beautifulsoup4==4.10.0
 certifi==2021.10.8
 chardet==4.0.0
