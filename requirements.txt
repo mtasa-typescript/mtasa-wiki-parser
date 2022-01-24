@@ -17,7 +17,7 @@ pluggy==1.0.0
 py==1.11.0
 pycodestyle==2.8.0
 pyflakes==2.4.0
-pyparsing==3.0.6
+pyparsing==3.0.7
 pyrsistent==0.18.0
 pytest==6.2.5
 PyYAML==6.0
