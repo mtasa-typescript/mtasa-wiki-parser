@@ -3,7 +3,7 @@ attrs==21.4.0
 beautifulsoup4==4.11.0
 certifi==2021.10.8
 chardet==4.0.0
-charset-normalizer==2.0.10
+charset-normalizer==2.0.12
 colorama==0.4.4
 flake8==4.0.1
 idna==3.3
