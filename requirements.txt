@@ -27,7 +27,7 @@ six==1.16.0
 soupsieve==2.3.1
 toml==0.10.2
 typing-extensions==4.1.1
-urllib3==1.26.8
+urllib3==1.26.12
 wcwidth==0.2.5
 wikitextparser==0.48.2
 zipp==3.7.0
