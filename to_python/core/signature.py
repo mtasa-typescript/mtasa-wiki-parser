@@ -349,7 +349,8 @@ class SignatureTokenizer:
                         else:
                             print(f'[ERROR] {message}', file=sys.stderr)
 
-                    open_bracket_index = index
+                    if open_bracket_index is None:
+                        open_bracket_index = index
                     continue
 
                 if token.type == close_bracket:
@@ -369,7 +370,11 @@ class SignatureTokenizer:
         """
         Check: there should be no UNDEFINED tokens
         """
-        self.brackets_check()
+        print(
+            "\u001b[33m[WARN] \u001b[0m"
+            "brackets_check works in no-exception mode"
+        )
+        self.brackets_check(False)
 
         # No UNDEFINED Tokens
         for index, token in enumerate(self.tokenized):
