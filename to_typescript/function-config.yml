@@ -226,3 +226,36 @@ data:
       replaceReturnType:
         values:
           - DxTexture
+
+  - functionName: svgSetUpdateCallback
+    side: client
+    actions:
+      replaceArgument:
+        - name: 'callback'
+          newArgument:
+            name: 'callback'
+            type:
+              names:
+                - 'SvgCallback'
+                - 'false'
+
+  - functionName: svgCreate
+    side: client
+    actions:
+      replaceArgument: &svgReplaceCallback
+        - name: 'svg'
+          newArgument:
+            name: 'callback'
+            type:
+              isOptional: true
+              names: ['SvgCallback']
+
+  - functionName: svgSetDocumentXML
+    side: client
+    actions:
+      replaceArgument: *svgReplaceCallback
+
+  - functionName: svgSetSize
+    side: client
+    actions:
+      replaceArgument: *svgReplaceCallback

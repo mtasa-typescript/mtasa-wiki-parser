@@ -46,6 +46,7 @@ class FilterFunctionSave(FilterAbstract):
             'Projectile',
             'Material',
             'Svg',
+            'SvgCallback',
         ],
         shared=[  # Appends to client/server list in runtime
             'Userdata',

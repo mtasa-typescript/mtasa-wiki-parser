@@ -45,12 +45,6 @@ FUNCTION_BLACKLIST = {
 
     'utf8.lower',
     'utf8.upper',
-
-    # Blocked due to #74
-    # https://github.com/mtasa-typescript/mtasa-wiki-parser/issues/74
-    'svgCreate',
-    'svgSetDocumentXML',
-    'svgSetSize',
 }
 
 EVENT_SUBFOLDER = 'events'
